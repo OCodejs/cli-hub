@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OCodeJS CLI Hub — Công cụ TUI/CLI</title>
+<meta name="description" content="Khám phá, tìm kiếm và đề xuất các công cụ TUI/CLI dành cho lập trình viên trong hệ sinh thái OCodeJS.">
+<link rel="canonical" href="https://zskbot.github.io/ocodejs-cli/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OCodeJS CLI Hub">
+<meta property="og:description" content="Khám phá công cụ terminal dành cho lập trình viên.">
+<meta property="og:url" content="https://zskbot.github.io/ocodejs-cli/">
+<style>
+:root{--bg:#000;--card:#0a0a0c;--fg:#ededed;--mut:#8a8a93;--a:#00d8ff;--b:#9a6bff;--c:#ff3df0;--g:#22e58a;--bd:#1f1f24;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef3ff;--card:#fff;--fg:#0d1a3f;--mut:#51608a;--a:#0877c9;--b:#6b3fd6;--c:#c01fb0;--g:#0a8f54;--bd:#c3d0f2;color-scheme:light}}
+:root[data-theme="dark"]{--bg:#000;--card:#0a0a0c;--fg:#ededed;--mut:#8a8a93;--a:#00d8ff;--b:#9a6bff;--c:#ff3df0;--g:#22e58a;--bd:#1f1f24}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+code,.term,.bar,.keys,.inp,.st,.logo,.chip,.tags,footer,input,.card h3,.box,h2{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.win{max-width:1000px;margin:14px auto;border:1.5px solid var(--bd);border-radius:12px;background:var(--bg);box-shadow:none;overflow:hidden}
+.bar{display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid var(--bd);color:var(--mut);font-size:12px}
+.bar i{width:11px;height:11px;border-radius:50%;display:inline-block}
+.bar span{margin-left:10px}.bar em{margin-left:auto;font-style:normal}
+.in{padding:18px}
+.logo{font-size:clamp(30px,9vw,76px);font-weight:900;letter-spacing:-.03em;line-height:1;margin:10px 0 6px;background:linear-gradient(90deg,var(--a),var(--b),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.tag{color:var(--mut);margin:0 0 18px}
+a{color:var(--a);text-decoration:none}select,textarea,input{width:100%;padding:12px 14px;background:var(--card);color:var(--fg);border:1.5px solid var(--a);border-radius:8px;font:inherit}
+input:focus{outline:none;box-shadow:0 0 0 3px rgba(0,216,255,.25)}
+h2{font-size:12px;color:var(--mut);margin:24px 0 10px;text-transform:uppercase;letter-spacing:.1em}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--card);border:1px solid var(--bd);color:var(--fg);padding:5px 12px;border-radius:6px;cursor:pointer;font:inherit}
+.chip.on,.chip:hover{border-color:var(--a);color:var(--a)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px;cursor:pointer}
+.card:hover{border-color:var(--c)}
+.card h3{margin:0 0 4px;color:var(--a);font-size:16px}
+.card h3:before{content:"> ";color:var(--c)}
+.card p{margin:0 0 10px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--mut)}
+.tags b{border:1px solid var(--bd);border-radius:4px;padding:1px 6px;font-weight:400}
+code{display:block;margin-top:10px;background:var(--bg);padding:7px 9px;border-radius:5px;font-size:12px;overflow-x:auto;white-space:nowrap;color:var(--g)}
+.back{background:none;border:0;color:var(--a);font:inherit;cursor:pointer;padding:0;margin-bottom:12px}
+.box{border:1px solid var(--a);border-radius:8px;padding:12px;margin:12px 0}
+.box.up{border-color:#ffb36b}
+.box small{color:var(--mut)}.box strong{display:block;font-size:18px}
+.spark{display:flex;align-items:flex-end;gap:2px;height:56px;justify-content:flex-end;margin-top:6px}
+.spark s{width:6px;background:linear-gradient(var(--a),var(--b));border-radius:1px;display:block}
+.up .spark s{background:linear-gradient(#ffd08a,#ff6b4a)}
+.keys{color:var(--mut);text-align:center;font-size:12px}.keys b{color:var(--b)}
+.term p{margin:2px 0}.pr{color:var(--c)}.cm{color:var(--a)}.ok{color:var(--g)}
+.inp{border:1.5px solid var(--a);border-radius:8px;padding:10px;margin-top:12px;color:var(--mut)}
+.st{display:flex;gap:16px;flex-wrap:wrap;border-top:1px solid var(--bd);margin-top:14px;padding-top:10px;color:var(--a);font-size:12px}
+.btn{background:var(--a);color:#000;border:0;border-radius:8px;padding:10px 16px;font:inherit;font-weight:700;cursor:pointer;margin-top:12px}label{display:block;margin-top:12px;color:var(--mut);font-size:12px}textarea{resize:vertical;min-height:80px}
+.empty,footer{color:var(--mut)}footer{padding:14px 18px;border-top:1px solid var(--bd);font-size:12px}
+</style>
+</head>
+<body>
+<div class="win">
+<div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span>OCODEJS — Công cụ TUI/CLI</span><em><a href="#submit">+ Gửi công cụ</a></em></div>
+<div class="in" id="app"></div>
+<footer>● online · <span id="cnt"></span> công cụ · /help · ⌘K phím tắt</footer>
+</div>
+<script>
+let TOOLS=[];
+const REPO="zskbot/ocodejs-cli";
+const $=s=>document.querySelector(s),esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let lang=null,cat=null,q="",timer=null;
+function chips(key,cur){const v=[...new Set(TOOLS.map(t=>t[key]))].sort();return v.map(x=>`<button class="chip${cur===x?" on":""}" data-k="${key}" data-v="${esc(x)}">${esc(x)}</button>`).join("")}
+function home(){
+ const r=TOOLS.filter(t=>(!lang||t.language===lang)&&(!cat||t.category===cat)&&(t.name+t.description).toLowerCase().includes(q));
+ $("#app").innerHTML=`<div class="logo">&gt;_OCODEJS</div><p class="tag">Tìm công cụ terminal tiếp theo của bạn.</p>
+ <input id="q" type="search" placeholder="Type a message or tìm: git, json, mạng…" value="${esc(q)}">
+ <h2>Ngôn ngữ</h2><div class="chips" id="L">${chips("language",lang)}</div>
+ <h2>Danh mục</h2><div class="chips" id="C">${chips("category",cat)}</div>
+ <h2>${q||lang||cat?"Kết quả ("+r.length+")":"Mới thêm"}</h2>
+ <div class="grid">${r.length?r.map(t=>`<div class="card" data-id="${esc(t.id)}"><h3>${esc(t.name)}</h3><p>${esc(t.description)}</p><div class="tags"><b>${esc(t.language)}</b><b>${esc(t.category)}</b></div><code>${esc(t.install)}</code></div>`).join(""):'<div class="empty">Không tìm thấy.</div>'}</div>`;
+ const i=$("#q");i.oninput=()=>{q=i.value.toLowerCase();const p=i.selectionStart;home();const n=$("#q");n.focus();n.setSelectionRange(p,p)};
+}
+function spark(el,max){el.innerHTML=Array.from({length:40},()=>`<s style="height:${10+Math.random()*max}px"></s>`).join("")}
+function flowView(){
+ return `<div class="logo" style="font-size:clamp(34px,10vw,64px)">FLOW</div><p class="tag">Calm your network. See it breathe.</p>
+ <div class="box"><small>download</small><strong id="dn">↓ 1.2 MB/s</strong><div class="spark" id="s1"></div></div>
+ <div class="box up"><small>upload</small><strong id="ul">↑ 58 KB/s</strong><div class="spark" id="s2"></div></div>
+ <p class="keys">today ↓ 1.5 MB ↑ 67 KB<br>● eth0 · ⇔ 92ms</p>
+ <p class="keys"><b>q</b> quit · <b>m</b> mode · <b>n</b> proc · <b>t</b> theme · <b>r</b> reset · <b>i</b> iface · <b>c</b> units · <b>b</b> bits · <b>p</b> pause · <b>?</b> help</p>`;
+}
+function ocView(){
+ return `<div class="logo">&gt;_OCODEJS</div><p class="tag">BUILD WITH AI IN THE TERMINAL</p><div class="term">
+ <p><b>Welcome to OCODEJS</b></p><p style="color:var(--mut)">Your AI coding workspace in the terminal.</p><br>
+ <p><span class="pr">&gt;</span> <span class="cm">help</span></p><p class="cm">Commands: [run] [help] [config] [clear] [status]</p><br>
+ <p><span class="pr">&gt;</span> <span class="cm">config</span></p><p><span class="ok">config loaded:</span> workspace=ocodespace, theme=cyber-night</p><br>
+ <p><span class="pr">&gt;</span> <span class="cm">run hello.py</span></p><p>Running hello.py ... <span class="ok">done</span></p><p>Hello, world!</p></div>
+ <div class="inp"><span class="pr">&gt;</span> ▌ Type a message or @path/to/file</div>
+ <div class="st"><span>OCODEJS CLI</span><span class="ok">● online</span><span>⬡ workspace ready</span><span>/help</span><span>⌘K shortcuts</span></div>`;
+}
+function detail(t){
+ let pv=t.id==="flow"?flowView():t.id==="ocodejs"?ocView():`<div class="logo" style="font-size:clamp(28px,8vw,56px)">${esc(t.name.toUpperCase())}</div>`;
+ $("#app").innerHTML=`<button class="back" id="bk">← Quay lại</button>${pv}
+ <h2>Thông tin</h2><p>${esc(t.description)}</p><div class="tags"><b>${esc(t.language)}</b><b>${esc(t.category)}</b></div><code>${esc(t.install)}</code>`;
+ $("#bk").onclick=()=>{location.hash=""};
+ if(t.id==="flow"){const go=()=>{spark($("#s1"),44);spark($("#s2"),20);$("#dn").textContent="↓ "+(0.8+Math.random()*.8).toFixed(1)+" MB/s";$("#ul").textContent="↑ "+Math.round(40+Math.random()*30)+" KB/s"};go();timer=setInterval(go,900)}
+}
+function submitView(){
+ const O=["Mạng","AI","Văn bản","DevOps","Git","Hệ thống","Dữ liệu","Khác"];
+ $("#app").innerHTML=`<button class="back" id="bk">← Quay lại</button><div class="logo" style="font-size:clamp(28px,8vw,56px)">SUBMIT</div><p class="tag">Gửi công cụ mới. Form sẽ mở một GitHub Issue điền sẵn để duyệt.</p>
+ <label>Tên công cụ</label><input id="fn"><label>Mô tả ngắn</label><textarea id="fd"></textarea>
+ <label>Ngôn ngữ</label><input id="fl" placeholder="Rust, Go, Python…"><label>Danh mục</label><select id="fc">${O.map(o=>`<option>${o}</option>`).join("")}</select>
+ <label>Lệnh cài đặt</label><input id="fi"><label>Link repo (https://…)</label><input id="fr">
+ <button class="btn" id="go">Mở GitHub Issue →</button>`;
+ $("#bk").onclick=()=>{location.hash=""};
+ $("#go").onclick=()=>{const v=i=>$(i).value.trim();
+  const body=`**Tên:** ${v("#fn")}\n**Mô tả:** ${v("#fd")}\n**Ngôn ngữ:** ${v("#fl")}\n**Danh mục:** ${v("#fc")}\n**Cài đặt:** ${v("#fi")}\n**Repo:** ${v("#fr")}`;
+  window.open(`https://github.com/${REPO}/issues/new?template=tool-submission.md&title=${encodeURIComponent("Gửi công cụ: "+v("#fn"))}&body=${encodeURIComponent(body)}`,"_blank")};
+}
+function route(){
+ clearInterval(timer);const id=location.hash.slice(1),t=TOOLS.find(x=>x.id===id);
+ id==="submit"?submitView():t?detail(t):home();window.scrollTo(0,0);
+}
+document.addEventListener("click",e=>{
+ const c=e.target.closest(".card"),h=e.target.closest(".chip");
+ if(c){location.hash=c.dataset.id}
+ else if(h){const k=h.dataset.k,v=h.dataset.v;if(k==="language")lang=lang===v?null:v;else cat=cat===v?null:v;home()}
+});
+addEventListener("hashchange",route);
+fetch("tools.json").then(r=>r.json()).then(d=>{TOOLS=d;$("#cnt").textContent=d.length;route()}).catch(()=>{$("#app").innerHTML='<p class="empty">Không tải được tools.json. Hãy chạy qua máy chủ (vd: npx serve) hoặc GitHub Pages.</p>'});
+</script>
+</body>
+</html>
