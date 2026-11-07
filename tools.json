@@ -1,0 +1,92 @@
+[
+  {
+    "id": "dnspyre",
+    "name": "dnspyre",
+    "description": "Công cụ benchmark DNS qua UDP/TCP, DoT, DoH và DoQ; hỗ trợ đo tải và xuất biểu đồ.",
+    "language": "Go",
+    "category": "Mạng",
+    "install": "go install github.com/Tantalor93/dnspyre/v3@latest",
+    "repo": "https://github.com/Tantalor93/dnspyre"
+  },
+  {
+    "id": "cli-anything-hub",
+    "name": "cli-hub",
+    "description": "Duyệt, tìm kiếm, cài đặt và quản lý các CLI harness từ hệ sinh thái CLI-Anything.",
+    "language": "Python",
+    "category": "AI Agents",
+    "install": "pip install cli-anything-hub",
+    "repo": "https://github.com/HKUDS/CLI-Anything"
+  },
+  {
+    "id": "clihub",
+    "name": "clihub",
+    "description": "Quản lý đồng bộ skills, MCP, prompt và cấu hình cho nhiều AI coding CLI; có TUI và CLI.",
+    "language": "TypeScript",
+    "category": "AI Agents",
+    "install": "curl -fsSL https://raw.githubusercontent.com/wikieden/clihub/main/scripts/install.sh | sh",
+    "repo": "https://github.com/wikieden/clihub"
+  },
+  {
+    "id": "ripgrep",
+    "name": "ripgrep (rg)",
+    "description": "Tìm kiếm chuỗi và biểu thức chính quy tốc độ cao trong cây thư mục, tôn trọng .gitignore.",
+    "language": "Rust",
+    "category": "Tìm kiếm",
+    "install": "brew install ripgrep",
+    "repo": "https://github.com/BurntSushi/ripgrep"
+  },
+  {
+    "id": "fd",
+    "name": "fd",
+    "description": "Tìm file và thư mục với cú pháp thân thiện, nhanh hơn find cho các tác vụ phổ biến.",
+    "language": "Rust",
+    "category": "Tệp tin",
+    "install": "brew install fd",
+    "repo": "https://github.com/sharkdp/fd"
+  },
+  {
+    "id": "fzf",
+    "name": "fzf",
+    "description": "Bộ lọc fuzzy finder tổng quát cho terminal, có thể kết hợp với shell và các lệnh khác.",
+    "language": "Go",
+    "category": "Tìm kiếm",
+    "install": "brew install fzf",
+    "repo": "https://github.com/junegunn/fzf"
+  },
+  {
+    "id": "lazygit",
+    "name": "lazygit",
+    "description": "Giao diện terminal tương tác để quản lý Git repository, commit, branch và stash.",
+    "language": "Go",
+    "category": "Git",
+    "install": "brew install lazygit",
+    "repo": "https://github.com/jesseduffield/lazygit"
+  },
+  {
+    "id": "k9s",
+    "name": "k9s",
+    "description": "TUI quan sát và tương tác với Kubernetes cluster trực tiếp từ terminal.",
+    "language": "Go",
+    "category": "DevOps",
+    "install": "brew install k9s",
+    "repo": "https://github.com/derailed/k9s"
+  },
+  {
+    "id": "jq",
+    "name": "jq",
+    "description": "Bộ xử lý JSON trên command line để lọc, biến đổi và truy vấn dữ liệu.",
+    "language": "C",
+    "category": "Dữ liệu",
+    "install": "brew install jq",
+    "repo": "https://github.com/jqlang/jq"
+  },
+  {
+    "id": "yq",
+    "name": "yq",
+    "description": "Bộ xử lý YAML, JSON, XML, INI và CSV/TSV từ terminal.",
+    "language": "Go",
+    "category": "Dữ liệu",
+    "install": "brew install yq",
+    "repo": "https://github.com/mikefarah/yq"
+  }
+]
