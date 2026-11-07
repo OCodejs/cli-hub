@@ -1,0 +1,16 @@
+{
+  "name": "ocodejs-cli-hub",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "test": "node --test",
+    "auth:dev": "npm --prefix auth-server run dev",
+    "auth:start": "npm --prefix auth-server start",
+    "auth:test": "npm --prefix auth-server test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
