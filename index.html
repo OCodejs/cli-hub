@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>OCode.js CLI Hub — Developer tools</title>
+<meta name="description" content="Khám phá, tìm kiếm và sử dụng các công cụ CLI/TUI dành cho developer và AI agents.">
+<link rel="canonical" href="https://zskbot.github.io/ocodejs-cli/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OCode.js CLI Hub">
+<meta property="og:description" content="Developer tools, terminal-first.">
+<meta property="og:url" content="https://zskbot.github.io/ocodejs-cli/">
+<style>
+:root{color-scheme:dark;--bg:#05070d;--panel:#0a101c;--line:#26364f;--line-strong:#36577f;--fg:#f2f5fb;--muted:#a3afc2;--blue:#347cff;--cyan:#55c8ff;--purple:#a34cff;--yellow:#f3d44e;--pink:#e45ac8;--green:#57d6a2;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
+@media(max-width:768px){
+  html,body{width:100%;height:100%;min-height:100%;overflow-x:hidden;overscroll-behavior:none;touch-action:pan-x pan-y}
+  body{min-height:100dvh;min-height:100svh}
+  .layout{min-height:100dvh;min-height:100svh;height:auto}
+  .topbar{padding-top:calc(8px + env(safe-area-inset-top,0px))}
+  .sidebar{padding-bottom:env(safe-area-inset-bottom,0px)}
+  .content{min-width:0;max-width:100vw;overflow-wrap:anywhere}
+}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 var(--mono)}
+button,input,select{font:inherit}
+a{color:inherit;text-decoration:none}
+button,a,input,select{touch-action:manipulation}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+button{cursor:pointer}
+.layout{min-height:100vh;display:grid;grid-template-columns:230px minmax(0,1fr);grid-template-rows:64px 1fr auto;max-width:1680px;margin:0 auto;border:1px solid var(--line);background:linear-gradient(135deg,#070b13,#05070d 55%)}
+.sidebar{grid-column:1;grid-row:1/4;border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;min-height:100vh}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 26px;border-bottom:1px solid var(--line);font-weight:800;font-size:20px;letter-spacing:-1px}
+.brand-mark{font-size:34px;line-height:1;color:var(--blue);text-shadow:5px 4px 0 var(--purple)}
+.brand small{display:block;color:var(--blue);font-size:12px;letter-spacing:1px}
+.nav{display:grid;gap:6px;margin-top:24px}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid transparent;color:var(--muted);font-size:14px}
+.nav a:hover,.nav a.active{background:#173c9c;border-color:#356fff;color:#fff}
+.nav-icon{width:18px;text-align:center;font-size:16px}
+.side-card{margin-top:auto;border:1px solid var(--line-strong);padding:12px;background:#080e19}
+.side-card strong{display:block;margin-bottom:5px}
+.side-card p{margin:0;color:var(--muted);font-size:12px}
+.version{display:inline-block;margin-top:10px;border:1px solid var(--purple);padding:2px 7px;color:#c9a2ff;font-size:11px}
+.topbar{grid-column:2;grid-row:1;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:0 22px}
+.mbrand{display:none}
+.icon-button,.shortcut{height:38px;min-width:40px;border:1px solid var(--line-strong);border-radius:0;background:transparent;color:var(--fg);padding:0 12px}
+.shortcut{display:flex;align-items:center;gap:10px;color:var(--muted)}
+.submit-tool{height:38px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--blue);background:#102b67;color:#fff;padding:0 14px;font-size:12px;font-weight:700;white-space:nowrap}
+.submit-tool:hover{background:#1b43a0;border-color:var(--cyan)}
+.content{grid-column:2;grid-row:2;min-width:0;padding:clamp(22px,4vw,48px)}
+.hero{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:24px;margin:0 0 26px}
+.hero-mark{font-size:74px;line-height:1;color:var(--blue);text-shadow:10px 7px 0 var(--purple)}
+h1{margin:0;font-size:clamp(28px,4vw,54px);line-height:1.1;letter-spacing:-2px}
+h1 span{color:var(--blue)}
+.subtitle{margin:12px 0 0;color:var(--muted);font-size:15px}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 30px}
+.stat{min-height:42px;display:flex;align-items:center;gap:10px;border:1px solid var(--line-strong);padding:8px 14px;background:#080e19;white-space:nowrap}
+.stat:nth-child(1){border-color:#c3a92c;color:var(--yellow)}
+.stat:nth-child(2){border-color:#267db5;color:var(--cyan)}
+.stat:nth-child(3){border-color:#8b42d3;color:#c28bff}
+.stat:nth-child(4){border-color:#4a9fbd;color:#8de4ff}
+.searchbar{display:grid;grid-template-columns:minmax(0,1fr) 190px 190px 120px;gap:12px;margin-bottom:28px}
+.searchbox,.filter,.search-submit{height:52px;border:1px solid var(--line-strong);border-radius:0;background:#070c15;color:var(--fg);padding:0 15px;min-width:0}
+.searchbox{display:flex;align-items:center;gap:12px}
+.searchbox input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--fg)}
+.searchbox input:focus-visible{outline:0}
+.searchbox:focus-within{border-color:var(--cyan)}
+.filter{width:100%;appearance:none}
+.search-submit{background:#2859e8;border-color:#3c70ff;color:#fff;font-weight:700}
+.search-submit:hover{background:#3970ff}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 12px;scroll-margin-top:80px}
+.section-head h2{margin:0;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.result-count{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{min-width:0;border:1px solid var(--line-strong);background:linear-gradient(145deg,#0a101b,#070b13);padding:15px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s}
+.card:nth-child(4n+1){border-top:2px solid var(--blue)}
+.card:nth-child(4n+2){border-top:2px solid var(--purple)}
+.card:nth-child(4n+3){border-top:2px solid var(--cyan)}
+.card:nth-child(4n){border-top:2px solid var(--pink)}
+.card:hover{border-color:var(--blue)}
+.card-head{display:flex;align-items:center;gap:12px;min-width:0}
+.tool-icon{flex:0 0 44px;width:44px;height:44px;display:grid;place-items:center;border:2px solid var(--cyan);color:var(--cyan);font-weight:800;font-size:15px}
+.card:nth-child(4n+2) .tool-icon{border-color:var(--purple);color:#c69aff}
+.card:nth-child(4n) .tool-icon{border-color:var(--pink);color:#f08add}
+.card h3{margin:0;font-size:16px;overflow-wrap:anywhere}
+.card p{min-height:44px;margin:0;color:var(--muted);font-size:12px}
+.meta{display:flex;align-items:center;gap:10px;color:var(--blue);font-size:12px;flex-wrap:wrap}
+.meta span+span{color:var(--muted)}
+.card-actions{display:flex;align-items:center;gap:7px;margin-top:auto;flex-wrap:wrap}
+.btn{min-height:34px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-strong);border-radius:0;background:#0a1322;color:var(--fg);padding:6px 10px;font-size:11px}
+.btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn.primary{background:#173d9f;border-color:#3976ff;color:#fff}
+.btn.favorite[aria-pressed=true]{color:var(--yellow);border-color:var(--yellow)}
+.empty{grid-column:1/-1;border:1px dashed var(--line-strong);padding:28px;text-align:center;color:var(--muted)}
+.detail{max-width:760px}
+.detail h2{font-size:30px;margin:16px 0 8px;overflow-wrap:anywhere}
+.detail-panel{margin-top:16px;border:1px solid var(--line-strong);padding:16px;background:var(--panel);min-width:0}
+.command{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;color:var(--green);font-size:12px;margin:10px 0 14px}
+.back{height:40px;border:1px solid var(--line-strong);border-radius:0;background:transparent;color:var(--fg);padding:0 14px}
+footer{grid-column:2;grid-row:3;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding:16px 22px;color:var(--muted);font-size:12px}
+footer a{padding:0 8px}
+
+@media(max-width:1100px){
+  .searchbar{grid-template-columns:minmax(0,1fr) minmax(150px,1fr) minmax(150px,1fr)}
+  .search-submit{grid-column:1/-1}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* ===== Mobile: header cố định phía trên, thanh điều hướng cố định phía dưới ===== */
+@media(max-width:768px){
+  html,body{width:100%;overflow-x:hidden}
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+  .layout{display:block;min-height:100svh;border:0;background:var(--bg)}
+
+  /* Header */
+  .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:8px;height:auto;padding:calc(8px + env(safe-area-inset-top,0px)) calc(14px + env(safe-area-inset-right,0px)) 8px calc(14px + env(safe-area-inset-left,0px));background:rgba(5,7,13,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .mbrand{display:flex;align-items:center;gap:8px;min-width:0;margin-right:auto;font-weight:800;font-size:16px;letter-spacing:-.5px}
+  .mbrand b{font-size:22px;line-height:1;color:var(--blue);text-shadow:3px 2px 0 var(--purple)}
+  .mbrand small{color:var(--blue);font-size:10px;letter-spacing:1px;margin-left:2px}
+  .shortcut{display:none}
+  .submit-tool,.icon-button{height:38px;min-height:38px;padding:0 11px;font-size:12px}
+  .icon-button{min-width:38px}
+
+  /* Sidebar -> bottom tab bar */
+  .sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:40;min-height:0;padding:0 env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);border:0;border-top:1px solid var(--line-strong);background:rgba(8,12,21,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .brand,.side-card{display:none}
+  .nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;margin:0}
+  .nav a{flex-direction:column;justify-content:center;gap:2px;min-height:56px;padding:6px 2px;font-size:10px;text-align:center;border:0;border-top:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nav a:hover,.nav a.active{background:#10265f;border-top-color:var(--cyan);color:#fff}
+  .nav-icon{width:auto;font-size:17px;line-height:1}
+
+  /* Nội dung */
+  .content{padding:16px calc(14px + env(safe-area-inset-right,0px)) 24px calc(14px + env(safe-area-inset-left,0px))}
+  .hero{display:block;margin:0 0 12px}
+  .hero-mark{display:none}
+  h1{font-size:clamp(26px,8vw,32px);line-height:1.15;letter-spacing:-.8px}
+  .subtitle{margin-top:6px;font-size:13px;line-height:1.45}
+
+  /* Stats: một hàng cuộn ngang thay vì lưới 2x2 chiếm chỗ */
+  .stats{flex-wrap:nowrap;gap:8px;margin:14px -14px 14px;padding:0 14px 4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .stats::-webkit-scrollbar{display:none}
+  .stat{flex:0 0 auto;min-height:32px;padding:5px 10px;font-size:11px}
+
+  /* Tìm kiếm: ô tìm full width, 2 bộ lọc cùng hàng */
+  .searchbar{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 14px}
+  .searchbox{grid-column:1/-1}
+  .searchbox,.filter{height:46px;padding:0 12px}
+  .searchbox input{font-size:16px;height:100%}
+  .filter{font-size:14px;appearance:auto}
+  .search-submit{display:none}
+
+  .section-head{margin:14px 0 10px;scroll-margin-top:70px}
+  .section-head h2{font-size:12px}
+  .result-count{font-size:11px}
+
+  .grid{grid-template-columns:minmax(0,1fr);gap:10px}
+  .card{padding:12px;gap:8px;border-top-width:2px}
+  .tool-icon{flex-basis:40px;width:40px;height:40px;font-size:13px;border-width:1px}
+  .card h3{font-size:15px}
+  .card p{min-height:0;font-size:12.5px}
+  .meta{font-size:11px;gap:8px}
+
+  /* Nút trong card: View chiếm phần lớn, các nút còn lại gọn bên cạnh */
+  .card-actions{display:grid;grid-template-columns:1fr auto auto 44px;gap:6px}
+  .card-actions .btn{min-height:42px;padding:0 12px;font-size:12px;white-space:nowrap}
+  .btn.favorite{font-size:18px;padding:0}
+
+  .detail h2{font-size:24px}
+  .detail-panel{padding:12px}
+  .back{width:100%;height:44px}
+  .detail .btn.primary{width:100%;min-height:44px}
+
+  footer{display:block;padding:14px calc(14px + env(safe-area-inset-right,0px)) 14px calc(14px + env(safe-area-inset-left,0px));font-size:11px;line-height:1.9}
+  footer span{display:block}
+  footer a{padding:0 6px 0 0}
+  button,.btn,.icon-button,.submit-tool,.back,input,select,.filter,.searchbox,.stat,.card,.detail-panel{border-radius:0!important}
+}
+@media(max-width:360px){
+  .mbrand small{display:none}
+  .submit-tool{padding:0 8px;font-size:11px}
+  .card-actions{grid-template-columns:1fr 1fr 44px}
+  .card-actions .btn.primary{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important}
+}
+
+.light-preview .layout{background:#edf2fb;color:#101827}
+.light-preview .sidebar,.light-preview .topbar,.light-preview footer{background:#f7f9fd;color:#263449}
+.light-preview .brand small,.light-preview .mbrand small,.light-preview .meta,.light-preview .result-count{color:#245ac7}
+.light-preview .nav a{color:#34445c}
+.light-preview .nav a:hover,.light-preview .nav a.active{background:#dce8ff;color:#102b61}
+.light-preview .side-card,.light-preview .card,.light-preview .detail-panel,.light-preview .searchbox,.light-preview .filter,.light-preview .shortcut,.light-preview .icon-button,.light-preview .btn,.light-preview .stat{background:#fff;color:#17243a}
+.light-preview .btn.primary,.light-preview .submit-tool{color:#fff}
+.light-preview .btn.primary{background:#173d9f}
+.light-preview .card p,.light-preview .section-head h2,.light-preview .subtitle{color:#52627a}
+.light-preview .command{background:#f2f6fc;color:#08764d;padding:8px}
+.light-preview .card,.light-preview .layout{border-color:#9eb4d4}
+@media(max-width:768px){.light-preview .topbar{background:rgba(247,249,253,.94)}.light-preview .sidebar{background:rgba(247,249,253,.97)}}
+
+/* OCode.js UI system: 8pt spacing, fluid canvas, accessible touch targets. */
+:root{
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;
+  --space-5:24px;--space-6:32px;--space-7:48px;--space-8:64px;
+  --content-max:1200px;--mobile-gutter:16px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{width:100%;max-width:100%;overflow-x:hidden}
+body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
+.layout{width:100%;max-width:100%;min-width:0}
+.content{width:100%;max-width:calc(var(--content-max) + 2 * var(--space-6));min-width:0;margin-inline:auto}
+button,a,input,select,textarea{font:inherit}
+button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,.nav a{
+  border-radius:0!important
+}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+  outline:2px solid var(--cyan);outline-offset:2px
+}
+@media(min-width:1200px){
+  .content{padding-inline:clamp(32px,5vw,80px)}
+  .stats{gap:16px;margin-block:32px}
+  .searchbar{gap:12px;margin-bottom:32px}
+  .grid{gap:16px}
+  .card{padding:16px}
+  .section-head{margin-block:32px 16px}
+}
+@media(min-width:769px) and (max-width:1199px){
+  .content{padding:32px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:768px){
+  :root{--mobile-gutter:16px}
+  .content{padding:24px var(--mobile-gutter) 32px}
+  .hero{gap:16px;margin-bottom:24px}
+  h1{font-size:clamp(28px,7vw,32px);line-height:1.2;letter-spacing:-.8px}
+  .subtitle{font-size:14px;line-height:1.5}
+  .stats{gap:8px;margin:24px 0}
+  .stat{min-height:40px;padding:8px}
+  .searchbar{gap:8px;margin-bottom:32px}
+  .searchbox,.filter{height:44px;min-height:44px;padding-inline:12px}
+  .search-submit{height:48px;min-height:48px;padding-inline:16px}
+  .grid{gap:12px}
+  .card{padding:16px;gap:12px}
+  .card-actions{gap:8px}
+  .card-actions .btn{min-height:36px;padding:8px 12px}
+  .section-head{margin:24px 0 12px}
+  .topbar{padding-inline:16px}
+  .submit-tool{min-height:40px;padding-inline:16px}
+  .icon-button,.shortcut{min-height:40px}
+  .nav{gap:8px}
+  .nav a{min-height:40px;padding:8px 12px}
+  footer{gap:12px;padding:16px}
+}
+@media(max-width:420px){
+  .content{padding:24px 16px 32px}
+  .hero{margin-bottom:16px}
+  h1{font-size:28px}
+  .subtitle{font-size:13px}
+  .stats{gap:8px;margin:16px 0 24px}
+  .stat{min-height:36px;padding:8px;font-size:10px}
+  .searchbar{gap:8px;margin-bottom:32px}
+  .searchbox,.filter{height:44px;min-height:44px}
+  .search-submit{height:48px;min-height:48px}
+  .card{padding:12px}
+  .card-actions .btn{min-height:36px}
+}
+/* Maintain the explicit 100% square-corner visual requirement. */
+button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,input,select,textarea,.filter,.searchbox,.stat,.card,.detail-panel,.nav a{border-radius:0!important}
+
+
+/* ===== OCode.js Pages layout: portrait mobile / 16:9 desktop ===== */
+@media (min-width:769px){
+  body{min-height:100vh}
+  .layout{
+    width:min(100%,1920px);
+    min-height:100vh;
+    margin-inline:auto;
+    grid-template-columns:240px minmax(0,1fr);
+    grid-template-rows:64px minmax(0,1fr) auto;
+  }
+  .content{max-width:1280px;padding:clamp(32px,4vw,64px)}
+}
+@media (max-width:768px){
+  html,body{width:100%;height:100%;min-height:100%;overflow-x:hidden}
+  body{min-height:100svh;min-height:100dvh;padding:0 0 calc(64px + env(safe-area-inset-bottom,0px))}
+  .layout{display:flex;flex-direction:column;width:100%;min-height:100svh;min-height:100dvh;height:auto;max-width:100%;border:0}
+  .topbar{position:sticky;top:0;z-index:50;flex:0 0 auto;min-height:56px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;justify-content:space-between}
+  .mbrand{font-size:15px}
+  .submit-tool{height:40px;min-height:40px;padding:0 12px}
+  .icon-button{height:40px;min-width:40px}
+  .content{flex:1 0 auto;width:100%;max-width:100%;padding:20px 16px 28px;margin:0}
+  .hero{display:block;margin:0 0 18px}
+  .hero-mark{display:none}
+  h1{font-size:clamp(27px,8vw,34px);line-height:1.12;letter-spacing:-1px}
+  .subtitle{max-width:38ch;font-size:13px;line-height:1.5}
+  .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:18px 0}
+  .stat{min-width:0;min-height:42px;padding:8px 10px;white-space:normal;font-size:11px}
+  .searchbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 22px}
+  .searchbox{grid-column:1/-1;min-width:0;height:48px}
+  .searchbox input{min-width:0;font-size:16px}
+  .filter{min-width:0;width:100%;height:44px;font-size:12px}
+  .search-submit{grid-column:1/-1;display:block;height:44px}
+  .section-head{margin:22px 0 12px}
+  .grid{grid-template-columns:minmax(0,1fr);gap:10px}
+  .card{min-width:0;padding:14px;gap:10px}
+  .card p{min-height:0}
+  .card-actions{display:flex;flex-wrap:wrap;gap:8px}
+  .card-actions .btn{min-height:40px;padding:8px 12px;font-size:11px}
+  .card-actions .btn.primary{flex:1 1 120px}
+  .detail{width:100%;max-width:100%}
+  .detail h2{font-size:24px;line-height:1.2}
+  .detail-panel{min-width:0;padding:14px}
+  footer{flex:0 0 auto;display:block;padding:16px}
+  footer span{display:block}
+  .sidebar{position:fixed;inset:auto 0 0;z-index:60;min-height:0;padding:0 0 env(safe-area-inset-bottom,0px);border:0;border-top:1px solid var(--line-strong);background:rgba(8,12,21,.98)}
+  .brand,.side-card{display:none}
+  .nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;margin:0}
+  .nav a{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;min-height:58px;padding:6px 1px;border:0;border-top:2px solid transparent;font-size:9px;white-space:nowrap}
+  .nav-icon{width:auto;font-size:17px;line-height:1}
+  button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,input,select,textarea,.filter,.searchbox,.stat,.card,.detail-panel,.nav a{border-radius:0!important}
+}
+@media(max-width:380px){
+  .topbar{padding-inline:12px}
+  .mbrand small{display:none}
+  .content{padding-inline:12px}
+  .stats{gap:6px}
+  .stat{font-size:10px}
+  .nav a{font-size:8px}
+}
+@media(orientation:landscape) and (max-width:900px){
+  .content{padding-top:14px}
+  .hero{margin-bottom:12px}
+  .stats{grid-template-columns:repeat(4,minmax(0,1fr));margin:12px 0}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+
+/* ===== Mobile UX v2: drawer, compact search, chips and accessible actions ===== */
+@media(max-width:768px){
+  body{padding:0!important}
+  .layout{display:block!important;min-height:100svh!important;border:0!important}
+  .topbar{position:sticky!important;top:0;z-index:90;height:56px;min-height:56px;padding:0 12px!important;gap:8px;justify-content:space-between;background:rgba(5,7,13,.96);border-bottom:1px solid var(--line-strong)}
+  .menu-toggle{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;font-size:20px;color:var(--cyan);border:0!important}
+  .mbrand{display:flex!important;flex:1;gap:7px;font-size:15px;white-space:nowrap}
+  .mbrand b{font-size:22px}
+  .mbrand small{font-size:9px}
+  .mobile-search{display:inline-flex!important;flex:0 0 44px;width:44px;height:44px;font-size:21px;color:var(--cyan);border:0!important}
+  .desktop-search,.topbar .submit-tool{display:none!important}
+  #theme-toggle{display:none}
+  .sidebar{position:fixed!important;z-index:110!important;inset:0 auto 0 0!important;width:min(82vw,320px)!important;height:100dvh;min-height:0!important;padding:calc(18px + env(safe-area-inset-top)) 16px env(safe-area-inset-bottom)!important;display:flex!important;flex-direction:column;transform:translateX(-105%);transition:transform .22s ease;background:#090f1b!important;border-right:1px solid var(--cyan)!important;border-top:0!important;box-shadow:18px 0 50px #0009}
+  body.drawer-open .sidebar{transform:translateX(0)}
+  .sidebar .brand{display:flex!important;margin-bottom:16px;padding:8px;border-bottom:1px solid var(--line)}
+  .sidebar .side-card{display:block!important;margin-top:auto}
+  .nav{display:flex!important;flex-direction:column;gap:4px!important;margin:8px 0!important}
+  .nav a{display:flex!important;flex-direction:row!important;justify-content:flex-start!important;gap:12px!important;min-height:48px!important;padding:10px 12px!important;border:1px solid transparent!important;text-align:left!important;font-size:13px!important;white-space:normal!important}
+  .nav a.active{border-color:var(--line-strong)!important;background:#10264a!important}
+  .nav-icon{width:22px!important;font-size:17px!important}
+  .drawer-scrim{display:block;position:fixed;inset:0;z-index:100;background:#0009;opacity:0;visibility:hidden;transition:opacity .2s}
+  body.drawer-open .drawer-scrim{opacity:1;visibility:visible}
+  .content{width:100%;max-width:100%!important;padding:16px 14px 32px!important;margin:0!important}
+  .hero{display:block!important;margin:0 0 14px!important}
+  .hero-mark{display:none!important}
+  h1{font-size:clamp(26px,7.5vw,32px)!important;line-height:1.14!important;letter-spacing:-.7px!important}
+  .subtitle{margin-top:5px!important;font-size:13px!important;line-height:1.45!important}
+  .stats{display:flex!important;flex-wrap:nowrap!important;gap:7px!important;margin:14px -14px 16px!important;padding:0 14px 4px!important;overflow-x:auto!important;scrollbar-width:none}
+  .stats::-webkit-scrollbar{display:none}
+  .stat{flex:0 0 auto!important;min-height:34px!important;padding:6px 9px!important;font-size:10px!important}
+  .searchbar{display:block!important;margin:0 0 14px!important}
+  .searchbox{display:flex!important;width:100%;height:46px!important;min-height:46px;padding:0 12px!important}
+  .searchbox input{height:100%;font-size:16px!important}
+  .filter{display:none!important}
+  .search-submit{display:none!important}
+  .filter-toggle{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;flex:0 0 46px;border:1px solid var(--line-strong);background:#0a1322;color:var(--fg);font-size:18px}
+  .search-row{display:flex;gap:8px}
+  .filter-panel{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;padding:10px;border:1px solid var(--line);background:#080e19}
+  .filter-panel.open{display:grid}
+  .filter-panel .filter{display:block!important;height:42px!important;min-width:0;font-size:12px}
+  .filter-chips{display:flex;gap:7px;overflow-x:auto;white-space:nowrap;padding:0 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .filter-chips::-webkit-scrollbar{display:none}
+  .filter-chip{flex:0 0 auto;min-height:34px;padding:6px 11px;border:1px solid var(--line-strong);background:transparent;color:var(--muted);font:11px var(--mono)}
+  .filter-chip.active{border-color:var(--cyan);background:#10243a;color:#fff}
+  .section-head{margin:14px 0 10px!important}
+  .grid{grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+  .card{padding:12px!important;gap:8px!important}
+  .card-head{gap:10px}
+  .tool-icon{width:40px!important;height:40px!important;flex-basis:40px!important}
+  .card h3{font-size:14px!important}
+  .card p{min-height:0!important;font-size:12px!important;line-height:1.45}
+  .meta{font-size:10px!important}
+  .card-actions{display:grid!important;grid-template-columns:1fr 1fr 1fr 44px!important;gap:6px!important;margin-top:4px!important}
+  .card-actions .btn{min-width:0;min-height:44px!important;padding:0 6px!important;font-size:11px!important;white-space:nowrap}
+  .card-actions .btn.favorite{font-size:17px!important}
+  .detail{max-width:100%!important}
+  .detail h2{font-size:23px!important}
+  .detail-panel{padding:12px!important;min-width:0}
+  .code-canvas{position:relative;margin-top:10px;border:1px solid var(--line-strong);background:#080e19}
+  .code-canvas pre{margin:0;padding:44px 12px 14px;max-width:100%;overflow-x:auto;white-space:pre;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;font:12px/1.6 var(--mono);color:var(--green)}
+  .copy-code{position:absolute;top:6px;right:6px;z-index:2;min-height:34px;padding:0 10px;border:1px solid var(--line-strong);background:#101b2b;color:var(--fg);font:11px var(--mono)}
+  .back,.detail .btn.primary{min-height:44px!important}
+  footer{display:block;padding:14px!important;font-size:10px}
+  footer span{display:block}
+}
+@media(min-width:769px){
+  .menu-toggle,.mobile-search,.filter-toggle,.filter-chips{display:none!important}
+  .drawer-scrim{display:none!important}
+  .filter-panel{display:none!important}
+}
+button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,input,select,textarea,.filter,.searchbox,.stat,.card,.detail-panel,.nav a,.filter-chip,.filter-toggle,.copy-code{border-radius:0!important}
+
+
+/* ===== OCode.js minimal monochrome theme ===== */
+:root{
+  color-scheme:dark;
+  --bg:#000;
+  --panel:#050505;
+  --line:#777;
+  --line-strong:#fff;
+  --fg:#f7f7f7;
+  --muted:#b8b8b8;
+  --blue:#fff;
+  --cyan:#fff;
+  --purple:#fff;
+  --yellow:#fff;
+  --pink:#fff;
+  --green:#eee;
+}
+html,body,.layout{background:#000!important;color:#f7f7f7}
+.layout{background:#000!important;border-color:#333!important}
+.sidebar,.topbar,footer{background:#000!important;border-color:#555!important}
+.brand-mark,.mbrand b,.brand small,.mbrand small{color:#fff!important;text-shadow:none!important}
+.hero-mark{color:#fff!important;text-shadow:none!important}
+h1 span,.meta,.result-count{color:#eee!important}
+.subtitle,.card p,.section-head h2,.side-card p,footer{color:#bdbdbd!important}
+.side-card,.card,.detail-panel,.stat,.searchbox,.filter,.shortcut,.icon-button,.btn,.back,.version,.tool-icon,.nav a,.submit-tool,.search-submit,.filter-chip,.filter-toggle,.copy-code{
+  background:#000!important;
+  color:#f5f5f5!important;
+  border:1px solid #fff!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.card,.detail-panel,.side-card{background:#030303!important}
+.card:nth-child(n),.card:nth-child(4n+1),.card:nth-child(4n+2),.card:nth-child(4n+3),.card:nth-child(4n){
+  border:1px solid #777!important;
+  border-top:1px solid #fff!important;
+}
+.card:hover,.nav a:hover,.nav a.active,.btn:hover,.icon-button:hover,.submit-tool:hover,.filter-chip:hover{
+  border-color:#fff!important;
+  background:#171717!important;
+  color:#fff!important;
+}
+.stat:nth-child(n){border-color:#777!important;color:#eee!important}
+.tool-icon,.card:nth-child(n) .tool-icon{border:1px solid #fff!important;color:#fff!important}
+.btn.primary,.submit-tool,.search-submit{
+  background:#f5f5f5!important;
+  color:#000!important;
+  border:1px solid #fff!important;
+  font-weight:700;
+}
+.btn.primary:hover,.submit-tool:hover,.search-submit:hover{background:#d9d9d9!important;color:#000!important}
+.btn.favorite[aria-pressed=true]{border-color:#fff!important;color:#fff!important;background:#222!important}
+.searchbox:focus-within,.searchbox input:focus-visible,.filter:focus-visible{
+  border-color:#fff!important;outline:1px solid #fff!important;outline-offset:2px
+}
+.searchbox input{color:#fff!important}
+.searchbox input::placeholder{color:#999!important;opacity:1}
+.filter option{background:#000;color:#fff}
+.nav a{color:#ddd!important}
+.nav a.active{background:#1a1a1a!important;border-color:#fff!important}
+.version{color:#fff!important}
+.command,.code-canvas pre{color:#eee!important;background:#080808!important}
+.copy-code{background:#000!important;color:#fff!important}
+.empty{border:1px dashed #aaa!important;color:#bbb!important}
+.drawer-scrim{background:#000b!important}
+@media(max-width:768px){
+  .topbar{background:rgba(0,0,0,.97)!important;border-bottom:1px solid #555!important}
+  .sidebar{background:rgba(0,0,0,.99)!important;border-right:1px solid #fff!important;border-top:1px solid #555!important}
+  .nav a.active{border-color:#fff!important;background:#171717!important}
+  .filter-chip.active{background:#f5f5f5!important;color:#000!important;border-color:#fff!important}
+  .filter-toggle{background:#000!important;color:#fff!important;border:1px solid #fff!important}
+  .card-actions .btn{border:1px solid #fff!important}
+  .code-canvas{border:1px solid #777!important;background:#050505!important}
+}
+
+
+/* ===== UX refinement: clear hierarchy, predictable controls, readable catalog ===== */
+:root{--bg:#050505;--panel:#0b0b0b;--line:#292929;--line-strong:#555;--fg:#f5f5f5;--muted:#aaa}
+.layout{background:#050505}
+.nav a:hover,.nav a.active{background:#171717;border-color:#777;color:#fff}
+.nav a.active{box-shadow:inset 2px 0 0 #fff}
+.hero{gap:18px}
+.hero-mark{font-size:58px;text-shadow:none;color:#fff}
+h1 span{color:#bbb}
+.subtitle{max-width:760px;color:#aaa}
+.stats{gap:8px}
+.stat,.stat:nth-child(n){border-color:#333;background:#090909;color:#ddd}
+.searchbar{display:block;margin:0 0 24px;padding:14px;border:1px solid #333;background:#090909}
+.search-row{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:8px}
+.searchbox{height:48px;border-color:#555;background:#050505}
+.searchbox input{font-size:14px}
+.filter-toggle{height:48px;border:1px solid #555;background:#111;color:#fff;font-size:18px}
+.filter-toggle:hover{border-color:#fff;background:#1b1b1b}
+.filter-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.filter-chip{min-height:34px;padding:6px 10px;border:1px solid #393939;background:#0b0b0b;color:#bbb;font:11px var(--mono);cursor:pointer}
+.filter-chip:hover,.filter-chip.active{border-color:#ddd;background:#eee;color:#050505}
+.filter-panel{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.filter-panel.open{display:grid}
+.filter{height:42px;border-color:#555;background:#050505}
+.section-head{margin:22px 0 12px}
+.section-head h2{color:#eee;font-size:13px;letter-spacing:.6px}
+.result-count{padding:4px 8px;border:1px solid #444;color:#ddd}
+.grid{gap:12px}
+.card,.card:nth-child(n){border:1px solid #383838;border-top:1px solid #555;background:#090909;padding:16px}
+.card:hover{border-color:#aaa;background:#0d0d0d}
+.tool-icon,.card:nth-child(n) .tool-icon{border:1px solid #666;color:#fff;background:#111}
+.card h3{font-size:15px}
+.card p{color:#bbb;line-height:1.55}
+.meta,.meta span+span{color:#999}
+.btn{min-height:38px;border-color:#555;background:#080808;color:#eee}
+.btn.primary{background:#eee;border-color:#eee;color:#050505;font-weight:800}
+.btn:hover{border-color:#fff;color:#fff}
+.btn.primary:hover{background:#ccc;color:#000}
+.btn.favorite[aria-pressed=true]{color:#fff;border-color:#fff;background:#222}
+.empty{border-color:#555;color:#ccc}
+.detail-panel{background:#090909;border-color:#444}
+.back{border-color:#666}
+@media(max-width:768px){
+ .content{padding:18px 14px 28px!important}
+ .hero{margin-bottom:10px}
+ .stats{margin:14px 0 18px}
+ .searchbar{padding:10px;margin-bottom:18px}
+ .search-row{grid-template-columns:minmax(0,1fr) 44px}
+ .searchbox,.filter-toggle{height:46px}
+ .filter-chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:5px;scrollbar-width:thin}
+ .filter-chip{flex:0 0 auto;min-height:36px}
+ .filter-panel{grid-template-columns:1fr}
+ .grid{gap:9px}
+ .card,.card:nth-child(n){padding:13px}
+ .card-actions{grid-template-columns:minmax(0,1fr) auto auto 42px}
+ .nav a.active{box-shadow:inset 0 2px 0 #fff}
+}
+@media(max-width:360px){.card-actions{grid-template-columns:1fr 1fr 42px}.card-actions .btn.primary{grid-column:1/-1}}
+
+
+/* 25-page workspace */
+.nav{display:flex;flex-direction:column;gap:12px;overflow:auto;min-height:0}
+.nav-group{display:grid;gap:3px}.nav-group-label{padding:8px 10px 4px;color:#888;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+.nav a{min-height:36px;padding:7px 10px;font-size:12px}
+.page-intro{max-width:850px;margin-bottom:24px}.page-intro h1{font-size:clamp(26px,4vw,42px)}
+.page-kicker{color:#999;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.page-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.page-tile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:118px;padding:16px;border:1px solid #444;background:#080808;color:#f5f5f5;text-align:left;cursor:pointer}
+.page-tile:hover{border-color:#fff;background:#111}.page-tile strong{font-size:14px}.page-tile span{font-size:11px;color:#aaa;line-height:1.5}
+.page-status{display:inline-flex;border:1px solid #555;padding:3px 6px;color:#ddd;font-size:10px}.page-status.foundation{color:#999}
+.page-panel{max-width:900px;border:1px solid #444;background:#080808;padding:18px;margin:14px 0}
+.page-panel h2{font-size:14px;margin:0 0 10px}.page-panel p{color:#aaa;font-size:12px;line-height:1.7}
+.page-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+@media(max-width:768px){.sidebar{top:0;bottom:0;left:0;right:auto;width:min(310px,86vw);height:100dvh;min-height:0;padding:calc(18px + env(safe-area-inset-top,0px)) 14px calc(18px + env(safe-area-inset-bottom,0px));border:1px solid #555;border-left:0;transform:translateX(-105%);transition:transform .18s ease;overflow:auto}.sidebar .brand{display:flex;padding-bottom:16px}.sidebar .side-card{display:block;margin-top:16px}.sidebar .nav{display:flex;gap:12px;overflow:auto}.sidebar .nav a{min-height:36px;flex-direction:row;justify-content:flex-start;text-align:left;font-size:12px}.drawer-scrim{display:none;position:fixed;inset:0;z-index:35;background:#000b}body.drawer-open .sidebar{transform:translateX(0)}body.drawer-open .drawer-scrim{display:block}.page-grid{grid-template-columns:minmax(0,1fr)}}
+
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<a class="brand" href="#" aria-label="OCode.js CLI Hub"><span class="brand-mark">&gt;_</span><span>OCode.js<small>CLI HUB</small></span></a>
+<nav class="nav" aria-label="Main navigation" id="main-nav"></nav>
+<div class="side-card"><strong>OCode.js</strong><p>Open-source CLI hub for developers and AI agents.</p><span class="version">v1.0.0</span></div>
+</aside>
+<div class="drawer-scrim" id="drawer-scrim"></div>
+<header class="topbar"><button class="icon-button menu-toggle" id="menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false">☰</button><span class="mbrand"><b>&gt;_</b>OCode.js<small>CLI HUB</small></span><button class="icon-button mobile-search" id="focus-search" type="button" aria-label="Tìm kiếm">⌕</button><a class="submit-tool" href="https://github.com/zskbot/ocodejs-cli/issues/new?template=tool-submission.md" target="_blank" rel="noopener noreferrer">+ Gửi công cụ</a><button class="icon-button" id="theme-toggle" type="button" aria-label="Đổi giao diện sáng/tối">☾</button><button class="shortcut desktop-search" id="desktop-search" type="button">⌕ <span>Ctrl + K</span></button></header>
+<main class="content" id="app" aria-live="polite"><p>Loading catalog…</p></main>
+<footer><span>© 2026 OCode.js. Open-source developer tools.</span><span><a href="https://github.com/zskbot/ocodejs-cli">GitHub</a> | <a href="https://github.com/zskbot/ocodejs-cli#readme">Docs</a> | <a href="https://github.com/zskbot/ocodejs-cli/issues/new">Contribute</a> | <a href="https://github.com/zskbot/ocodejs-cli/blob/main/LICENSE">License</a></span></footer>
+</div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let tools=[],query="",category="",language="",view="home",favorites=new Set();
+try{favorites=new Set(JSON.parse(localStorage.getItem("ocodejs-cli-favorites")||"[]"))}catch{}
+const icons={"ripgrep":"rg","fd":"fd","fzf":"fzf","lazygit":"lg","k9s":"k9s","jq":"jq","yq":"yq","dnspyre":"dns","cli-anything-hub":"AI","clihub":"CH"};
+const pageDefinitions=[["home","Home","Workspace","Workspace overview","ready"],["dashboard","Dashboard","Workspace","Workspace activity and shortcuts","foundation"],["projects","Projects","Workspace","Organize project workspaces","foundation"],["new-project","New Project","Workspace","Start a project from a template or blank workspace","foundation"],["environments","Environments","Workspace","Development environment profiles","foundation"],["editor","Code Editor","Development","Code editing workspace entry point","foundation"],["files","File Explorer","Development","Project file tree and file operations","foundation"],["terminal","Terminal","Development","Terminal entry point; secure execution backend required","foundation"],["preview","Preview","Development","Application preview and responsive testing","foundation"],["build","Build & Run","Development","Build configurations and output","foundation"],["agents","Agents","AI Agents","AI agent workspace and capabilities","foundation"],["agent-tasks","Agent Tasks","AI Agents","Tasks assigned to AI agents","foundation"],["chat","Chat","AI Agents","AI conversation workspace","foundation"],["prompts","Prompts","AI Agents","Reusable prompt library","foundation"],["models","Models","AI Agents","Model provider configuration","foundation"],["tools","Available Tools","Tools","Search and browse the CLI tools catalog","ready"],["tool-details","Tool Details","Tools","Inspect a selected CLI tool","ready"],["favorites","Favorites","Tools","Saved CLI tools","ready"],["integrations","Integrations","Tools","External developer service connections","foundation"],["github","GitHub","Developer Hub","Repository and source control entry point","foundation"],["api","API Reference","Developer Hub","API endpoint reference","foundation"],["docs","Documentation","Developer Hub","Guides and project documentation","ready"],["activity","Activity & Logs","System","Workspace activity and diagnostics","foundation"],["settings","Settings","System","Application preferences","ready"],["about","About","System","Project information and open-source links","ready"]].map(([id,title,group,description,status])=>({id,title,group,description,status}));
+function buildNavigation(){const nav=$("#main-nav");if(!nav)return;const groups=[...new Set(pageDefinitions.map(p=>p.group))];nav.innerHTML=groups.map(g=>'<section class="nav-group"><div class="nav-group-label">'+esc(g)+'</div>'+pageDefinitions.filter(p=>p.group===g).map(p=>'<a href="#page='+p.id+'" data-page="'+p.id+'"><span class="nav-icon">›</span>'+esc(p.title)+'</a>').join("")+'</section>').join("")}
+function setPage(id,hash=true){const p=pageDefinitions.find(x=>x.id===id)||pageDefinitions[0];view=p.id;document.querySelectorAll("[data-page]").forEach(a=>a.classList.toggle("active",a.dataset.page===p.id));if(hash&&location.hash!=="#page="+p.id)history.pushState({page:p.id},"","#page="+p.id);closeDrawer();render();window.scrollTo(0,0)}
+function renderHome(){const picks=pageDefinitions.filter(p=>["dashboard","projects","new-project","environments","tools","agents","github","docs"].includes(p.id));$("#app").innerHTML='<section class="page-intro"><div class="page-kicker">DEVELOPER WORKSPACE</div><h1>OCode.js CLI Hub</h1><p class="subtitle">One workspace to discover tools, organize development workflows and explore AI-agent capabilities.</p></section><div class="page-panel"><h2>Workspace overview</h2><p>25 dedicated pages · '+tools.length+' catalog tools · static frontend foundation</p><div class="page-actions"><button class="btn primary" data-go-page="tools">Browse available tools →</button><button class="btn" data-go-page="projects">Open projects →</button></div></div><div class="section-head"><h2>Quick access</h2></div><div class="page-grid">'+picks.map(p=>'<button class="page-tile" data-go-page="'+p.id+'"><strong>'+esc(p.title)+' →</strong><span>'+esc(p.description)+'</span><small class="page-status">'+(p.status==="ready"?"READY":"UI FOUNDATION")+'</small></button>').join("")+'</div>'}
+function renderWorkspace(){if(view==="home"){renderHome();return}if(view==="tools"||view==="favorites"){renderCatalog();return}const p=pageDefinitions.find(x=>x.id===view)||pageDefinitions[0];const related=pageDefinitions.filter(x=>x.group===p.group&&x.id!==p.id);let panel='<div class="page-panel"><h2>Implementation status</h2><p>This page is part of the 25-page interface foundation. Navigation and page structure are available. Real execution, project persistence, provider credentials and remote integrations are not configured in this static frontend yet.</p><p>Next layer: connect a backend, define permissions, then wire actions to verified APIs. No fake terminal or agent execution is presented as live.</p></div>';if(p.id==="about")panel='<div class="page-panel"><h2>OCode.js CLI Hub</h2><p>Open-source directory and workspace interface for terminal tools, developer workflows and AI agents.</p><a class="btn primary" href="https://github.com/zskbot/ocodejs-cli" target="_blank" rel="noopener">View GitHub ↗</a></div>';if(p.id==="docs")panel='<div class="page-panel"><h2>Documentation</h2><p>Read the maintained repository documentation.</p><a class="btn primary" href="https://github.com/zskbot/ocodejs-cli#readme" target="_blank" rel="noopener">Open README ↗</a></div>';if(p.id==="github")panel='<div class="page-panel"><h2>Source repository</h2><p>Repository access is provided through GitHub. No authenticated session or live sync is claimed.</p><a class="btn primary" href="https://github.com/zskbot/ocodejs-cli" target="_blank" rel="noopener">Open repository ↗</a></div>';if(p.id==="settings")panel='<div class="page-panel"><h2>Preferences</h2><p>Theme and saved catalog favorites are stored locally in this browser.</p><div class="page-actions"><button class="btn" id="page-theme">Toggle theme</button><a class="btn" href="settings.html">Compatibility settings ↗</a></div></div>';if(p.id==="api")panel='<div class="page-panel"><h2>API status</h2><p>No application API server is configured in this static GitHub Pages build. Endpoints will be documented when a backend is introduced.</p></div>';$("#app").innerHTML='<section class="page-intro"><div class="page-kicker">'+esc(p.group)+' / OCODE.JS</div><h1>'+esc(p.title)+'</h1><p class="subtitle">'+esc(p.description)+'</p><span class="page-status">'+(p.status==="ready"?"READY":"UI FOUNDATION")+'</span></section>'+panel+'<div class="section-head"><h2>Explore '+esc(p.group)+'</h2></div><div class="page-grid">'+related.map(x=>'<button class="page-tile" data-go-page="'+x.id+'"><strong>'+esc(x.title)+' →</strong><span>'+esc(x.description)+'</span><small class="page-status">'+(x.status==="ready"?"READY":"UI FOUNDATION")+'</small></button>').join("")+'</div>';$("#page-theme")?.addEventListener("click",()=>$("#theme-toggle").click())}
+function renderCatalog(){const result=filtered(),cats=[...new Set(tools.map(t=>t.category))].sort(),langs=[...new Set(tools.map(t=>t.language))].sort();$("#app").innerHTML='<section class="page-intro"><div class="page-kicker">TOOLS / CATALOG</div><h1>'+(view==="favorites"?"Favorites":"Available Tools")+'</h1><p class="subtitle">Search and filter curated command-line tools.</p></section><div class="searchbar"><div class="search-row"><label class="searchbox">⌕ <input id="search" type="search" placeholder="Search tools…" value="'+esc(query)+'" aria-label="Search tools"></label><button class="filter-toggle" id="filter-toggle">☷</button></div><div class="filter-chips">'+ '<button class="filter-chip" data-category="">All</button>'+cats.map(c=>'<button class="filter-chip" data-category="'+esc(c)+'">'+esc(c)+'</button>').join("")+langs.map(l=>'<button class="filter-chip" data-language="'+esc(l)+'">'+esc(l)+'</button>').join("")+'</div><div class="filter-panel" id="filter-panel"><select class="filter" id="category"><option value="">All Categories</option>'+cats.map(c=>'<option '+(c===category?"selected":"")+'>'+esc(c)+'</option>').join("")+'</select><select class="filter" id="language"><option value="">All Languages</option>'+langs.map(l=>'<option '+(l===language?"selected":"")+'>'+esc(l)+'</option>').join("")+'</select></div></div><div class="section-head"><h2>'+ (view==="favorites"?"Saved tools":"Available Tools")+'</h2><span class="result-count">'+result.length+' / '+tools.length+' tools</span></div><div class="grid">'+(result.length?result.map(card).join(""):'<div class="empty">No tools found.</div>')+'</div>';$("#search")?.addEventListener("input",e=>{query=e.target.value;renderKeepFocus()});$("#category")?.addEventListener("change",e=>{category=e.target.value;renderCatalog()});$("#language")?.addEventListener("change",e=>{language=e.target.value;renderCatalog()});$("#filter-toggle")?.addEventListener("click",()=>$("#filter-panel").classList.toggle("open"))}
+
+function filtered(){const q=query.trim().toLocaleLowerCase("vi");return tools.filter(t=>(!category||t.category===category)&&(!language||t.language===language)&&(!q||[t.name,t.description,t.language,t.category,t.install].join(" ").toLocaleLowerCase("vi").includes(q))&&(view!=="favorites"||favorites.has(t.id)))}
+function card(t){return `<article class="card"><div class="card-head"><span class="tool-icon">${esc(icons[t.id]||t.name.slice(0,3))}</span><h3>${esc(t.name)}</h3></div><p>${esc(t.description)}</p><div class="meta"><span>${esc(t.language)}</span><span>• ${esc(t.category)}</span></div><div class="card-actions"><button class="btn primary" data-detail="${esc(t.id)}" type="button">View →</button><button class="btn" data-copy="${esc(t.install)}" type="button">Copy</button><a class="btn" href="${esc(t.repo)}" target="_blank" rel="noopener noreferrer">GitHub ↗</a><button class="btn favorite" data-fav="${esc(t.id)}" aria-pressed="${favorites.has(t.id)}" aria-label="Toggle favorite" type="button">${favorites.has(t.id)?"★":"☆"}</button></div></article>`}
+function render(){if(view!=="tools"&&view!=="favorites"){renderWorkspace();return}renderCatalog()}
+function renderKeepFocus(){const pos=$("#search")?.selectionStart;render();const input=$("#search");input?.focus({preventScroll:true});if(pos!==undefined)input?.setSelectionRange(pos,pos)}
+function detail(id){const t=tools.find(x=>x.id===id);if(!t)return;$("#app").innerHTML=`<div class="detail"><button class="back" id="back" type="button">← Back to tools</button><h2>${esc(t.name)}</h2><p>${esc(t.description)}</p><p class="meta">${esc(t.language)} · ${esc(t.category)}</p><div class="detail-panel"><strong>INSTALL COMMAND</strong><div class="code-canvas"><button class="copy-code" data-copy="${esc(t.install)}" type="button">Copy code</button><pre class="command">${esc(t.install)}</pre></div></div><div class="detail-panel"><strong>UPSTREAM REPOSITORY</strong><p><a href="${esc(t.repo)}" target="_blank" rel="noopener noreferrer">${esc(t.repo)} ↗</a></p></div></div>`;$("#back").addEventListener("click",render);window.scrollTo(0,0)}
+document.addEventListener("click",e=>{const go=e.target.closest("[data-go-page]");if(go){setPage(go.dataset.goPage);return}const pg=e.target.closest("[data-page]");if(pg){e.preventDefault();setPage(pg.dataset.page);return}
+ const chip=e.target.closest("[data-category]");if(chip){category=chip.dataset.category;render();return}
+ const langChip=e.target.closest("[data-language]");if(langChip){language=language===langChip.dataset.language?"":langChip.dataset.language;render();return}
+ if(e.target.closest("#drawer-scrim")){closeDrawer();return}
+ const d=e.target.closest("[data-detail]");if(d){detail(d.dataset.detail);return}
+ const f=e.target.closest("[data-fav]");if(f){const id=f.dataset.fav;favorites.has(id)?favorites.delete(id):favorites.add(id);try{localStorage.setItem("ocodejs-cli-favorites",JSON.stringify([...favorites]))}catch{}const y=window.scrollY;render();window.scrollTo(0,y);return}
+ const c=e.target.closest("[data-copy]");if(c){const old=c.textContent;const done=t=>{c.textContent=t;setTimeout(()=>{c.textContent=old},1500)};navigator.clipboard?.writeText(c.dataset.copy).then(()=>done("Copied ✓")).catch(()=>done("Copy failed"));return}
+});
+function closeDrawer(){document.body.classList.remove("drawer-open");$("#menu-toggle")?.setAttribute("aria-expanded","false")}
+$("#menu-toggle").addEventListener("click",()=>{const open=document.body.classList.toggle("drawer-open");$("#menu-toggle").setAttribute("aria-expanded",String(open))});
+$("#focus-search").addEventListener("click",()=>{closeDrawer();$("#search")?.focus()});
+$("#desktop-search").addEventListener("click",()=>$("#search")?.focus());
+document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#search")?.focus()}if(e.key==="/"&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName||"")){e.preventDefault();$("#search")?.focus()}});
+$("#theme-toggle").addEventListener("click",()=>{document.body.classList.toggle("light-preview");const l=document.body.classList.contains("light-preview");document.documentElement.style.colorScheme=l?"light":"dark";$("#theme-toggle").textContent=l?"☀":"☾";document.querySelector('meta[name=theme-color]').content=l?"#f7f9fd":"#05070d"});
+buildNavigation();window.addEventListener("popstate",()=>setPage(location.hash.startsWith("#page=")?location.hash.slice(6):"home",false));
+fetch("tools.json").then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(data=>{tools=data;const initial=location.hash.startsWith("#page=")?location.hash.slice(6):"home";view=pageDefinitions.some(p=>p.id===initial)?initial:"home";buildNavigation();render()}).catch(err=>{$("#app").innerHTML='<div class="empty">Unable to load tools.json. Open this page through GitHub Pages or a local static server.</div>';console.error(err)});
+</script>
+</body>
+</html>
