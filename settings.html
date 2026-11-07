@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Settings — OCode.js CLI Hub</title>
+<meta name="description" content="Configure Cloudflare Workers compatibility flags and export a configuration array.">
+<style>
+:root{color-scheme:dark;--bg:#000;--panel:#080808;--line:#555;--strong:#fff;--fg:#f5f5f5;--muted:#aaa;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font:14px/1.55 var(--mono)}
+a{color:inherit;text-decoration:none}button,input{font:inherit;border-radius:0}
+button{min-height:40px;padding:0 13px;border:1px solid var(--strong);background:#000;color:var(--fg);cursor:pointer}
+button.primary{background:#f5f5f5;color:#000;font-weight:700}
+button:focus-visible,input:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.shell{width:min(100%,1100px);margin:auto;padding:20px clamp(14px,4vw,36px) 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0 18px;border-bottom:1px solid var(--line)}
+.brand{font-weight:800;letter-spacing:-.5px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1px}
+.back{color:var(--muted);font-size:12px}
+h1{font-size:clamp(25px,6vw,38px);line-height:1.15;letter-spacing:-1px;margin:28px 0 8px}
+.sub{color:var(--muted);max-width:70ch;margin:0 0 20px}
+.notice{border:1px solid var(--line);padding:12px 14px;margin:16px 0;color:#ddd;background:#050505;font-size:12px}
+.toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;margin:18px 0}
+#search{width:100%;height:42px;min-width:0;padding:0 12px;border:1px solid var(--strong);background:#000;color:#fff}
+.stats{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin:12px 0}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.flag{display:flex;align-items:center;gap:10px;min-width:0;min-height:48px;border:1px solid #555;padding:9px 11px;background:#050505}
+.flag input{width:18px;height:18px;flex:0 0 auto;accent-color:#fff}
+.flag code{font:11px/1.4 var(--mono);overflow-wrap:anywhere;word-break:break-word}
+.flag:has(input:checked){border-color:#fff;background:#151515}
+.empty{grid-column:1/-1;padding:24px;text-align:center;border:1px dashed #777;color:var(--muted)}
+#output{width:100%;min-height:170px;margin-top:14px;padding:12px;border:1px solid #777;background:#050505;color:#eee;font:12px/1.5 var(--mono);resize:vertical}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+footer{margin-top:28px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
+@media(max-width:640px){.shell{padding-top:12px}.toolbar{grid-template-columns:1fr 1fr}.toolbar #search{grid-column:1/-1}.list{grid-template-columns:1fr}.flag{min-height:46px}.actions button{flex:1}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header><a class="brand" href="index.html">&gt;_ OCode.js<small>CLI HUB / SETTINGS</small></a><a class="back" href="index.html">← Back to Hub</a></header>
+<main>
+<h1>Compatibility flags</h1>
+<p class="sub">Chọn các runtime compatibility flags cho cấu hình Cloudflare Workers. Tìm kiếm theo tên, bật/tắt từng flag và xuất danh sách JSON để đưa vào cấu hình dự án.</p>
+<div class="notice">Lưu ý: lựa chọn được lưu cục bộ trên trình duyệt này. Trang không tự cập nhật Worker đang chạy hoặc deploy lên Cloudflare. Một số flag có biến thể đối nghịch; hãy kiểm tra compatibility date và tài liệu runtime trước khi triển khai.</div>
+<div class="toolbar">
+<input id="search" type="search" placeholder="Search compatibility flags…" aria-label="Search flags" autocomplete="off">
+<button id="select-visible" type="button">Select visible</button>
+<button id="clear" type="button">Clear all</button>
+</div>
+<div class="stats"><span id="count">0 selected</span><span id="total">0 flags</span></div>
+<div class="list" id="flags" aria-live="polite"></div>
+<h2 style="font-size:15px;margin:24px 0 6px">Export configuration</h2>
+<p class="sub" style="font-size:12px;margin-bottom:8px">Sao chép mảng này vào thuộc tính <code>compatibility_flags</code> trong <code>wrangler.toml</code> hoặc <code>wrangler.jsonc</code>.</p>
+<textarea id="output" readonly spellcheck="false" aria-label="Selected flags JSON"></textarea>
+<div class="actions"><button class="primary" id="copy" type="button">Copy JSON</button><button id="download" type="button">Download JSON</button><button id="reset" type="button">Reset saved selection</button></div>
+</main>
+<footer>OCode.js CLI Hub · Compatibility flags workspace · Preferences stored in localStorage only.</footer>
+</div>
+<script>
+"use strict";
+const FLAGS=["durable_object_io_tasks_prevent_eviction","durable_object_io_tasks_do_not_prevent_eviction","spec_compliant_dispatch_exceptions","no_spec_compliant_dispatch_exceptions","python_workers_314","nodejs_compat","no_nodejs_compat","throw_on_not_implemented_tls_options","no_throw_on_not_implemented_tls_options","python_process_pth_files","disable_python_process_pth_files","diagnostics_channel_has_subscribers_getter","no_diagnostics_channel_has_subscribers_getter","workflows_preserve_non_retryable_error_message","workflows_replace_non_retryable_error_message","enhanced_error_serialization","legacy_error_serialization","web_socket_auto_reply_to_close","web_socket_manual_reply_to_close","containers_pid_namespace","no_containers_pid_namespace","encoder_stream_spec_compliant_backpressure","no_encoder_stream_spec_compliant_backpressure","writable_stream_spec_compliant_writer","no_writable_stream_spec_compliant_writer","disable_global_performance_classes","enable_global_performance_classes","enable_nodejs_perf_hooks_module","disable_nodejs_child_process_module","enable_nodejs_child_process_module","disable_nodejs_perf_hooks_module","enable_nodejs_readline_module","disable_nodejs_readline_module","enable_nodejs_repl_module","disable_nodejs_repl_module","enable_nodejs_tty_module","disable_nodejs_tty_module","enable_nodejs_v8_module","disable_nodejs_v8_module","enable_nodejs_worker_threads_module","disable_nodejs_worker_threads_module","websocket_standard_binary_type","no_websocket_standard_binary_type","queue_expose_error_codes","no_queue_expose_error_codes","text_decoder_cjk_decoder","disable_text_decoder_cjk_decoder","unhandled_rejection_after_microtask_checkpoint","no_unhandled_rejection_after_microtask_checkpoint","websocket_close_reason_byte_limit","no_websocket_close_reason_byte_limit","delete_all_deletes_alarm","delete_all_preserves_alarm","text_decoder_replace_surrogates","disable_text_decoder_replace_surrogates","fetch_iterable_type_support","no_fetch_iterable_type_support","enable_nodejs_global_timers","no_nodejs_global_timers","enable_nodejs_dgram_module","disable_nodejs_dgram_module","enable_nodejs_inspector_module","disable_nodejs_inspector_module","enable_nodejs_sqlite_module","disable_nodejs_sqlite_module","enable_nodejs_stream_wrap_module","disable_nodejs_stream_wrap_module","require_returns_default_export","require_returns_namespace","rpc_params_dup_stubs","fetch_iterable_type_support_override_adjustment","rpc_params_transfer_stubs","no_fetch_iterable_type_support_override_adjustment","strip_bom_in_read_all_text","do_not_strip_bom_in_read_all_text","enable_nodejs_cluster_module","disable_nodejs_cluster_module","enable_nodejs_domain_module","disable_nodejs_domain_module","disable_nodejs_punycode_module","enable_nodejs_punycode_module","disable_nodejs_trace_events_module","enable_nodejs_trace_events_module","enable_nodejs_wasi_module","enable_fast_jsg_struct","disable_fast_jsg_struct","disable_nodejs_wasi_module","enable_nodejs_vm_module","disable_ctx_exports","enable_ctx_exports","disable_nodejs_vm_module","enable_nodejs_console_module","enable_validate_workflow_entrypoint","disable_nodejs_console_module","disable_validate_workflow_entrypoint","enable_nodejs_fs_module","disable_nodejs_fs_module","disable_nodejs_process_v2","enable_nodejs_process_v2","disable_nodejs_os_module","enable_nodejs_os_module","disable_nodejs_http_server_modules","enable_nodejs_http_server_modules","enable_nodejs_http2_module","disable_nodejs_http2_module","remove_nodejs_compat_eol","add_nodejs_compat_eol_v23","remove_nodejs_compat_eol_v23","add_nodejs_compat_eol","strip_authorization_on_cross_origin_redirect","retain_authorization_on_cross_origin_redirect","enable_nodejs_http_modules","disable_nodejs_http_modules","expose_global_message_channel","no_expose_global_message_channel","python_no_global_handlers","set_event_target_this","cache_no_cache_disabled","cache_no_cache_enabled","disable_python_no_global_handlers","no_set_event_target_this","set_forwardable_email_full_headers","set_forwardable_email_single_headers","bind_asynclocalstorage_snapshot_to_request","do_not_bind_asynclocalstorage_snapshot_to","throw_on_unrecognized_import_assertion","allow_eval_during_startup","ignore_unrecognized_import_assertion","cache_api_request_cf_overrides_cache_rules","disallow_eval_during_startup","no_cache_api_request_cf_overrides_cache_rules","enable_navigator_language","disable_navigator_language","enable_weak_ref","disable_weak_ref","urlpattern_standard","urlpattern_original","request_cf_overrides_cache_rules","no_request_cf_overrides_cache_rules","assets_navigation_prefers_asset_serving","assets_navigation_has_no_effect","nodejs_compat_populate_process_env","nodejs_compat_do_not_populate_process_env","fixup-transform-stream-backpressure","original-transform-stream-backpressure","disable_top_level_await_in_require","enable_top_level_await_in_require","cache_option_enabled","cache_option_disabled","handle_cross_request_promise_resolution","no_handle_cross_request_promise_resolution","upper_case_all_http_methods","no_upper_case_all_http_methods","set_tostring_tag","do_not_set_tostring_tag","nodejs_zlib","allow_custom_ports","no_nodejs_zlib","ignore_custom_ports","internal_writable_stream_abort_clears_queue","internal_writable_stream_abort_does_not_clear_queue","blob_standard_mime_type","blob_legacy_mime_type","fetch_standard_url","internal_stream_byob_return_view","fetch_legacy_url","internal_stream_byob_return_undefined","brotli_content_encoding","no_brotli_content_encoding","rpc","no_rpc","unwrap_custom_thenables","no_unwrap_custom_thenables","fetcher_no_get_put_delete","fetcher_has_get_put_delete","queues_json_messages","no_queues_json_messages","no_global_importscripts","crypto_preserve_public_exponent","global_importscripts","no_crypto_preserve_public_exponent","vectorize_query_metadata_optional","vectorize_query_original","web_socket_compression","no_web_socket_compression","no_cf_botmanagement_default","cf_botmanagement_default","strict_compression_checks","no_strict_compression_checks","strict_crypto_checks","no_strict_crypto_checks","urlsearchparams_delete_has_value_arg","no_urlsearchparams_delete_has_value_arg","response_redirect_url_standard","response_redirect_url_original","dynamic_dispatch_tunnel_exceptions","dynamic_dispatch_treat_exceptions_as_500","http_headers_getsetcookie","no_http_headers_getsetcookie","transformstream_enable_standard_constructor","streams_disable_constructors","streams_enable_constructors","transformstream_disable_standard_constructor","export_commonjs_default","export_commonjs_namespace","capture_async_api_throws","dont_substitute_null_on_type_error","r2_list_honor_include","url_original","url_standard","do_not_capture_async_api_throws","substitute_null_on_type_error","minimal_subrequests","no_minimal_subrequests","global_navigator","no_global_navigator","no_cots_on_external_fetch","cots_on_external_fetch","workers_api_getters_setters_on_prototype","workers_api_getters_setters_on_instance","durable_object_fetch_requires_full_url","durable_object_fetch_allows_relative_url","fetch_refuses_unknown_protocols","streams_byob_reader_does_not_detach_buffer","streams_byob_reader_detaches_buffer","fetch_treats_unknown_protocols_as_http","formdata_parser_supports_files","formdata_parser_converts_files_to_strings"];
+const KEY="ocodejs-cli-compatibility-flags";
+const $=s=>document.querySelector(s);
+let selected=new Set();
+try{const saved=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(saved))selected=new Set(saved.filter(x=>FLAGS.includes(x)))}catch{}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify([...selected]))}catch{}}
+function updateOutput(){const values=[...selected].sort();$("#count").textContent=values.length+" selected";$("#total").textContent=FLAGS.length+" available flags";$("#output").value=JSON.stringify(values,null,2);persist()}
+function render(){const q=$("#search").value.trim().toLowerCase();const visible=FLAGS.filter(x=>x.toLowerCase().includes(q));$("#flags").innerHTML=visible.length?visible.map(name=>'<label class="flag"><input type="checkbox" data-flag="'+name+'" '+(selected.has(name)?"checked":"")+'><code>'+name+'</code></label>').join(""):'<div class="empty">No matching compatibility flags.</div>';updateOutput()}
+$("#flags").addEventListener("change",e=>{const input=e.target.closest("[data-flag]");if(!input)return;input.checked?selected.add(input.dataset.flag):selected.delete(input.dataset.flag);updateOutput()});
+$("#search").addEventListener("input",render);
+$("#select-visible").addEventListener("click",()=>{const q=$("#search").value.trim().toLowerCase();FLAGS.filter(x=>x.toLowerCase().includes(q)).forEach(x=>selected.add(x));render()});
+$("#clear").addEventListener("click",()=>{selected.clear();render()});
+$("#reset").addEventListener("click",()=>{selected.clear();try{localStorage.removeItem(KEY)}catch{}render()});
+$("#copy").addEventListener("click",async()=>{try{await navigator.clipboard.writeText($("#output").value);$("#copy").textContent="Copied ✓"}catch{$("#copy").textContent="Copy unavailable"}setTimeout(()=>$("#copy").textContent="Copy JSON",1400)});
+$("#download").addEventListener("click",()=>{const blob=new Blob([$("#output").value+"\n"],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="compatibility_flags.json";a.click();URL.revokeObjectURL(url)});
+render();
+</script>
+</body>
+</html>
