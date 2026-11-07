@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070f">
+<title>OCodeJS CLI Hub — Công cụ terminal cho developer</title>
+<meta name="description" content="Khám phá, tìm kiếm và cài đặt các công cụ terminal, TUI và CLI dành cho developer và AI agents.">
+<link rel="canonical" href="https://zskbot.github.io/ocodejs-cli/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OCodeJS CLI Hub">
+<meta property="og:description" content="Khám phá công cụ terminal cho developer và AI agents.">
+<meta property="og:url" content="https://zskbot.github.io/ocodejs-cli/">
+<style>
+:root{color-scheme:dark;--bg:#05070f;--panel:#0b1020;--fg:#eef2ff;--muted:#98a3bb;--line:#202a40;--blue:#4d8dff;--purple:#9b7bff;--green:#52d6a0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,#14244a 0,transparent 48%),var(--bg);color:var(--fg);font-size:15px;line-height:1.55}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+button,input,select,textarea{font:inherit}
+button,a,input,select,textarea{touch-action:manipulation}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.shell{width:min(1080px,100% - 28px);margin:20px auto;border:1px solid var(--line);border-radius:16px;background:rgba(5,8,17,.94);overflow:hidden;box-shadow:0 24px 80px #0006}
+.topbar{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line);color:var(--muted);font:12px ui-monospace,monospace}
+.dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:#ff625b}.dots i:nth-child(2){background:#ffbd44}.dots i:nth-child(3){background:#39c96e}
+.topbar .right{margin-left:auto}
+.main{padding:clamp(18px,4vw,34px)}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.logo{font:900 clamp(34px,8vw,68px)/1 ui-monospace,monospace;letter-spacing:-.07em;background:linear-gradient(90deg,#4d8dff,#9b7bff);background-clip:text;color:transparent}
+.subtitle{color:var(--muted);margin:10px 0 22px}
+.hero-links{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}
+.search-row{display:grid;grid-template-columns:1fr auto;gap:10px}
+.search{width:100%;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 15px;color:var(--fg)}
+.clear{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:10px;padding:0 14px;cursor:pointer}
+.section-title{margin:24px 0 9px;color:var(--muted);font:600 11px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.12em}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1px solid var(--line);background:#0b1020;color:var(--muted);border-radius:999px;padding:6px 11px;font-size:12px;cursor:pointer}
+.chip[aria-pressed=true],.chip:hover{border-color:var(--blue);color:var(--fg)}
+.results-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:26px 0 10px}
+.results-head .section-title{margin:0}
+.count{color:var(--muted);font:12px ui-monospace,monospace}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:12px}
+.card{min-width:0;border:1px solid var(--line);border-radius:12px;background:linear-gradient(160deg,#0c1427,#090d18);padding:15px;display:flex;flex-direction:column;gap:10px}
+.card:hover{border-color:#4265a8}
+.card h3{margin:0;font:700 17px ui-monospace,monospace;color:var(--fg);overflow-wrap:anywhere}
+.card p{margin:0;color:var(--muted);font-size:13px;min-height:42px}
+.meta{display:flex;gap:6px;flex-wrap:wrap}
+.meta span{border:1px solid var(--line);border-radius:5px;padding:2px 7px;color:var(--muted);font:11px ui-monospace,monospace}
+.command{margin:0;padding:9px 10px;background:#050811;border:1px solid #17233b;border-radius:7px;color:var(--green);font:12px ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+.action{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:#101a30;color:var(--fg);border-radius:7px;padding:7px 10px;font-size:12px;cursor:pointer}
+.action.primary{background:#244d9b;border-color:#3868bf}
+.empty{grid-column:1/-1;padding:24px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);text-align:center}
+.detail-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.back{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:8px;padding:8px 12px;cursor:pointer}
+.detail{max-width:760px}.detail h1{font:800 clamp(28px,7vw,48px) ui-monospace,monospace;overflow-wrap:anywhere}.detail p{color:var(--muted)}
+.panel{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.label{font:600 11px ui-monospace,monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+footer{border-top:1px solid var(--line);padding:14px 18px;color:var(--muted);font:12px ui-monospace,monospace;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted)}
+.field input,.field textarea,.field select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg)}
+.field textarea{min-height:90px;resize:vertical}
+@media(max-width:600px){.shell{width:100%;margin:0;border:0;border-radius:0;min-height:100dvh}.topbar{padding:12px 14px}.main{padding:20px 15px}.hero{align-items:flex-start}.logo{font-size:clamp(32px,11vw,48px)}.grid{grid-template-columns:1fr}.card p{min-height:0}.search-row{grid-template-columns:1fr auto}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.hero-links{gap:10px}.topbar .right{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="topbar"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><span>OCODEJS / CLI HUB</span><span class="right"><a href="#submit">+ Đề xuất công cụ</a></span></header>
+<main class="main" id="app" aria-live="polite"><p>Đang tải danh mục…</p></main>
+<footer><span>● OCodeJS CLI Hub · <span id="count">—</span> công cụ đã tuyển chọn</span><span><a href="https://github.com/zskbot/ocodejs-cli">GitHub</a> · <a href="https://github.com/OCodejs/OCodejs">OCode.js</a></span></footer>
+</div>
+<script>
+"use strict";
+const REPO="zskbot/ocodejs-cli";
+const $=selector=>document.querySelector(selector);
+const esc=value=>String(value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+let TOOLS=[],query="",language="",category="",searchTimer;
+function unique(key){return [...new Set(TOOLS.map(tool=>tool[key]))].sort((a,b)=>a.localeCompare(b,"vi"))}
+function chipMarkup(key,value,selected){return `<button class="chip" type="button" data-filter="${key}" data-value="${esc(value)}" aria-pressed="${selected===value}">${esc(value)}</button>`}
+function filteredTools(){const q=query.trim().toLocaleLowerCase("vi");return TOOLS.filter(tool=>(!language||tool.language===language)&&(!category||tool.category===category)&&(!q||[tool.name,tool.description,tool.language,tool.category,tool.install].join(" ").toLocaleLowerCase("vi").includes(q)))}
+function cardMarkup(tool){return `<article class="card">
+<h3>${esc(tool.name)}</h3><p>${esc(tool.description)}</p>
+<div class="meta"><span>${esc(tool.language)}</span><span>${esc(tool.category)}</span></div>
+<pre class="command"><code>${esc(tool.install)}</code></pre>
+<div class="actions">
+<button class="action primary" type="button" data-copy="${esc(tool.install)}">Copy lệnh</button>
+<button class="action" type="button" data-open-detail="${esc(tool.id)}">Chi tiết</button>
+<a class="action" href="${esc(tool.repo)}" target="_blank" rel="noopener noreferrer">Repository ↗</a>
+</div></article>`}
+function renderHome(keepFocus=false){
+ const results=filteredTools();
+ $("#app").innerHTML=`<section class="hero"><div><div class="logo">&gt;_OCODEJS</div><p class="subtitle">Tìm kiếm công cụ terminal tiếp theo của bạn — từ CLI tiện ích đến AI agents.</p></div><nav class="hero-links"><a href="https://github.com/OCodejs/OCodejs" target="_blank" rel="noopener noreferrer">OCode.js source ↗</a><a href="https://github.com/zskbot/ocodejs-cli" target="_blank" rel="noopener noreferrer">Contribute ↗</a></nav></section>
+<div class="search-row"><input class="search" id="search" type="search" autocomplete="off" placeholder="Tìm tên, mô tả, ngôn ngữ hoặc lệnh cài đặt…" value="${esc(query)}" aria-label="Tìm công cụ"><button class="clear" id="clear" type="button" aria-label="Xóa tìm kiếm">Xóa</button></div>
+<h2 class="section-title">Ngôn ngữ</h2><div class="chips">${unique("language").map(value=>chipMarkup("language",value,language)).join("")}</div>
+<h2 class="section-title">Danh mục</h2><div class="chips">${unique("category").map(value=>chipMarkup("category",value,category)).join("")}</div>
+<div class="results-head"><h2 class="section-title">Danh mục công cụ</h2><span class="count" id="result-count">${results.length}/${TOOLS.length} kết quả</span></div>
+<div class="grid">${results.length?results.map(cardMarkup).join(""):'<div class="empty">Không tìm thấy công cụ phù hợp. Hãy thử từ khóa khác hoặc xóa bộ lọc.</div>'}</div>`;
+ const input=$("#search");
+ input.addEventListener("input",()=>{query=input.value;clearTimeout(searchTimer);searchTimer=setTimeout(()=>renderHome(true),100)});
+ input.addEventListener("keydown",event=>{if(event.key==="Escape"){query="";renderHome(true)}});
+ $("#clear").addEventListener("click",()=>{query="";language="";category="";renderHome(true);$("#search").focus()});
+ if(keepFocus){input.focus();input.setSelectionRange(query.length,query.length)}
+}
+function renderDetail(id){
+ const tool=TOOLS.find(item=>item.id===id);if(!tool){location.hash="";return}
+ $("#app").innerHTML=`<div class="detail-top"><button class="back" id="back" type="button">← Danh mục</button><a href="${esc(tool.repo)}" target="_blank" rel="noopener noreferrer">Mở repository ↗</a></div>
+ <section class="detail"><h1>${esc(tool.name)}</h1><p>${esc(tool.description)}</p><div class="meta"><span>${esc(tool.language)}</span><span>${esc(tool.category)}</span></div>
+ <div class="panel"><div class="label">Lệnh cài đặt</div><pre class="command"><code>${esc(tool.install)}</code></pre><button class="action primary" data-copy="${esc(tool.install)}" type="button">Copy lệnh</button></div>
+ <div class="panel"><div class="label">Upstream source</div><p><a href="${esc(tool.repo)}" target="_blank" rel="noopener noreferrer">${esc(tool.repo)} ↗</a></p><p>Kiểm tra tài liệu upstream trước khi chạy lệnh cài đặt; lệnh được hiển thị để tham khảo và không tự động thực thi.</p></div></section>`;
+ $("#back").addEventListener("click",()=>{location.hash=""});
+}
+function renderSubmit(){
+ $("#app").innerHTML=`<div class="detail-top"><button class="back" id="back" type="button">← Danh mục</button></div><section class="detail"><h1>Đề xuất công cụ</h1><p>Gửi metadata và repository để maintainer kiểm tra trước khi thêm vào registry.</p>
+ <div class="form-grid">
+ <div class="field"><label for="name">Tên công cụ</label><input id="name" required maxlength="80"></div>
+ <div class="field"><label for="language">Ngôn ngữ</label><input id="language" required maxlength="40"></div>
+ <div class="field"><label for="category">Danh mục</label><input id="category" required maxlength="40"></div>
+ <div class="field"><label for="install">Lệnh cài đặt</label><input id="install" required maxlength="180"></div>
+ <div class="field full"><label for="description">Mô tả</label><textarea id="description" required maxlength="500"></textarea></div>
+ <div class="field full"><label for="repo">Repository URL</label><input id="repo" type="url" required placeholder="https://github.com/owner/repo"></div>
+ </div><button class="action primary" id="submit" type="button" style="margin-top:14px">Tạo GitHub Issue ↗</button></section>`;
+ $("#back").addEventListener("click",()=>{location.hash=""});
+ $("#submit").addEventListener("click",()=>{
+  const value=id=>$("#"+id).value.trim();
+  const name=value("name"),repo=value("repo"),install=value("install"),description=value("description"),language=value("language"),category=value("category");
+  if(!name||!repo||!install||!description||!language||!category){alert("Vui lòng điền đầy đủ thông tin.");return}
+  let parsed;try{parsed=new URL(repo)}catch{alert("Repository URL không hợp lệ.");return}
+  if(parsed.protocol!=="https:"||parsed.hostname!=="github.com"){alert("Vui lòng dùng URL HTTPS của GitHub.");return}
+  const body=["### Tên công cụ",name,"### Mô tả",description,"### Ngôn ngữ",language,"### Danh mục",category,"### Lệnh cài đặt",install,"### Repository URL",repo].join("\n");
+  const url="https://github.com/"+REPO+"/issues/new?template=tool-submission.md&title="+encodeURIComponent("Gửi công cụ: "+name)+"&body="+encodeURIComponent(body);
+  window.open(url,"_blank","noopener,noreferrer");
+ });
+}
+function route(){const id=decodeURIComponent(location.hash.slice(1));if(id==="submit")renderSubmit();else if(id)renderDetail(id);else renderHome()}
+document.addEventListener("click",event=>{
+ const filter=event.target.closest("[data-filter]"),detail=event.target.closest("[data-open-detail]"),copy=event.target.closest("[data-copy]");
+ if(filter){const key=filter.dataset.filter,value=filter.dataset.value;if(key==="language")language=language===value?"":value;else category=category===value?"":value;renderHome();return}
+ if(detail){location.hash=detail.dataset.openDetail;return}
+ if(copy){const value=copy.dataset.copy;if(!navigator.clipboard?.writeText){copy.textContent="Không hỗ trợ copy";return}navigator.clipboard.writeText(value).then(()=>{copy.textContent="Đã copy ✓"}).catch(()=>{copy.textContent="Copy thất bại"});return}
+});
+document.addEventListener("keydown",event=>{
+ if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="k"){event.preventDefault();if(!location.hash){$("#search")?.focus()}else{location.hash=""}}
+ if(event.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||"")&&!location.hash){event.preventDefault();$("#search")?.focus()}
+});
+window.addEventListener("hashchange",route);
+fetch("tools.json").then(response=>{if(!response.ok)throw new Error("HTTP "+response.status);return response.json()}).then(data=>{TOOLS=data;$("#count").textContent=TOOLS.length;route()}).catch(error=>{$("#app").innerHTML='<div class="empty">Không tải được tools.json. Hãy mở trang qua GitHub Pages hoặc máy chủ tĩnh local.</div>';console.error(error)});
+</script>
+</body>
+</html>
