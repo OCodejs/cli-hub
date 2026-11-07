@@ -1,0 +1,1719 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>OCode.js CLI Hub — Developer tools</title>
+<meta name="description" content="Khám phá, tìm kiếm và sử dụng các công cụ CLI/TUI dành cho developer và AI agents.">
+<link rel="canonical" href="https://zskbot.github.io/ocodejs-cli/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OCode.js CLI Hub">
+<meta property="og:description" content="Developer tools, terminal-first.">
+<meta property="og:url" content="https://zskbot.github.io/ocodejs-cli/">
+<style>
+:root{color-scheme:dark;--bg:#05070d;--panel:#0a101c;--line:#26364f;--line-strong:#36577f;--fg:#f2f5fb;--muted:#a3afc2;--blue:#347cff;--cyan:#55c8ff;--purple:#a34cff;--yellow:#f3d44e;--pink:#e45ac8;--green:#57d6a2;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;width:100%;max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
+@media(max-width:768px){
+  html,body{width:100%;height:100%;min-height:100%;overflow-x:hidden;overscroll-behavior:none;touch-action:pan-x pan-y}
+  body{min-height:100dvh;min-height:100svh}
+  .layout{min-height:100dvh;min-height:100svh;height:auto}
+  .topbar{padding-top:calc(8px + env(safe-area-inset-top,0px))}
+  .sidebar{padding-bottom:env(safe-area-inset-bottom,0px)}
+  .content{min-width:0;max-width:100vw;overflow-wrap:anywhere}
+}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.55 var(--mono)}
+button,input,select{font:inherit}
+a{color:inherit;text-decoration:none}
+button,a,input,select{touch-action:manipulation}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+button{cursor:pointer}
+.layout{min-height:100vh;display:grid;grid-template-columns:230px minmax(0,1fr);grid-template-rows:64px 1fr auto;max-width:1680px;margin:0 auto;border:1px solid var(--line);background:linear-gradient(135deg,#070b13,#05070d 55%)}
+.sidebar{grid-column:1;grid-row:1/4;border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;min-height:100vh}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 26px;border-bottom:1px solid var(--line);font-weight:800;font-size:20px;letter-spacing:-1px}
+.brand-mark{font-size:34px;line-height:1;color:var(--blue);text-shadow:5px 4px 0 var(--purple)}
+.brand small{display:block;color:var(--blue);font-size:12px;letter-spacing:1px}
+.nav{display:grid;gap:6px;margin-top:24px}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid transparent;color:var(--muted);font-size:14px}
+.nav a:hover,.nav a.active{background:#173c9c;border-color:#356fff;color:#fff}
+.nav-icon{width:18px;text-align:center;font-size:16px}
+.side-card{margin-top:auto;border:1px solid var(--line-strong);padding:12px;background:#080e19}
+.side-card strong{display:block;margin-bottom:5px}
+.side-card p{margin:0;color:var(--muted);font-size:12px}
+.version{display:inline-block;margin-top:10px;border:1px solid var(--purple);padding:2px 7px;color:#c9a2ff;font-size:11px}
+.topbar{grid-column:2;grid-row:1;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:0 22px}
+.mbrand{display:none}
+.icon-button,.shortcut{height:38px;min-width:40px;border:1px solid var(--line-strong);border-radius:0;background:transparent;color:var(--fg);padding:0 12px}
+.shortcut{display:flex;align-items:center;gap:10px;color:var(--muted)}
+.submit-tool{height:38px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--blue);background:#102b67;color:#fff;padding:0 14px;font-size:12px;font-weight:700;white-space:nowrap}
+.submit-tool:hover{background:#1b43a0;border-color:var(--cyan)}
+.content{grid-column:2;grid-row:2;min-width:0;padding:clamp(22px,4vw,48px)}
+.hero{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:24px;margin:0 0 26px}
+.hero-mark{font-size:74px;line-height:1;color:var(--blue);text-shadow:10px 7px 0 var(--purple)}
+h1{margin:0;font-size:clamp(28px,4vw,54px);line-height:1.1;letter-spacing:-2px}
+h1 span{color:var(--blue)}
+.subtitle{margin:12px 0 0;color:var(--muted);font-size:15px}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0 30px}
+.stat{min-height:42px;display:flex;align-items:center;gap:10px;border:1px solid var(--line-strong);padding:8px 14px;background:#080e19;white-space:nowrap}
+.stat:nth-child(1){border-color:#c3a92c;color:var(--yellow)}
+.stat:nth-child(2){border-color:#267db5;color:var(--cyan)}
+.stat:nth-child(3){border-color:#8b42d3;color:#c28bff}
+.stat:nth-child(4){border-color:#4a9fbd;color:#8de4ff}
+.searchbar{display:grid;grid-template-columns:minmax(0,1fr) 190px 190px 120px;gap:12px;margin-bottom:28px}
+.searchbox,.filter,.search-submit{height:52px;border:1px solid var(--line-strong);border-radius:0;background:#070c15;color:var(--fg);padding:0 15px;min-width:0}
+.searchbox{display:flex;align-items:center;gap:12px}
+.searchbox input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--fg)}
+.searchbox input:focus-visible{outline:0}
+.searchbox:focus-within{border-color:var(--cyan)}
+.filter{width:100%;appearance:none}
+.search-submit{background:#2859e8;border-color:#3c70ff;color:#fff;font-weight:700}
+.search-submit:hover{background:#3970ff}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 12px;scroll-margin-top:80px}
+.section-head h2{margin:0;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.result-count{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{min-width:0;border:1px solid var(--line-strong);background:linear-gradient(145deg,#0a101b,#070b13);padding:15px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s}
+.card:nth-child(4n+1){border-top:2px solid var(--blue)}
+.card:nth-child(4n+2){border-top:2px solid var(--purple)}
+.card:nth-child(4n+3){border-top:2px solid var(--cyan)}
+.card:nth-child(4n){border-top:2px solid var(--pink)}
+.card:hover{border-color:var(--blue)}
+.card-head{display:flex;align-items:center;gap:12px;min-width:0}
+.tool-icon{flex:0 0 44px;width:44px;height:44px;display:grid;place-items:center;border:2px solid var(--cyan);color:var(--cyan);font-weight:800;font-size:15px}
+.card:nth-child(4n+2) .tool-icon{border-color:var(--purple);color:#c69aff}
+.card:nth-child(4n) .tool-icon{border-color:var(--pink);color:#f08add}
+.card h3{margin:0;font-size:16px;overflow-wrap:anywhere}
+.card p{min-height:44px;margin:0;color:var(--muted);font-size:12px}
+.meta{display:flex;align-items:center;gap:10px;color:var(--blue);font-size:12px;flex-wrap:wrap}
+.meta span+span{color:var(--muted)}
+.card-actions{display:flex;align-items:center;gap:7px;margin-top:auto;flex-wrap:wrap}
+.btn{min-height:34px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-strong);border-radius:0;background:#0a1322;color:var(--fg);padding:6px 10px;font-size:11px}
+.btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn.primary{background:#173d9f;border-color:#3976ff;color:#fff}
+.btn.favorite[aria-pressed=true]{color:var(--yellow);border-color:var(--yellow)}
+.empty{grid-column:1/-1;border:1px dashed var(--line-strong);padding:28px;text-align:center;color:var(--muted)}
+.detail{max-width:760px}
+.detail h2{font-size:30px;margin:16px 0 8px;overflow-wrap:anywhere}
+.detail-panel{margin-top:16px;border:1px solid var(--line-strong);padding:16px;background:var(--panel);min-width:0}
+.command{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;color:var(--green);font-size:12px;margin:10px 0 14px}
+.back{height:40px;border:1px solid var(--line-strong);border-radius:0;background:transparent;color:var(--fg);padding:0 14px}
+footer{grid-column:2;grid-row:3;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding:16px 22px;color:var(--muted);font-size:12px}
+footer a{padding:0 8px}
+
+@media(max-width:1100px){
+  .searchbar{grid-template-columns:minmax(0,1fr) minmax(150px,1fr) minmax(150px,1fr)}
+  .search-submit{grid-column:1/-1}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* ===== Mobile: header cố định phía trên, thanh điều hướng cố định phía dưới ===== */
+@media(max-width:768px){
+  html,body{width:100%;overflow-x:hidden}
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+  .layout{display:block;min-height:100svh;border:0;background:var(--bg)}
+
+  /* Header */
+  .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:8px;height:auto;padding:calc(8px + env(safe-area-inset-top,0px)) calc(14px + env(safe-area-inset-right,0px)) 8px calc(14px + env(safe-area-inset-left,0px));background:rgba(5,7,13,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .mbrand{display:flex;align-items:center;gap:8px;min-width:0;margin-right:auto;font-weight:800;font-size:16px;letter-spacing:-.5px}
+  .mbrand b{font-size:22px;line-height:1;color:var(--blue);text-shadow:3px 2px 0 var(--purple)}
+  .mbrand small{color:var(--blue);font-size:10px;letter-spacing:1px;margin-left:2px}
+  .shortcut{display:none}
+  .submit-tool,.icon-button{height:38px;min-height:38px;padding:0 11px;font-size:12px}
+  .mobile-profile{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:64px;border-color:var(--line-strong);background:#0b1424;color:var(--fg);font-weight:700}
+  .mobile-profile span:first-child{font-size:16px;line-height:1}
+  .profile-label{font-size:12px;letter-spacing:.2px}
+  .icon-button{min-width:38px}
+
+  /* Sidebar -> bottom tab bar */
+  .sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:40;min-height:0;padding:0 env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);border:0;border-top:1px solid var(--line-strong);background:rgba(8,12,21,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .brand,.side-card{display:none}
+  .nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;margin:0}
+  .nav a{flex-direction:column;justify-content:center;gap:2px;min-height:56px;padding:6px 2px;font-size:10px;text-align:center;border:0;border-top:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nav a:hover,.nav a.active{background:#10265f;border-top-color:var(--cyan);color:#fff}
+  .nav-icon{width:auto;font-size:17px;line-height:1}
+
+  /* Nội dung */
+  .content{padding:16px calc(14px + env(safe-area-inset-right,0px)) 24px calc(14px + env(safe-area-inset-left,0px))}
+  .hero{display:block;margin:0 0 12px}
+  .hero-mark{display:none}
+  h1{font-size:clamp(26px,8vw,32px);line-height:1.15;letter-spacing:-.8px}
+  .subtitle{margin-top:6px;font-size:13px;line-height:1.45}
+
+  /* Stats: một hàng cuộn ngang thay vì lưới 2x2 chiếm chỗ */
+  .stats{flex-wrap:nowrap;gap:8px;margin:14px -14px 14px;padding:0 14px 4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .stats::-webkit-scrollbar{display:none}
+  .stat{flex:0 0 auto;min-height:32px;padding:5px 10px;font-size:11px}
+
+  /* Tìm kiếm: ô tìm full width, 2 bộ lọc cùng hàng */
+  .searchbar{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 14px}
+  .searchbox{grid-column:1/-1}
+  .searchbox,.filter{height:46px;padding:0 12px}
+  .searchbox input{font-size:16px;height:100%}
+  .filter{font-size:14px;appearance:auto}
+  .search-submit{display:none}
+
+  .section-head{margin:14px 0 10px;scroll-margin-top:70px}
+  .section-head h2{font-size:12px}
+  .result-count{font-size:11px}
+
+  .grid{grid-template-columns:minmax(0,1fr);gap:10px}
+  .card{padding:12px;gap:8px;border-top-width:2px}
+  .tool-icon{flex-basis:40px;width:40px;height:40px;font-size:13px;border-width:1px}
+  .card h3{font-size:15px}
+  .card p{min-height:0;font-size:12.5px}
+  .meta{font-size:11px;gap:8px}
+
+  /* Nút trong card: View chiếm phần lớn, các nút còn lại gọn bên cạnh */
+  .card-actions{display:grid;grid-template-columns:1fr auto auto 44px;gap:6px}
+  .card-actions .btn{min-height:42px;padding:0 12px;font-size:12px;white-space:nowrap}
+  .btn.favorite{font-size:18px;padding:0}
+
+  .detail h2{font-size:24px}
+  .detail-panel{padding:12px}
+  .back{width:100%;height:44px}
+  .detail .btn.primary{width:100%;min-height:44px}
+
+  footer{display:block;padding:14px calc(14px + env(safe-area-inset-right,0px)) 14px calc(14px + env(safe-area-inset-left,0px));font-size:11px;line-height:1.9}
+  footer span{display:block}
+  footer a{padding:0 6px 0 0}
+  button,.btn,.icon-button,.submit-tool,.back,input,select,.filter,.searchbox,.stat,.card,.detail-panel{border-radius:0!important}
+}
+@media(max-width:360px){
+  .mbrand small{display:none}
+  .submit-tool{padding:0 8px;font-size:11px}
+  .card-actions{grid-template-columns:1fr 1fr 44px}
+  .card-actions .btn.primary{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important}
+}
+
+.light-preview .layout{background:#edf2fb;color:#101827}
+.light-preview .sidebar,.light-preview .topbar,.light-preview footer{background:#f7f9fd;color:#263449}
+.light-preview .brand small,.light-preview .mbrand small,.light-preview .meta,.light-preview .result-count{color:#245ac7}
+.light-preview .nav a{color:#34445c}
+.light-preview .nav a:hover,.light-preview .nav a.active{background:#dce8ff;color:#102b61}
+.light-preview .side-card,.light-preview .card,.light-preview .detail-panel,.light-preview .searchbox,.light-preview .filter,.light-preview .shortcut,.light-preview .icon-button,.light-preview .btn,.light-preview .stat{background:#fff;color:#17243a}
+.light-preview .btn.primary,.light-preview .submit-tool{color:#fff}
+.light-preview .btn.primary{background:#173d9f}
+.light-preview .card p,.light-preview .section-head h2,.light-preview .subtitle{color:#52627a}
+.light-preview .command{background:#f2f6fc;color:#08764d;padding:8px}
+.light-preview .card,.light-preview .layout{border-color:#9eb4d4}
+@media(max-width:768px){.light-preview .topbar{background:rgba(247,249,253,.94)}.light-preview .sidebar{background:rgba(247,249,253,.97)}}
+
+/* OCode.js UI system: 8pt spacing, fluid canvas, accessible touch targets. */
+:root{
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;
+  --space-5:24px;--space-6:32px;--space-7:48px;--space-8:64px;
+  --content-max:1200px;--mobile-gutter:16px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{width:100%;max-width:100%;overflow-x:hidden}
+body{width:100%;max-width:100%;margin:0;overflow-x:hidden}
+.layout{width:100%;max-width:100%;min-width:0}
+.content{width:100%;max-width:calc(var(--content-max) + 2 * var(--space-6));min-width:0;margin-inline:auto}
+button,a,input,select,textarea{font:inherit}
+button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,.nav a{
+  border-radius:0!important
+}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+  outline:2px solid var(--cyan);outline-offset:2px
+}
+@media(min-width:1200px){
+  .content{padding-inline:clamp(32px,5vw,80px)}
+  .stats{gap:16px;margin-block:32px}
+  .searchbar{gap:12px;margin-bottom:32px}
+  .grid{gap:16px}
+  .card{padding:16px}
+  .section-head{margin-block:32px 16px}
+}
+@media(min-width:769px) and (max-width:1199px){
+  .content{padding:32px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:768px){
+  :root{--mobile-gutter:16px}
+  .content{padding:24px var(--mobile-gutter) 32px}
+  .hero{gap:16px;margin-bottom:24px}
+  h1{font-size:clamp(28px,7vw,32px);line-height:1.2;letter-spacing:-.8px}
+  .subtitle{font-size:14px;line-height:1.5}
+  .stats{gap:8px;margin:24px 0}
+  .stat{min-height:40px;padding:8px}
+  .searchbar{gap:8px;margin-bottom:32px}
+  .searchbox,.filter{height:44px;min-height:44px;padding-inline:12px}
+  .search-submit{height:48px;min-height:48px;padding-inline:16px}
+  .grid{gap:12px}
+  .card{padding:16px;gap:12px}
+  .card-actions{gap:8px}
+  .card-actions .btn{min-height:36px;padding:8px 12px}
+  .section-head{margin:24px 0 12px}
+  .topbar{padding-inline:16px}
+  .submit-tool{min-height:40px;padding-inline:16px}
+  .icon-button,.shortcut{min-height:40px}
+  .nav{gap:8px}
+  .nav a{min-height:40px;padding:8px 12px}
+  footer{gap:12px;padding:16px}
+}
+@media(max-width:420px){
+  .content{padding:24px 16px 32px}
+  .hero{margin-bottom:16px}
+  h1{font-size:28px}
+  .subtitle{font-size:13px}
+  .stats{gap:8px;margin:16px 0 24px}
+  .stat{min-height:36px;padding:8px;font-size:10px}
+  .searchbar{gap:8px;margin-bottom:32px}
+  .searchbox,.filter{height:44px;min-height:44px}
+  .search-submit{height:48px;min-height:48px}
+  .card{padding:12px}
+  .card-actions .btn{min-height:36px}
+}
+/* Maintain the explicit 100% square-corner visual requirement. */
+button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,input,select,textarea,.filter,.searchbox,.stat,.card,.detail-panel,.nav a{border-radius:0!important}
+
+
+/* ===== OCode.js Pages layout: portrait mobile / 16:9 desktop ===== */
+@media (min-width:769px){
+  body{min-height:100vh}
+  .layout{
+    width:min(100%,1920px);
+    min-height:100vh;
+    margin-inline:auto;
+    grid-template-columns:240px minmax(0,1fr);
+    grid-template-rows:64px minmax(0,1fr) auto;
+  }
+  .content{max-width:1280px;padding:clamp(32px,4vw,64px)}
+}
+@media (max-width:768px){
+  html,body{width:100%;height:100%;min-height:100%;overflow-x:hidden}
+  body{min-height:100svh;min-height:100dvh;padding:0 0 calc(64px + env(safe-area-inset-bottom,0px))}
+  .layout{display:flex;flex-direction:column;width:100%;min-height:100svh;min-height:100dvh;height:auto;max-width:100%;border:0}
+  .topbar{position:sticky;top:0;z-index:50;flex:0 0 auto;min-height:56px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;justify-content:space-between}
+  .mbrand{font-size:15px}
+  .submit-tool{height:40px;min-height:40px;padding:0 12px}
+  .icon-button{height:40px;min-width:40px}
+  .content{flex:1 0 auto;width:100%;max-width:100%;padding:20px 16px 28px;margin:0}
+  .hero{display:block;margin:0 0 18px}
+  .hero-mark{display:none}
+  h1{font-size:clamp(27px,8vw,34px);line-height:1.12;letter-spacing:-1px}
+  .subtitle{max-width:38ch;font-size:13px;line-height:1.5}
+  .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:18px 0}
+  .stat{min-width:0;min-height:42px;padding:8px 10px;white-space:normal;font-size:11px}
+  .searchbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 22px}
+  .searchbox{grid-column:1/-1;min-width:0;height:48px}
+  .searchbox input{min-width:0;font-size:16px}
+  .filter{min-width:0;width:100%;height:44px;font-size:12px}
+  .search-submit{grid-column:1/-1;display:block;height:44px}
+  .section-head{margin:22px 0 12px}
+  .grid{grid-template-columns:minmax(0,1fr);gap:10px}
+  .card{min-width:0;padding:14px;gap:10px}
+  .card p{min-height:0}
+  .card-actions{display:flex;flex-wrap:wrap;gap:8px}
+  .card-actions .btn{min-height:40px;padding:8px 12px;font-size:11px}
+  .card-actions .btn.primary{flex:1 1 120px}
+  .detail{width:100%;max-width:100%}
+  .detail h2{font-size:24px;line-height:1.2}
+  .detail-panel{min-width:0;padding:14px}
+  footer{flex:0 0 auto;display:block;padding:16px}
+  footer span{display:block}
+  .sidebar{position:fixed;inset:auto 0 0;z-index:60;min-height:0;padding:0 0 env(safe-area-inset-bottom,0px);border:0;border-top:1px solid var(--line-strong);background:rgba(8,12,21,.98)}
+  .brand,.side-card{display:none}
+  .nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;margin:0}
+  .nav a{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;min-height:58px;padding:6px 1px;border:0;border-top:2px solid transparent;font-size:9px;white-space:nowrap}
+  .nav-icon{width:auto;font-size:17px;line-height:1}
+  button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,input,select,textarea,.filter,.searchbox,.stat,.card,.detail-panel,.nav a{border-radius:0!important}
+}
+@media(max-width:380px){
+  .topbar{padding-inline:12px}
+  .mbrand small{display:none}
+  .content{padding-inline:12px}
+  .stats{gap:6px}
+  .stat{font-size:10px}
+  .nav a{font-size:8px}
+}
+@media(orientation:landscape) and (max-width:900px){
+  .content{padding-top:14px}
+  .hero{margin-bottom:12px}
+  .stats{grid-template-columns:repeat(4,minmax(0,1fr));margin:12px 0}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+
+/* ===== Mobile UX v2: drawer, compact search, chips and accessible actions ===== */
+@media(max-width:768px){
+  body{padding:0!important}
+  .layout{display:block!important;min-height:100svh!important;border:0!important}
+  .topbar{position:sticky!important;top:0;z-index:90;height:56px;min-height:56px;padding:0 12px!important;gap:8px;justify-content:space-between;background:rgba(5,7,13,.96);border-bottom:1px solid var(--line-strong)}
+  .menu-toggle{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;font-size:20px;color:var(--cyan);border:0!important}
+  .mbrand{display:flex!important;flex:1;gap:7px;font-size:15px;white-space:nowrap}
+  .mbrand b{font-size:22px}
+  .mbrand small{font-size:9px}
+  .mobile-search{display:inline-flex!important;flex:0 0 44px;width:44px;height:44px;font-size:21px;color:var(--cyan);border:0!important}
+  .desktop-search,.topbar .submit-tool{display:none!important}
+  #theme-toggle{display:none}
+  .sidebar{position:fixed!important;z-index:110!important;inset:0 auto 0 0!important;width:min(82vw,320px)!important;height:100dvh;min-height:0!important;padding:calc(18px + env(safe-area-inset-top)) 16px env(safe-area-inset-bottom)!important;display:flex!important;flex-direction:column;transform:translateX(-105%);transition:transform .22s ease;background:#090f1b!important;border-right:1px solid var(--cyan)!important;border-top:0!important;box-shadow:18px 0 50px #0009}
+  body.drawer-open .sidebar{transform:translateX(0)}
+  .sidebar .brand{display:flex!important;margin-bottom:16px;padding:8px;border-bottom:1px solid var(--line)}
+  .sidebar .side-card{display:block!important;margin-top:auto}
+  .nav{display:flex!important;flex-direction:column;gap:4px!important;margin:8px 0!important}
+  .nav a{display:flex!important;flex-direction:row!important;justify-content:flex-start!important;gap:12px!important;min-height:48px!important;padding:10px 12px!important;border:1px solid transparent!important;text-align:left!important;font-size:13px!important;white-space:normal!important}
+  .nav a.active{border-color:var(--line-strong)!important;background:#10264a!important}
+  .nav-icon{width:22px!important;font-size:17px!important}
+  .drawer-scrim{display:block;position:fixed;inset:0;z-index:100;background:#0009;opacity:0;visibility:hidden;transition:opacity .2s}
+  body.drawer-open .drawer-scrim{opacity:1;visibility:visible}
+  .content{width:100%;max-width:100%!important;padding:16px 14px 32px!important;margin:0!important}
+  .hero{display:block!important;margin:0 0 14px!important}
+  .hero-mark{display:none!important}
+  h1{font-size:clamp(26px,7.5vw,32px)!important;line-height:1.14!important;letter-spacing:-.7px!important}
+  .subtitle{margin-top:5px!important;font-size:13px!important;line-height:1.45!important}
+  .stats{display:flex!important;flex-wrap:nowrap!important;gap:7px!important;margin:14px -14px 16px!important;padding:0 14px 4px!important;overflow-x:auto!important;scrollbar-width:none}
+  .stats::-webkit-scrollbar{display:none}
+  .stat{flex:0 0 auto!important;min-height:34px!important;padding:6px 9px!important;font-size:10px!important}
+  .searchbar{display:block!important;margin:0 0 14px!important}
+  .searchbox{display:flex!important;width:100%;height:46px!important;min-height:46px;padding:0 12px!important}
+  .searchbox input{height:100%;font-size:16px!important}
+  .filter{display:none!important}
+  .search-submit{display:none!important}
+  .filter-toggle{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;flex:0 0 46px;border:1px solid var(--line-strong);background:#0a1322;color:var(--fg);font-size:18px}
+  .search-row{display:flex;gap:8px}
+  .filter-panel{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;padding:10px;border:1px solid var(--line);background:#080e19}
+  .filter-panel.open{display:grid}
+  .filter-panel .filter{display:block!important;height:42px!important;min-width:0;font-size:12px}
+  .filter-chips{display:flex;gap:7px;overflow-x:auto;white-space:nowrap;padding:0 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .filter-chips::-webkit-scrollbar{display:none}
+  .filter-chip{flex:0 0 auto;min-height:34px;padding:6px 11px;border:1px solid var(--line-strong);background:transparent;color:var(--muted);font:11px var(--mono)}
+  .filter-chip.active{border-color:var(--cyan);background:#10243a;color:#fff}
+  .section-head{margin:14px 0 10px!important}
+  .grid{grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+  .card{padding:12px!important;gap:8px!important}
+  .card-head{gap:10px}
+  .tool-icon{width:40px!important;height:40px!important;flex-basis:40px!important}
+  .card h3{font-size:14px!important}
+  .card p{min-height:0!important;font-size:12px!important;line-height:1.45}
+  .meta{font-size:10px!important}
+  .card-actions{display:grid!important;grid-template-columns:1fr 1fr 1fr 44px!important;gap:6px!important;margin-top:4px!important}
+  .card-actions .btn{min-width:0;min-height:44px!important;padding:0 6px!important;font-size:11px!important;white-space:nowrap}
+  .card-actions .btn.favorite{font-size:17px!important}
+  .detail{max-width:100%!important}
+  .detail h2{font-size:23px!important}
+  .detail-panel{padding:12px!important;min-width:0}
+  .code-canvas{position:relative;margin-top:10px;border:1px solid var(--line-strong);background:#080e19}
+  .code-canvas pre{margin:0;padding:44px 12px 14px;max-width:100%;overflow-x:auto;white-space:pre;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;font:12px/1.6 var(--mono);color:var(--green)}
+  .copy-code{position:absolute;top:6px;right:6px;z-index:2;min-height:34px;padding:0 10px;border:1px solid var(--line-strong);background:#101b2b;color:var(--fg);font:11px var(--mono)}
+  .back,.detail .btn.primary{min-height:44px!important}
+  footer{display:block;padding:14px!important;font-size:10px}
+  footer span{display:block}
+}
+@media(min-width:769px){
+  .menu-toggle,.mobile-search,.filter-toggle,.filter-chips{display:none!important}
+  .drawer-scrim{display:none!important}
+  .filter-panel{display:none!important}
+}
+button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,input,select,textarea,.filter,.searchbox,.stat,.card,.detail-panel,.nav a,.filter-chip,.filter-toggle,.copy-code{border-radius:0!important}
+
+
+/* ===== OCode.js minimal monochrome theme ===== */
+:root{
+  color-scheme:dark;
+  --bg:#000;
+  --panel:#050505;
+  --line:#777;
+  --line-strong:#fff;
+  --fg:#f7f7f7;
+  --muted:#b8b8b8;
+  --blue:#fff;
+  --cyan:#fff;
+  --purple:#fff;
+  --yellow:#fff;
+  --pink:#fff;
+  --green:#eee;
+}
+html,body,.layout{background:#000!important;color:#f7f7f7}
+.layout{background:#000!important;border-color:#333!important}
+.sidebar,.topbar,footer{background:#000!important;border-color:#555!important}
+.brand-mark,.mbrand b,.brand small,.mbrand small{color:#fff!important;text-shadow:none!important}
+.hero-mark{color:#fff!important;text-shadow:none!important}
+h1 span,.meta,.result-count{color:#eee!important}
+.subtitle,.card p,.section-head h2,.side-card p,footer{color:#bdbdbd!important}
+.side-card,.card,.detail-panel,.stat,.searchbox,.filter,.shortcut,.icon-button,.btn,.back,.version,.tool-icon,.nav a,.submit-tool,.search-submit,.filter-chip,.filter-toggle,.copy-code{
+  background:#000!important;
+  color:#f5f5f5!important;
+  border:1px solid #fff!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.card,.detail-panel,.side-card{background:#030303!important}
+.card:nth-child(n),.card:nth-child(4n+1),.card:nth-child(4n+2),.card:nth-child(4n+3),.card:nth-child(4n){
+  border:1px solid #777!important;
+  border-top:1px solid #fff!important;
+}
+.card:hover,.nav a:hover,.nav a.active,.btn:hover,.icon-button:hover,.submit-tool:hover,.filter-chip:hover{
+  border-color:#fff!important;
+  background:#171717!important;
+  color:#fff!important;
+}
+.stat:nth-child(n){border-color:#777!important;color:#eee!important}
+.tool-icon,.card:nth-child(n) .tool-icon{border:1px solid #fff!important;color:#fff!important}
+.btn.primary,.submit-tool,.search-submit{
+  background:#f5f5f5!important;
+  color:#000!important;
+  border:1px solid #fff!important;
+  font-weight:700;
+}
+.btn.primary:hover,.submit-tool:hover,.search-submit:hover{background:#d9d9d9!important;color:#000!important}
+.btn.favorite[aria-pressed=true]{border-color:#fff!important;color:#fff!important;background:#222!important}
+.searchbox:focus-within,.searchbox input:focus-visible,.filter:focus-visible{
+  border-color:#fff!important;outline:1px solid #fff!important;outline-offset:2px
+}
+.searchbox input{color:#fff!important}
+.searchbox input::placeholder{color:#999!important;opacity:1}
+.filter option{background:#000;color:#fff}
+.nav a{color:#ddd!important}
+.nav a.active{background:#1a1a1a!important;border-color:#fff!important}
+.version{color:#fff!important}
+.command,.code-canvas pre{color:#eee!important;background:#080808!important}
+.copy-code{background:#000!important;color:#fff!important}
+.empty{border:1px dashed #aaa!important;color:#bbb!important}
+.drawer-scrim{background:#000b!important}
+@media(max-width:768px){
+  .topbar{background:rgba(0,0,0,.97)!important;border-bottom:1px solid #555!important}
+  .sidebar{background:rgba(0,0,0,.99)!important;border-right:1px solid #fff!important;border-top:1px solid #555!important}
+  .nav a.active{border-color:#fff!important;background:#171717!important}
+  .filter-chip.active{background:#f5f5f5!important;color:#000!important;border-color:#fff!important}
+  .filter-toggle{background:#000!important;color:#fff!important;border:1px solid #fff!important}
+  .card-actions .btn{border:1px solid #fff!important}
+  .code-canvas{border:1px solid #777!important;background:#050505!important}
+}
+
+
+/* ===== UX refinement: clear hierarchy, predictable controls, readable catalog ===== */
+:root{--bg:#050505;--panel:#0b0b0b;--line:#292929;--line-strong:#555;--fg:#f5f5f5;--muted:#aaa}
+.layout{background:#050505}
+.nav a:hover,.nav a.active{background:#171717;border-color:#777;color:#fff}
+.nav a.active{box-shadow:inset 2px 0 0 #fff}
+.hero{gap:18px}
+.hero-mark{font-size:58px;text-shadow:none;color:#fff}
+h1 span{color:#bbb}
+.subtitle{max-width:760px;color:#aaa}
+.stats{gap:8px}
+.stat,.stat:nth-child(n){border-color:#333;background:#090909;color:#ddd}
+.searchbar{display:block;margin:0 0 24px;padding:14px;border:1px solid #333;background:#090909}
+.search-row{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:8px}
+.searchbox{height:48px;border-color:#555;background:#050505}
+.searchbox input{font-size:14px}
+.filter-toggle{height:48px;border:1px solid #555;background:#111;color:#fff;font-size:18px}
+.filter-toggle:hover{border-color:#fff;background:#1b1b1b}
+.filter-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.filter-chip{min-height:34px;padding:6px 10px;border:1px solid #393939;background:#0b0b0b;color:#bbb;font:11px var(--mono);cursor:pointer}
+.filter-chip:hover,.filter-chip.active{border-color:#ddd;background:#eee;color:#050505}
+.filter-panel{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.filter-panel.open{display:grid}
+.filter{height:42px;border-color:#555;background:#050505}
+.section-head{margin:22px 0 12px}
+.section-head h2{color:#eee;font-size:13px;letter-spacing:.6px}
+.result-count{padding:4px 8px;border:1px solid #444;color:#ddd}
+.grid{gap:12px}
+.card,.card:nth-child(n){border:1px solid #383838;border-top:1px solid #555;background:#090909;padding:16px}
+.card:hover{border-color:#aaa;background:#0d0d0d}
+.tool-icon,.card:nth-child(n) .tool-icon{border:1px solid #666;color:#fff;background:#111}
+.card h3{font-size:15px}
+.card p{color:#bbb;line-height:1.55}
+.meta,.meta span+span{color:#999}
+.btn{min-height:38px;border-color:#555;background:#080808;color:#eee}
+.btn.primary{background:#eee;border-color:#eee;color:#050505;font-weight:800}
+.btn:hover{border-color:#fff;color:#fff}
+.btn.primary:hover{background:#ccc;color:#000}
+.btn.favorite[aria-pressed=true]{color:#fff;border-color:#fff;background:#222}
+.empty{border-color:#555;color:#ccc}
+.detail-panel{background:#090909;border-color:#444}
+.back{border-color:#666}
+@media(max-width:768px){
+ .content{padding:18px 14px 28px!important}
+ .hero{margin-bottom:10px}
+ .stats{margin:14px 0 18px}
+ .searchbar{padding:10px;margin-bottom:18px}
+ .search-row{grid-template-columns:minmax(0,1fr) 44px}
+ .searchbox,.filter-toggle{height:46px}
+ .filter-chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:5px;scrollbar-width:thin}
+ .filter-chip{flex:0 0 auto;min-height:36px}
+ .filter-panel{grid-template-columns:1fr}
+ .grid{gap:9px}
+ .card,.card:nth-child(n){padding:13px}
+ .card-actions{grid-template-columns:minmax(0,1fr) auto auto 42px}
+ .nav a.active{box-shadow:inset 0 2px 0 #fff}
+}
+@media(max-width:360px){.card-actions{grid-template-columns:1fr 1fr 42px}.card-actions .btn.primary{grid-column:1/-1}}
+
+
+/* 25-page workspace */
+.nav{display:flex;flex-direction:column;gap:12px;overflow:auto;min-height:0}
+.nav-group{display:grid;gap:3px}.nav-group-label{padding:8px 10px 4px;color:#888;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+.nav a{min-height:36px;padding:7px 10px;font-size:12px}
+.page-intro{max-width:850px;margin-bottom:24px}.page-intro h1{font-size:clamp(26px,4vw,42px)}
+.page-kicker{color:#999;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.page-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.page-tile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:118px;padding:16px;border:1px solid #444;background:#080808;color:#f5f5f5;text-align:left;cursor:pointer}
+.page-tile:hover{border-color:#fff;background:#111}.page-tile strong{font-size:14px}.page-tile span{font-size:11px;color:#aaa;line-height:1.5}
+.page-status{display:inline-flex;border:1px solid #555;padding:3px 6px;color:#ddd;font-size:10px}.page-status.foundation{color:#999}
+.page-panel{max-width:900px;border:1px solid #444;background:#080808;padding:18px;margin:14px 0}
+.page-panel h2{font-size:14px;margin:0 0 10px}.page-panel p{color:#aaa;font-size:12px;line-height:1.7}
+.page-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+@media(max-width:768px){.sidebar{top:0;bottom:0;left:0;right:auto;width:min(310px,86vw);height:100dvh;min-height:0;padding:calc(18px + env(safe-area-inset-top,0px)) 14px calc(18px + env(safe-area-inset-bottom,0px));border:1px solid #555;border-left:0;transform:translateX(-105%);transition:transform .18s ease;overflow:auto}.sidebar .brand{display:flex;padding-bottom:16px}.sidebar .side-card{display:block;margin-top:16px}.sidebar .nav{display:flex;gap:12px;overflow:auto}.sidebar .nav a{min-height:36px;flex-direction:row;justify-content:flex-start;text-align:left;font-size:12px}.drawer-scrim{display:none;position:fixed;inset:0;z-index:35;background:#000b}body.drawer-open .sidebar{transform:translateX(0)}body.drawer-open .drawer-scrim{display:block}.page-grid{grid-template-columns:minmax(0,1fr)}}
+
+
+/* Local workspace project manager */
+.workspace-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.workspace-stats .page-panel{display:flex;flex-direction:column;gap:6px;margin:0}
+.workspace-stats strong{font-size:26px}.workspace-stats span,.workspace-meta,.workspace-note{font-size:11px;color:#999}
+.workspace-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.workspace-heading h2{margin:0}
+.workspace-row{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 0;border-top:1px solid #292929}
+.workspace-row p{margin:5px 0 0}
+.workspace-project{margin:10px 0}
+.workspace-field{display:grid;gap:8px;margin:14px 0;color:#ddd;font-size:12px}
+.workspace-field input,.workspace-field textarea,.workspace-field select{width:100%;padding:12px;background:#050505;color:#fff;border:1px solid #555;font:12px var(--mono);border-radius:0}
+.workspace-field textarea{resize:vertical}
+.workspace-form{max-width:680px}
+.workspace-note{line-height:1.6;margin-top:14px}
+.btn.danger{border-color:#777;color:#ddd}
+@media(max-width:768px){.workspace-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.workspace-stats .page-panel{padding:12px}.workspace-stats strong{font-size:20px}.workspace-row{display:block}.workspace-row .workspace-meta{display:block;margin-top:7px}.workspace-heading{align-items:flex-start}.workspace-field{font-size:11px}}
+
+/* Home community library showcase */
+.home-hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(260px,.95fr);gap:24px;align-items:stretch;margin:0 0 22px;border:1px solid var(--line-strong);background:linear-gradient(120deg,#0b1425,#080b14);overflow:hidden}
+.home-hero-copy{padding:clamp(20px,4vw,38px);align-self:center}.home-hero-copy h1{font-size:clamp(32px,5vw,58px);line-height:1.06}.home-hero-copy h1 span{color:var(--cyan)}.home-hero-copy .subtitle{max-width:52ch;line-height:1.7}
+.home-hero-media{position:relative;min-height:230px;background:#05070d;overflow:hidden}.home-hero-media img{width:100%;height:100%;min-height:230px;max-height:330px;object-fit:cover;display:block;opacity:.78}.home-hero-media span{position:absolute;left:12px;bottom:12px;padding:7px 9px;background:#05070de8;border:1px solid var(--line-strong);font-size:10px;letter-spacing:1px;color:var(--cyan)}
+.home-intro-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 24px}.home-intro-grid .page-panel{margin:0}.home-intro-grid h2{margin:8px 0;font-size:18px}.home-intro-grid p,.community-note{color:var(--muted);font-size:12px;line-height:1.7}.community-section{margin:28px 0}.community-section .section-head{align-items:end}.community-section .section-head>div{display:grid;gap:4px}.community-section .section-head h2{font-size:clamp(17px,2vw,22px);color:var(--fg);letter-spacing:0;text-transform:none}.community-note{margin:0 0 14px}.library-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.library-card{min-width:0;border:1px solid var(--line-strong);background:linear-gradient(145deg,#0b1321,#070b13);padding:14px;display:flex;flex-direction:column;gap:10px}.library-card-top{display:flex;justify-content:space-between;align-items:center}.library-rank{color:var(--cyan);font-size:12px;font-weight:800}.library-category,.library-package{color:var(--muted);font-size:10px}.library-brand{display:flex;align-items:center;gap:12px;min-width:0}.library-brand img{width:42px;height:42px;object-fit:contain;padding:7px;background:#111c2e;border:1px solid var(--line-strong);flex:0 0 42px}.library-brand h3{margin:0;font-size:15px}.library-package{display:block;margin-top:3px}.library-card>p{margin:0;min-height:38px;color:var(--muted);font-size:11px;line-height:1.6}.library-downloads{display:flex;align-items:baseline;gap:8px;border-top:1px solid var(--line);padding-top:9px}.library-downloads strong{font-size:18px;color:var(--green);font-variant-numeric:tabular-nums}.library-downloads span{font-size:10px;color:var(--muted)}.library-links{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}.library-links .btn{font-size:10px;min-height:32px;padding:5px 8px}.library-source{margin-top:12px;color:var(--muted);font-size:10px}.library-source a{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}.home-tools-section{margin-top:32px}
+@media(max-width:768px){.home-hero{grid-template-columns:1fr;gap:0}.home-hero-copy{padding:20px}.home-hero-media{min-height:170px;max-height:190px}.home-hero-media img{min-height:170px;max-height:190px}.home-intro-grid{grid-template-columns:1fr;gap:10px}.library-grid{grid-template-columns:1fr}.library-card{padding:13px}.library-card>p{min-height:0}.community-section .section-head{align-items:flex-start;flex-direction:column}.community-section .section-head .result-count{white-space:normal}.library-links .btn{flex:1 1 auto}.home-hero-copy h1{font-size:34px}}
+
+/* ===== Documentation-inspired monochrome visual system ===== */
+:root{
+ color-scheme:dark;
+ --bg:#08090b;--panel:#0d0f11;--line:#24272a;--line-strong:#3a3f44;
+ --fg:#f1f2f3;--muted:#a3a8ad;--blue:#aeb4ba;--cyan:#d5d9dd;
+ --purple:#7950f2;--yellow:#d6c36b;--pink:#b8a0b2;--green:#75c98b;
+ --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+}
+html,body{background:#08090b;color:var(--fg)}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.65;font-weight:400}
+.layout{background:#08090b;border-color:#202326}
+.sidebar{background:#090a0c;border-color:#292d31}
+.brand{border-color:#292d31;font-family:inherit;font-size:19px;letter-spacing:-.5px}
+.brand-mark,.mbrand b,.brand small,.mbrand small{color:#f1f2f3;text-shadow:none}
+.nav{gap:2px}
+.nav a{font-family:inherit;font-size:13px;color:#a9adb1}
+.nav a:hover,.nav a.active{background:#17191c;border-color:#393d41;color:#fff}
+.side-card{background:#0d0f11;border-color:#34383c}
+.version{border-color:#555b61;color:#d3d6d9}
+.topbar{background:#08090b;border-color:#303438}
+.icon-button,.shortcut,.submit-tool{background:#0e1012;border-color:#3b4045;color:#e5e7e9}
+.submit-tool:hover,.icon-button:hover{background:#191c1f;border-color:#858c92}
+.content{padding:clamp(24px,5vw,64px)}
+.hero{gap:18px}
+h1{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:500;letter-spacing:-1.8px;line-height:1.12}
+h1 span{color:#f1f2f3}
+.subtitle{font-family:inherit;color:#a9adb1;font-size:clamp(15px,2vw,19px);line-height:1.65}
+.hero-mark{color:#f1f2f3;text-shadow:none}
+.stats{gap:8px}
+.stat,.stat:nth-child(n){background:#0d0f11;border-color:#353a3f;color:#d4d7da}
+.searchbar{gap:10px}
+.searchbox,.filter,.search-submit{background:#0d0f11;border-color:#3a3f44;color:#f1f2f3}
+.search-submit,.btn.primary{background:#f1f2f3;border-color:#f1f2f3;color:#090a0b}
+.search-submit:hover,.btn.primary:hover{background:#d9dcdf;border-color:#d9dcdf;color:#090a0b}
+.section-head h2{font-family:inherit;color:#b3b7bb;font-weight:600;letter-spacing:.04em}
+.grid{gap:12px}
+.card,.detail-panel,.page-panel,.page-tile,.library-card{
+ background:#0d0f11;border:1px solid #34393e;border-radius:0;box-shadow:none
+}
+.card{padding:18px}
+.card:nth-child(n){border-top:1px solid #34393e}
+.card:hover,.page-tile:hover{border-color:#858b91}
+.tool-icon,.card:nth-child(n) .tool-icon{border:1px solid #555b61;color:#e4e6e8;background:#111315}
+.card h3,.page-tile strong{font-family:inherit;font-weight:600}
+.card p,.page-tile span,.page-panel p{color:#a9adb1;line-height:1.7}
+.meta{color:#d1d4d7}
+.meta span+span{color:#92989e}
+.btn,.back{background:#101214;border:1px solid #454b50;color:#e6e8ea;border-radius:0;font-family:inherit}
+.btn:hover,.back:hover{border-color:#a4a9ae;color:#fff;background:#171a1d}
+.btn.favorite[aria-pressed=true]{color:#e0d18b;border-color:#b5a45e}
+.detail h2{font-family:inherit;font-weight:500;letter-spacing:-.7px}
+.command{font-family:var(--mono);background:#090b0d;border:1px solid #25292d;padding:16px;color:#83c995}
+footer{background:#08090b;border-color:#303438;color:#969ca2}
+.page-intro h1,.home-hero-copy h1{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:500;letter-spacing:-1.5px}
+.page-kicker{color:#aeb4ba;letter-spacing:.12em}
+.page-actions .btn{min-height:42px}
+.home-hero{background:#0b0d0f;border-color:#34393e}
+.home-hero-copy h1 span{color:#c9cdd1}
+.home-hero-media{background:#050607}
+.home-hero-media span{background:#090a0c;border-color:#4a5056;color:#e0e3e6}
+.home-intro-grid .page-panel{background:#0d0f11;border-color:#34393e}
+.library-card{background:#0d0f11;border-color:#34393e}
+.library-brand img{background:#f1f2f3;border:1px solid #555b61;padding:7px;filter:grayscale(1)}
+.library-rank,.library-downloads strong{color:#e1e4e7}
+.library-downloads{border-color:#303438}
+.library-source a{color:#cbd0d4}
+.workspace-field input,.workspace-field textarea,.workspace-field select{background:#08090b;color:#f1f2f3;border-color:#444a50;font-family:var(--mono)}
+.workspace-row{border-color:#2b2f33}
+@media(max-width:768px){
+ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+ .topbar{background:rgba(8,9,11,.96);border-color:#303438}
+ .mbrand{font-family:inherit;font-weight:650}
+ .sidebar{background:rgba(9,10,12,.98);border-color:#353a3f}
+ .nav a{font-family:inherit;color:#aeb3b8}
+ .nav a:hover,.nav a.active{background:#171a1d;border-top-color:#c6cbd0;color:#fff}
+ .content{padding:22px 18px 28px}
+ h1{font-size:clamp(30px,8vw,42px);font-weight:500;letter-spacing:-1.1px}
+ .home-hero{border-color:#383d42}
+ .home-hero-copy{padding:22px 18px}
+ .home-hero-copy h1{font-size:clamp(34px,9vw,46px);line-height:1.1}
+ .home-hero-media{min-height:180px;max-height:210px}
+ .home-hero-media img{min-height:180px;max-height:210px}
+ .page-panel,.page-tile,.card,.library-card,.detail-panel{border-color:#34393e;background:#0d0f11}
+ .card-actions .btn,.btn,.back,.icon-button,.submit-tool{border-radius:0!important}
+ .card-actions .btn{font-size:12px}
+ .section-head h2{font-size:12px}
+ .workspace-field input,.workspace-field textarea,.workspace-field select{font-size:16px}
+}
+
+/* Prevent double-tap zoom while retaining native scrolling and pinch zoom */
+html,body{touch-action:pan-x pan-y pinch-zoom;-ms-touch-action:pan-x pan-y pinch-zoom}
+button,a,input,select,[role="button"],.btn,.icon-button,.submit-tool,.back{touch-action:manipulation;-ms-touch-action:manipulation}
+
+/* Expanded 50-page navigation and mobile drawer usability */
+.nav-search-wrap{display:flex;align-items:center;gap:8px;margin:18px 0 8px;padding:0 10px;height:40px;border:1px solid #454b50;background:#0d0f11;color:#aeb4ba}
+.nav-search-wrap input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#f1f2f3;font:12px var(--mono)}
+.nav-search-wrap input::placeholder{color:#777e84}
+.nav-group-label{display:flex;justify-content:space-between;align-items:center}
+.nav-group-label span{font:10px var(--mono);color:#777e84}
+.nav-empty{padding:12px;color:#92989e;font-size:12px}
+.sidebar .nav{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;min-height:0;flex:1}
+.sidebar .nav a{min-height:34px}
+@media(max-width:768px){.nav-search-wrap{margin:8px 0 12px;flex:0 0 40px}.sidebar .nav{padding-bottom:12px}.sidebar .side-card{flex:0 0 auto}}
+
+/* Official library brand colors + Lucide icon system */
+.library-brand img{filter:none!important;background:#111315!important;padding:7px!important;border-color:#454b50!important}
+.library-card{--brand-accent:#8b9299;border-top:2px solid var(--brand-accent)!important}
+.library-card:has(.library-brand img[alt*="React"]){--brand-accent:#61DAFB}
+.library-card:has(.library-brand img[alt*="Next.js"]){--brand-accent:#f5f5f5}
+.library-card:has(.library-brand img[alt*="Vite"]){--brand-accent:#646CFF}
+.library-card:has(.library-brand img[alt*="TypeScript"]){--brand-accent:#3178C6}
+.library-card:has(.library-brand img[alt*="Tailwind"]){--brand-accent:#06B6D4}
+.library-card:has(.library-brand img[alt*="Vue"]){--brand-accent:#4FC08D}
+.library-card:has(.library-brand img[alt*="Svelte"]){--brand-accent:#FF3E00}
+.library-card:has(.library-brand img[alt*="Astro"]){--brand-accent:#BC52EE}
+.library-card:has(.library-brand img[alt*="Express"]){--brand-accent:#eeeeee}
+.library-card:has(.library-brand img[alt*="Prisma"]){--brand-accent:#5A67D8}
+.library-rank,.library-downloads strong{color:var(--brand-accent)}
+.library-brand img{border-bottom:2px solid var(--brand-accent)!important}
+.tool-icon{display:grid;place-items:center}
+.tool-icon svg{width:21px;height:21px;stroke:currentColor}
+.nav-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 20px}
+.nav-icon svg{width:16px;height:16px;stroke:currentColor}
+.nav a.active .nav-icon,.nav a:hover .nav-icon{color:#fff}
+.home-hero-media img{opacity:1!important;filter:saturate(1.25) contrast(1.05)}
+.home-hero-media:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,#05070d30,transparent 45%,#6655ff22)}
+.home-hero-media span{z-index:1;color:#fff;border-color:#6877a5}
+@media(prefers-reduced-motion:reduce){.home-hero-media img{filter:none}}
+
+/* Official marketplace discovery cards */
+.marketplace-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0}
+.marketplace-card{display:flex;flex-direction:column;gap:14px;min-width:0;padding:22px;background:#0d0f11;border:1px solid #373d43;border-top:3px solid var(--market-accent);border-radius:0}
+.marketplace-vscode{--market-accent:#007acc}
+.marketplace-github{--market-accent:#f1f2f3}
+.marketplace-google{--market-accent:#4285f4}
+.marketplace-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.marketplace-brand-icon{display:grid;place-items:center;width:48px;height:48px;border:1px solid #42484e;color:var(--market-accent);background:#090b0d}
+.marketplace-brand-icon svg{width:27px;height:27px}
+.marketplace-tag{font:10px var(--mono);letter-spacing:.08em;color:#969da4}
+.marketplace-card h2{margin:0;font-size:21px;font-weight:550;letter-spacing:-.4px}
+.marketplace-card p{margin:0;color:#a9afb5;font-size:14px;line-height:1.7;flex:1}
+.marketplace-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.marketplace-actions .btn{font-size:12px}
+.marketplace-note{margin-top:18px}
+@media(max-width:900px){.marketplace-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.marketplace-grid{grid-template-columns:1fr;gap:10px}.marketplace-card{padding:18px}.marketplace-actions{display:grid;grid-template-columns:1fr}.marketplace-actions .btn{text-align:center}}
+
+.tool-card{border-top:2px solid var(--tool-accent)!important;background:linear-gradient(145deg,var(--tool-tint),#0d0f11 46%)!important}.tool-card .tool-icon{width:44px;height:44px;background:var(--tool-tint)!important;border:1px solid var(--tool-accent)!important;color:var(--tool-accent)!important}.tool-card .tool-icon svg{width:23px;height:23px;stroke-width:2}.tool-card .tool-language{color:var(--tool-accent);font-weight:650}.page-tile{border-top:2px solid var(--page-accent)!important;background:linear-gradient(145deg,var(--page-tint),#0d0f11 65%)!important}.page-tile-icon{display:grid;place-items:center;width:38px;height:38px;margin-bottom:10px;color:var(--page-accent);background:var(--page-tint);border:1px solid var(--page-accent)}.page-tile-icon svg{width:20px;height:20px}
+
+/* Library repository explorer */
+.library-card{cursor:pointer}.library-card:hover{border-color:#52647d}
+.library-card .library-open{width:100%;margin-top:10px}
+.library-repo{display:grid;gap:14px}.library-repo-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.library-repo-title{display:flex;gap:12px;align-items:center}.library-repo-title img{width:42px;height:42px;object-fit:contain}.library-repo-title h1{margin:0;font-size:clamp(22px,4vw,34px)}.library-repo-title p{margin:4px 0;color:var(--muted)}
+.library-repo-actions,.library-tabs,.library-install-row,.library-breadcrumbs{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.library-tabs{border-bottom:1px solid var(--line);padding-bottom:8px}.library-tabs button{background:transparent;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:9px 12px}.library-tabs button.active{color:var(--fg);border-bottom-color:var(--blue)}
+.library-repo-grid{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:14px}.library-repo-main,.library-repo-side{border:1px solid var(--line);background:#090c11;min-width:0}.library-repo-side{padding:14px;align-self:start}.library-repo-side h3{margin:0 0 8px}.library-repo-side p{color:var(--muted);font-size:12px;overflow-wrap:anywhere}.library-install{border:1px solid var(--line);padding:14px;margin-bottom:12px}.library-install code{display:block;white-space:pre-wrap;overflow-wrap:anywhere;padding:10px;background:#05070d;margin:8px 0;font-size:12px}.library-file-list{width:100%;border-collapse:collapse}.library-file-list td{border-bottom:1px solid var(--line);padding:10px 12px;font-size:12px}.library-file-list tr{cursor:pointer}.library-file-list tr:hover{background:#111a27}.library-file-list td:first-child{color:var(--fg)}.library-file-list td:last-child{color:var(--muted);text-align:right}.library-readme,.library-source{padding:16px;overflow:auto;max-height:70vh;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 var(--mono);color:var(--fg)}.library-loading,.library-empty{padding:24px;color:var(--muted)}.library-file-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px;border-bottom:1px solid var(--line);flex-wrap:wrap}.library-file-toolbar strong{overflow-wrap:anywhere}.library-breadcrumbs button{border:0;background:none;color:var(--cyan);padding:2px}.library-meta-list{display:grid;gap:8px;font-size:12px}.library-meta-list span{color:var(--muted)}
+@media(max-width:768px){.library-repo-grid{grid-template-columns:1fr}.library-repo-side{order:-1}.library-repo-actions .btn{flex:1}.library-file-list td{padding:9px 7px}.library-file-list td:last-child{max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+/* Default brand colors + restrained dark surfaces */
+:root{--ui-accent:var(--blue);--ui-surface:#0a101c;--ui-border:#26364f}
+.btn.primary,.submit-tool,.search-submit{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover,.submit-tool:hover,.search-submit:hover{background:#2563eb;border-color:#60a5fa;color:#fff}
+.nav a:hover,.nav a.active{border-left-color:var(--blue)}
+.tool-icon{color:var(--tool-accent)!important;border-color:color-mix(in srgb,var(--tool-accent) 58%,#26364f)!important;background:color-mix(in srgb,var(--tool-accent) 12%,transparent)!important}
+.tool-card{border-top-color:color-mix(in srgb,var(--tool-accent) 72%,#26364f)!important}
+.library-repo{--library-accent:var(--blue)}
+.library-repo-title img{padding:5px;background:color-mix(in srgb,var(--library-accent) 10%,#0a101c);border:1px solid color-mix(in srgb,var(--library-accent) 35%,#26364f)}
+.library-repo-title h1{color:var(--fg)}
+.library-repo-title p{color:var(--muted)}
+.library-repo-actions .btn.primary{background:var(--library-accent);border-color:var(--library-accent);color:#fff}
+.library-repo-actions .btn:not(.primary):hover,.library-file-toolbar .btn:hover{border-color:var(--library-accent);color:var(--library-accent);background:color-mix(in srgb,var(--library-accent) 8%,#0a101c)}
+.library-tabs button.active{color:var(--library-accent);border-bottom-color:var(--library-accent)}
+.library-install{border-color:color-mix(in srgb,var(--library-accent) 35%,#26364f);background:color-mix(in srgb,var(--library-accent) 4%,#090c11)}
+.library-install h3{color:var(--library-accent)}
+.library-install-row code{border-left:2px solid var(--library-accent);color:var(--fg)}
+.library-install-row .btn:hover{border-color:var(--library-accent);color:var(--library-accent)}
+.library-file-list tr:hover{background:color-mix(in srgb,var(--library-accent) 8%,#090c11)}
+.library-breadcrumbs button{color:var(--library-accent)}
+.library-repo-main,.library-repo-side{background:#090c11;border-color:#26364f}
+.library-repo-side h3{color:var(--fg)}
+.library-meta-list span:first-child{color:var(--library-accent)}
+.library-readme,.library-source{background:#05070d}
+.library-loading{color:var(--muted)}
+.library-empty{border-left:2px solid var(--library-accent);background:#0a101c}
+.library-card .library-open{background:var(--blue);border-color:var(--blue);color:#fff}
+.library-card .library-open:hover{background:#2563eb;border-color:#60a5fa}
+button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,.filter-chip,.filter-toggle,.page-tile{border-radius:0!important;box-shadow:none!important}
+
+/* Cross-page native accents: one OCode.js dark system, each feature keeps its own identity */
+:root{--ui-accent:var(--blue);--ui-border:var(--line-strong)}
+.btn.primary,.submit-tool,.search-submit{background:#2859e8!important;border-color:#3976ff!important;color:#fff!important}
+.btn.primary:hover,.submit-tool:hover,.search-submit:hover{background:#3970ff!important;border-color:#6d9aff!important}
+.btn:not(.primary):hover,.icon-button:hover,.shortcut:hover,.back:hover{border-color:var(--blue)!important;color:var(--blue)!important;background:#101a2b!important}
+.filter-chip{color:var(--fg)!important;border-color:var(--line-strong)!important;background:#080e18!important}
+.filter-chip:nth-child(6n+2){--chip-accent:#8b5cf6}
+.filter-chip:nth-child(6n+3){--chip-accent:#22c55e}
+.filter-chip:nth-child(6n+4){--chip-accent:#f59e0b}
+.filter-chip:nth-child(6n+5){--chip-accent:#06b6d4}
+.filter-chip:nth-child(6n+6){--chip-accent:#ec4899}
+.filter-chip:hover,.filter-chip.active,.filter-chip[aria-pressed=true]{border-color:var(--chip-accent,var(--blue))!important;color:var(--chip-accent,var(--blue))!important;background:color-mix(in srgb,var(--chip-accent,var(--blue)) 12%,#080e18)!important}
+.searchbox:focus-within,.filter:focus{border-color:var(--blue)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--blue) 25%,transparent)}
+.tool-card{border-top:2px solid var(--tool-accent)!important;background:linear-gradient(145deg,color-mix(in srgb,var(--tool-tint) 58%,#090c11),#090c11 68%)!important}
+.tool-card .tool-icon{color:var(--tool-accent)!important;border:1px solid var(--tool-accent)!important;background:var(--tool-tint)!important}
+.tool-card .tool-icon svg{stroke:currentColor!important}
+.tool-card .tool-language{color:var(--tool-accent)!important}
+.tool-card .btn.primary{background:var(--tool-accent)!important;border-color:var(--tool-accent)!important;color:#05070d!important}
+.tool-card .btn.primary:hover{filter:brightness(1.12)}
+.tool-card .btn:not(.primary):hover{border-color:var(--tool-accent)!important;color:var(--tool-accent)!important}
+.tool-card .btn.favorite[aria-pressed=true]{color:#fbbf24!important;border-color:#fbbf24!important}
+.nav-group:nth-of-type(1) .nav-icon{color:#60a5fa!important}
+.nav-group:nth-of-type(2) .nav-icon{color:#22c55e!important}
+.nav-group:nth-of-type(3) .nav-icon{color:#a78bfa!important}
+.nav-group:nth-of-type(4) .nav-icon{color:#f59e0b!important}
+.nav-group:nth-of-type(5) .nav-icon{color:#06b6d4!important}
+.nav-group:nth-of-type(6) .nav-icon{color:#ec4899!important}
+.nav a.active .nav-icon{filter:drop-shadow(0 0 5px currentColor)}
+.page-tile{--page-accent:#60a5fa;--page-tint:#10243d;border-top:2px solid var(--page-accent)!important;background:linear-gradient(145deg,var(--page-tint),#090c11 70%)!important}
+.page-tile:nth-child(6n+2){--page-accent:#a78bfa;--page-tint:#211637}
+.page-tile:nth-child(6n+3){--page-accent:#22c55e;--page-tint:#102b1c}
+.page-tile:nth-child(6n+4){--page-accent:#f59e0b;--page-tint:#30230e}
+.page-tile:nth-child(6n+5){--page-accent:#06b6d4;--page-tint:#0b2931}
+.page-tile:nth-child(6n){--page-accent:#ec4899;--page-tint:#301426}
+.page-tile-icon{color:var(--page-accent)!important;background:var(--page-tint)!important;border-color:var(--page-accent)!important}
+.page-tile:hover{border-color:var(--page-accent)!important;color:var(--fg)!important}
+.stat:nth-child(4n+1){border-color:#eab308!important;color:#eab308!important}
+.stat:nth-child(4n+2){border-color:#38bdf8!important;color:#38bdf8!important}
+.stat:nth-child(4n+3){border-color:#a78bfa!important;color:#a78bfa!important}
+.stat:nth-child(4n){border-color:#34d399!important;color:#34d399!important}
+.detail .meta{color:var(--blue)}
+.detail-panel>strong{color:var(--blue)}
+
+/* Community / Trending compact package directory */
+.library-grid{display:grid;grid-template-columns:1fr;gap:0;border:1px solid var(--line-strong);background:#080c13}
+.library-card{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"identity actions" "meta actions";align-items:center;gap:4px 14px;padding:12px 14px;border:0;border-bottom:1px solid var(--line)!important;background:transparent!important;min-width:0}
+.library-card:last-child{border-bottom:0!important}
+.library-card-top{display:none}
+.library-brand{grid-area:identity;gap:10px}
+.library-brand img{width:34px;height:34px;flex-basis:34px;padding:5px;background:#101722;border:1px solid color-mix(in srgb,var(--library-brand-color,#64748b) 55%,#26364f)}
+.library-brand h3{font-size:14px;font-weight:650}
+.library-package{font-size:10px}
+.library-card>p{display:none}
+.library-downloads{grid-area:meta;border:0;padding:0;margin:0 0 0 44px;gap:7px}
+.library-downloads strong{font-size:11px;color:var(--muted)}
+.library-downloads span{font-size:10px}
+.library-links{grid-area:actions;display:flex;gap:6px;flex-wrap:nowrap;margin:0}
+.library-links .btn{min-height:34px;min-width:78px;padding:6px 10px;font-size:11px;justify-content:center}
+.library-links .library-open{background:#245eea!important;border-color:#3976ff!important;color:#fff!important}
+.library-links .library-download{background:transparent!important;border-color:#35445b!important;color:var(--fg)!important}
+.library-links .library-download:hover{border-color:var(--blue)!important;color:var(--blue)!important}
+.library-repo-shell{display:grid;gap:14px}
+.library-ocode-brand{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid #27364c;background:#080d16}
+.library-ocode-brand strong{font-size:12px;letter-spacing:.08em;color:#eaf1ff}
+.library-ocode-brand small{display:block;color:var(--muted);font-size:10px;margin-top:3px}
+.library-repo-title img{border-radius:0}
+.library-repo-title h1{font-size:22px}
+.library-repo-actions{gap:5px}
+.library-repo-actions .btn{font-size:10px;padding:6px 8px;min-height:30px}
+.library-tabs{overflow-x:auto;flex-wrap:nowrap}
+.library-tabs button{white-space:nowrap;font-size:11px}
+.library-file-list tr td:first-child{font-weight:600}
+.library-file-list tr td:first-child:before{color:#8da2c0}
+.library-source{tab-size:2}
+.library-readme{font-family:inherit;line-height:1.75}
+.library-repo-side .library-install code{font-size:11px}
+@media(max-width:560px){.library-card{grid-template-columns:minmax(0,1fr);grid-template-areas:"identity" "meta" "actions";gap:8px;padding:12px}.library-downloads{margin-left:44px}.library-links{margin-left:44px}.library-links .btn{flex:1;min-width:0}.library-repo-title h1{font-size:18px}.library-ocode-brand{align-items:flex-start;flex-direction:column}.library-repo-actions .btn{flex:1}.library-tabs{gap:2px}}
+
+/* React repository workspace: source browsing, branches and commit history */
+.library-repo-overview{display:flex;gap:14px;flex-wrap:wrap;padding:12px 14px;border:1px solid #26364f;background:#080d16;align-items:center}
+.library-repo-overview p{margin:0;flex:1;min-width:180px;font-size:12px;color:var(--muted)}
+.library-repo-overview .overview-stat{font-size:11px;color:#cbd5e1}
+.library-repo-overview .overview-stat b{color:var(--library-accent)}
+.library-repo-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line)}
+.library-repo-toolbar input{flex:1;min-width:150px;background:#05070d;border:1px solid #26364f;color:var(--fg);padding:8px 10px;font:12px var(--mono);border-radius:0}
+.library-repo-toolbar select{background:#080d16;color:var(--fg);border:1px solid #26364f;padding:8px;font:12px var(--mono);border-radius:0}
+.library-file-list tr[data-library-file]{height:40px}
+.library-file-list .file-kind{display:inline-flex;width:20px;color:var(--library-accent)}
+.library-file-list .file-size{font:10px var(--mono);color:var(--muted)}
+.library-code-view{background:#05070d;overflow:auto;max-height:75vh;font:12px/1.65 var(--mono);tab-size:2}
+.library-code-line{display:grid;grid-template-columns:48px minmax(max-content,1fr);min-width:100%;white-space:pre}
+.library-code-line .line-no{position:sticky;left:0;text-align:right;padding:0 12px;color:#64748b;background:#080d16;border-right:1px solid #1e293b;user-select:none}
+.library-code-line code{padding:0 14px;color:#dbeafe}
+.library-code-line:nth-child(even){background:#070b12}
+.library-file-toolbar .file-actions{display:flex;gap:6px;flex-wrap:wrap}
+.library-history-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--line)}
+.library-history-item strong{font-size:12px;display:block;overflow-wrap:anywhere}
+.library-history-item small{color:var(--muted);font-size:10px}
+.library-repo-empty{padding:18px;color:var(--muted);font-size:12px}
+@media(max-width:560px){.library-repo-toolbar{align-items:stretch}.library-repo-toolbar input{flex-basis:100%}.library-history-item{align-items:flex-start;flex-direction:column}.library-code-line{grid-template-columns:38px minmax(max-content,1fr)}.library-code-line .line-no{padding:0 8px}}
+
+.vite-workspace{display:grid;gap:10px;margin:12px 0;padding:14px;border:1px solid #646cff66;background:linear-gradient(135deg,#171735,#0a0d18 68%)}.vite-workspace h2{font-size:15px;margin:0}.vite-workspace p{font-size:11px;color:var(--muted)}.vite-template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.vite-template{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px;border:1px solid #34365f;background:#0b1020}.vite-template strong{font-size:11px}.vite-template code{display:block;color:#a5a8ff;font-size:10px;overflow-wrap:anywhere}.vite-repo-note{padding:9px;border-left:2px solid #646cff;background:#101225;color:#c7c9ff;font-size:11px}@media(max-width:560px){.vite-template-grid{grid-template-columns:1fr}}
+/* TypeScript repository workspace */
+.library-ts-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.library-ts-stat{padding:10px;border:1px solid #26364f;background:#0b1422;min-width:0}
+.library-ts-stat strong{display:block;color:#3178c6;font-size:15px}.library-ts-stat span{font-size:10px;color:var(--muted)}
+.library-ts-note{padding:12px;border:1px solid #284c75;background:#0a1625;margin:12px 0;font-size:11px;color:#c5d8ef;line-height:1.6}
+.library-ts-note strong{color:#6aaef3}
+.library-branch-select,.library-file-search{min-height:34px;border:1px solid #35445b;background:#080e18;color:var(--fg);padding:6px 9px;border-radius:0;font:inherit;font-size:11px;max-width:100%}
+.library-code-head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:9px 10px;border-bottom:1px solid var(--line);background:#0b111b}
+.library-code-head strong{font-size:11px;overflow-wrap:anywhere;flex:1}
+.library-code-view{display:grid;grid-template-columns:auto minmax(0,1fr);overflow:auto;max-height:72vh;background:#05080e;font:12px/1.65 var(--mono)}
+.library-line-numbers{padding:12px 9px;text-align:right;color:#64748b;background:#090e17;border-right:1px solid #243146;user-select:none;white-space:pre}
+.library-code-view pre{margin:0;padding:12px 14px;min-width:max-content;color:#d9e4f4;white-space:pre;tab-size:2}
+@media(max-width:560px){.library-ts-overview{grid-template-columns:repeat(3,minmax(0,1fr))}.library-code-view{font-size:10px}.library-code-head .btn{flex:1}}
+
+.library-tabs button[data-library-tab="commits"],.library-tabs button[data-library-tab="branches"],.library-tabs button[data-library-tab="tags"],.library-tabs button[data-library-tab="contributors"]{white-space:nowrap}.library-tabs button[data-library-tab="commits"].active,.library-tabs button[data-library-tab="branches"].active,.library-tabs button[data-library-tab="tags"].active,.library-tabs button[data-library-tab="contributors"].active{color:#a5a8ff;border-bottom-color:#646cff}
+
+
+/* Repository browsing interactions */
+.library-readme{white-space:normal;overflow-wrap:anywhere;padding:16px;line-height:1.75;color:#dbe5f3}
+.library-readme h1,.library-readme h2,.library-readme h3{margin:18px 0 9px;padding-bottom:7px;border-bottom:1px solid var(--line);color:var(--fg)}
+.library-readme p{margin:10px 0}
+.library-readme pre{white-space:pre;overflow:auto;padding:12px;background:#05070d;border:1px solid var(--line)}
+.library-readme code{font:12px/1.6 var(--mono);color:#b9d5ff}
+.library-readme a{color:var(--ui-accent);text-decoration:underline}
+.library-filter-empty{padding:18px;color:var(--muted);font-size:12px}
+.library-file-list tr[hidden]{display:none}
+.library-repo-grid{min-width:0}
+.library-code-view pre{tab-size:2}
+
+/* React and Next.js branded repository workspaces */
+.react-workspace,.next-workspace{margin:12px 0;padding:14px;border:1px solid var(--line);background:#090e16}
+.react-workspace{--workspace-accent:#61dafb}
+.next-workspace{--workspace-accent:#ffffff}
+.react-workspace h2,.next-workspace h2{margin:0 0 5px;font-size:16px;color:var(--workspace-accent)}
+.react-workspace p,.next-workspace p{font-size:11px;color:var(--muted);margin:5px 0 12px}
+.library-starter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.library-starter{min-width:0;border:1px solid #27364c;background:#0d1420;padding:10px}
+.library-starter strong{display:block;font-size:11px;color:var(--workspace-accent)}
+.library-starter code{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font:10px/1.6 var(--mono);color:#dce7f6;margin:7px 0}
+.library-starter .btn{font-size:10px}
+.library-workspace-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.library-workspace-links .btn{font-size:10px}
+@media(max-width:560px){.library-starter-grid{grid-template-columns:1fr}.react-workspace,.next-workspace{padding:10px}}
+
+/* Brand-aware minimal UI: preserve each product's native accent without visual clutter. */
+:root{--ui-accent:#8b9bb4;--ui-surface:#0a0d12;--ui-border:#252b34}
+button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,.filter-chip,.filter-toggle,.page-tile{
+  border-radius:0!important;box-shadow:none!important;transition:background-color .14s,border-color .14s,color .14s;
+}
+.btn,.icon-button,.shortcut,.back,.filter-chip,.filter-toggle,.page-tile{
+  background:transparent;border:1px solid var(--ui-border);color:var(--fg);
+}
+.btn:hover,.icon-button:hover,.shortcut:hover,.back:hover,.filter-chip:hover,.filter-toggle:hover,.page-tile:hover{
+  background:#111821;border-color:var(--ui-accent);color:#fff;
+}
+.btn.primary,.submit-tool,.search-submit{
+  background:#151a22;border:1px solid #596579;color:#f4f6fa;font-weight:650;
+}
+.btn.primary:hover,.submit-tool:hover,.search-submit:hover{
+  background:#202833;border-color:#a8b5c8;color:#fff;
+}
+.nav a{border-left:2px solid transparent;background:transparent}
+.nav a:hover,.nav a.active{background:#101722;border-color:#344154;border-left-color:#8b9bb4;color:#fff}
+.nav-icon{color:#aab6c7}
+.nav-group:nth-of-type(1) .nav-icon{color:#8b9bb4}
+.nav-group:nth-of-type(2) .nav-icon{color:#60a5fa}
+.nav-group:nth-of-type(3) .nav-icon{color:#a78bfa}
+.nav-group:nth-of-type(4) .nav-icon{color:#34d399}
+.nav-group:nth-of-type(5) .nav-icon{color:#f59e0b}
+.nav-group:nth-of-type(6) .nav-icon{color:#f472b6}
+.tool-icon{color:var(--tool-accent)!important;border-color:color-mix(in srgb,var(--tool-accent) 48%,#252b34)!important;background:color-mix(in srgb,var(--tool-tint) 45%,transparent)!important}
+.tool-card{border:1px solid #252b34!important;border-top:1px solid color-mix(in srgb,var(--tool-accent) 55%,#252b34)!important;background:#090c11!important}
+.tool-card:hover{border-color:color-mix(in srgb,var(--tool-accent) 65%,#252b34)!important}
+.tool-language{color:var(--tool-accent)!important}
+.stat{background:transparent!important}
+.card,.page-tile,.detail-panel,.marketplace-card,.workspace-card{box-shadow:none!important}
+.mobile-profile{color:#e8edf5}
+.mobile-profile span:first-child{color:#c4cfdd}
+.light-preview .btn,.light-preview .icon-button,.light-preview .shortcut,.light-preview .back,.light-preview .filter-chip,.light-preview .filter-toggle,.light-preview .page-tile{background:#fff;color:#17243a;border-color:#cbd5e1}
+.light-preview .nav a:hover,.light-preview .nav a.active{background:#e8eef8;color:#17243a;border-left-color:#526b91}
+
+/* OCode.js visual polish: community actions, profile icon and repository surfaces */
+.library-links .library-open{
+  background:#fff!important;color:#101827!important;border:1px solid #fff!important;
+  font-weight:700;letter-spacing:.01em;transition:background .16s ease,border-color .16s ease,transform .16s ease
+}
+.library-links .library-open:hover{background:#e8edf5!important;border-color:#e8edf5!important;transform:translateY(-1px)}
+.library-links .library-download{background:#101722!important;color:#e7edf7!important;border:1px solid #3b4a60!important}
+.library-links .library-download:hover{background:#172235!important;border-color:#7d91ad!important;color:#fff!important}
+.mobile-profile{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.mobile-profile [data-lucide]{width:17px;height:17px;stroke-width:1.9}
+.mobile-profile .profile-label{font-size:11px;font-weight:650}
+.library-repo-shell{gap:16px}
+.library-ocode-brand,.library-repo-overview{
+  border:1px solid #34445b!important;background:linear-gradient(120deg,#0d1420,#090e17)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)
+}
+.library-repo-title{display:flex;align-items:center;gap:12px}
+.library-repo-title img{width:42px;height:42px;object-fit:contain;padding:7px;background:#111a28;border:1px solid var(--library-accent,#53657d)!important}
+.library-repo-title h1{font-weight:750;letter-spacing:-.035em}
+.library-repo-actions .btn,.library-tabs button{border:1px solid #34445b!important;background:#111a27!important;color:#dbe5f3!important}
+.library-repo-actions .btn:hover,.library-tabs button:hover{border-color:var(--library-accent,#7b91ae)!important;color:#fff!important;background:#172337!important}
+.library-tabs button[aria-selected="true"],.library-tabs button.active{background:#eaf0f8!important;color:#111827!important;border-color:#eaf0f8!important}
+.library-repo-toolbar,.library-file-list,.library-repo-side,.library-install,.library-readme,.library-source-panel{
+  border:1px solid #2b3a50!important;background:#0a111c!important
+}
+.library-repo-toolbar input,.library-repo-toolbar select{border:1px solid #3a4b63!important;background:#080e17!important;color:#e7edf7!important}
+.library-file-list{border-collapse:collapse;width:100%}
+.library-file-list th{background:#111b2a;color:#aebed3;font-size:10px;text-transform:uppercase;letter-spacing:.07em}
+.library-file-list td,.library-file-list th{border-bottom:1px solid #26364a!important;padding:10px 12px}
+.library-file-list tr:hover td{background:#111c2b!important}
+.library-file-list td:first-child{color:#e7edf7}
+.library-source{background:#080e17!important;border:1px solid #26364a!important;color:#dce6f5!important;line-height:1.7}
+.library-readme{padding:18px!important;color:#d5dfed!important}
+.library-readme h1,.library-readme h2,.library-readme h3{color:#f4f7fb;border-bottom:1px solid #2b3a50;padding-bottom:8px}
+.library-repo-side .library-install code{background:#111c2b;border:1px solid #2b3a50;color:#e9f0fa;padding:8px 10px;display:block;overflow-x:auto}
+.library-repo-overview .overview-stat{padding:5px 8px;border:1px solid #2b3a50;background:#0a111c}
+.library-repo-shell button,.library-repo-shell a,.library-card button{border-radius:0!important}
+@media(max-width:560px){
+ .library-repo-overview{gap:8px;padding:10px}
+ .library-repo-title img{width:36px;height:36px}
+ .library-file-list td,.library-file-list th{padding:8px 7px}
+}
+
+/* OCode.js Hub — unified minimal design system, precise surfaces and iconography */
+:root{
+ --bg:#070a10;--panel:#0b111b;--panel-raised:#101927;--panel-soft:#0d1521;
+ --line:#202d3e;--line-strong:#34465e;--line-focus:#52749c;
+ --fg:#edf2f9;--muted:#91a0b4;--muted-strong:#b7c3d2;
+ --surface-glow:rgba(91,145,220,.07)
+}
+html{background:#06090f}
+body{
+ background:
+  radial-gradient(ellipse at 78% -18%,rgba(43,91,157,.12),transparent 38rem),
+  linear-gradient(180deg,#080c13 0%,#06090f 58%,#070a10 100%);
+ color:var(--fg)
+}
+.layout{background:transparent;border-color:#1d2939;box-shadow:0 0 0 1px rgba(255,255,255,.012)}
+.sidebar{
+ background:linear-gradient(180deg,#0b111b 0%,#090e16 100%);
+ border-right:1px solid #29384b
+}
+.brand{border-bottom:1px solid #2a394d}
+.brand-mark{
+ display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;
+ border:1px solid #34547b;background:linear-gradient(145deg,#142945,#0b1422);
+ color:#8bbcff;text-shadow:3px 2px 0 rgba(151,92,255,.45);font-size:20px;font-weight:900
+}
+.brand small{letter-spacing:.16em;font-size:9px;color:#8fbaff}
+.nav{gap:3px}
+.nav a{min-height:39px;border:1px solid transparent;border-left:2px solid transparent;color:#9aa9bc;transition:background .15s,border-color .15s,color .15s}
+.nav a:hover{background:#111c2b;border-color:#263950;color:#edf4ff}
+.nav a.active{background:linear-gradient(90deg,rgba(54,111,190,.16),rgba(17,28,43,.82));border-color:#2c4563;border-left-color:#70aaff;color:#f4f8ff}
+.nav-icon{display:grid;place-items:center;width:21px;height:21px;flex:0 0 21px}
+.nav-icon [data-lucide],.tool-icon [data-lucide],.page-tile-icon [data-lucide]{
+ width:17px;height:17px;stroke-width:1.8;vector-effect:non-scaling-stroke
+}
+.topbar{
+ background:rgba(9,14,22,.94);border-bottom:1px solid #2a394d;
+ box-shadow:0 1px 0 rgba(255,255,255,.018);backdrop-filter:blur(14px)
+}
+.content{padding-top:26px;padding-bottom:34px}
+.content>.section-head,.content>.page-header{border-bottom:1px solid #27364a;padding-bottom:14px;margin-bottom:18px}
+h1,h2,h3,h4{color:#f0f5fc;letter-spacing:-.025em}
+h1{font-weight:780}
+.section-head h2{font-weight:720}
+p{color:#a6b3c5}
+.card,.detail-panel,.page-tile,.stat,.marketplace-card{
+ background:linear-gradient(145deg,#0e1724 0%,#0a111b 72%)!important;
+ border:1px solid #2a394d!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important
+}
+.card{border-top:2px solid var(--tool-accent,#344b68)!important;transition:border-color .16s,background .16s}
+.card:hover{border-color:#49617e!important;background:linear-gradient(145deg,#121e2d,#0b121d)!important}
+.tool-icon,.page-tile-icon,.marketplace-brand-icon{
+ display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--tool-accent,#496b91) 48%,#26364a);
+ background:linear-gradient(145deg,#142236,#0b1421);color:var(--tool-accent,#a9c7ed)
+}
+.tool-icon [data-lucide]{width:21px;height:21px;stroke-width:1.9}
+.page-tile-icon [data-lucide],.marketplace-brand-icon [data-lucide]{width:20px;height:20px}
+.stat{border-top:2px solid var(--page-accent,#46658b)!important}
+.btn,.icon-button,.shortcut,.back,.filter-chip,.filter-toggle,.page-tile,.library-repo-shell button{
+ border-radius:0!important;box-shadow:none!important
+}
+.btn{border:1px solid #3a4b61;transition:background .15s,border-color .15s,color .15s}
+.btn:not(.primary){background:#101a28;color:#dce6f3}
+.btn:not(.primary):hover{background:#17263a;border-color:#6683a8;color:#fff}
+.btn.primary{background:#eaf1fa!important;color:#101827!important;border:1px solid #eaf1fa!important;font-weight:750}
+.btn.primary:hover{background:#d5e2f2!important;border-color:#d5e2f2!important}
+.icon-button{border:1px solid #34465d;background:#0e1724;color:#d8e4f3}
+.icon-button:hover{background:#17263a;border-color:#6b86a7}
+input,select,textarea{
+ background:#080f19!important;color:#e7eef8!important;border:1px solid #304158!important;
+ border-radius:0!important;box-shadow:none!important
+}
+input::placeholder,textarea::placeholder{color:#718198}
+input:focus,select:focus,textarea:focus{border-color:#76a9e8!important;outline:1px solid rgba(118,169,232,.2)}
+table{border-collapse:collapse}
+th{background:#111c2a;color:#b8c8dc;border-bottom:1px solid #3a4c64}
+td{border-bottom:1px solid #26364a}
+tr:hover td{background:rgba(41,67,99,.16)}
+hr,.divider{border:0;border-top:1px solid #29394d}
+.badge,.tag,.chip{border-radius:0!important}
+a{ text-underline-offset:3px }
+a:hover{color:#a9ceff}
+:focus-visible{outline-color:#83b8f5!important;outline-offset:3px}
+footer{border-top:1px solid #29394d;background:#080d15;color:#8292a8}
+footer a{color:#b5c7dd}
+.library-grid,.library-repo-shell{border-color:#29394d}
+.library-card{border-bottom-color:#29394d!important}
+.library-brand img{box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.library-repo-shell .library-tabs{border-bottom:1px solid #34465d}
+.library-file-list tr:last-child td{border-bottom:0}
+@media(max-width:768px){
+ .content{padding:18px 14px 28px}
+ .topbar{border-bottom-color:#2c3c51}
+ .sidebar{box-shadow:14px 0 40px rgba(0,0,0,.35)}
+ .card{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
+/* Reliable catalog loading states */
+.catalog-loading,.catalog-error{max-width:680px;margin:clamp(36px,10vh,100px) auto;padding:30px;border:1px solid #383838;background:#080808;text-align:center}
+.catalog-loading strong{display:block;color:#fff;font-size:18px}
+.catalog-loading p,.catalog-error p{color:#aaa;font-size:13px}
+.catalog-error h1{font-size:28px;color:#fff}
+.catalog-error-detail{overflow-wrap:anywhere;padding:10px;border:1px solid #292929;background:#050505;font:12px var(--mono)}
+.catalog-retry{min-height:48px;margin:12px;padding:0 24px;border:1px solid #fff;border-radius:0;background:#fff;color:#000;font-weight:800}
+.catalog-retry:hover{background:#000;color:#fff}
+.catalog-error-link{display:block;margin-top:14px;color:#fff;text-decoration:underline;text-underline-offset:4px}
+
+</style>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" defer></script>
+
+<style id="ocode-monochrome-button-system">
+  :root{
+    --button-primary-bg:#ffffff;
+    --button-primary-fg:#000000;
+    --button-secondary-bg:#000000;
+    --button-secondary-fg:#ffffff;
+    --button-border:#ffffff;
+  }
+  /* One monochrome interaction system across every workspace and repository page. */
+  button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back,
+  .copy-code,.filter-chip,.filter-toggle,.page-tile,.library-tabs button,
+  .library-card .library-open,.library-repo-actions button{
+    border-radius:0!important;
+    box-shadow:none!important;
+    transition:background-color .15s ease,color .15s ease,border-color .15s ease;
+  }
+  button,.btn,.icon-button,.shortcut,.back,.copy-code,
+  .filter-chip,.filter-toggle,.library-tabs button,.library-repo-actions .btn,
+  .library-links .btn{
+    background:#000000!important;
+    color:#ffffff!important;
+    border:1px solid #ffffff!important;
+  }
+  .btn.primary,.submit-tool,.search-submit,
+  .library-card .library-open,.library-links .library-open,
+  .library-repo-actions .btn.primary,.detail .btn.primary,
+  button.primary,[data-variant="primary"]{
+    min-height:46px!important;
+    padding:0 18px!important;
+    background:#ffffff!important;
+    color:#000000!important;
+    border:1px solid #ffffff!important;
+    font-weight:800!important;
+  }
+  .btn:not(.primary),.icon-button,.shortcut,.back,.copy-code,
+  .filter-chip,.filter-toggle,.library-repo-actions .btn:not(.primary),
+  .library-links .btn:not(.library-open){
+    background:#000000!important;
+    color:#ffffff!important;
+    border-color:#ffffff!important;
+  }
+  button:hover,.btn:hover,.icon-button:hover,.shortcut:hover,.back:hover,
+  .copy-code:hover,.filter-chip:hover,.filter-toggle:hover,
+  .library-tabs button:hover,.library-repo-actions .btn:hover{
+    background:#ffffff!important;
+    color:#000000!important;
+    border-color:#ffffff!important;
+  }
+  .btn.primary:hover,.submit-tool:hover,.search-submit:hover,
+  .library-card .library-open:hover,.library-links .library-open:hover,
+  .library-repo-actions .btn.primary:hover,.detail .btn.primary:hover,
+  button.primary:hover,[data-variant="primary"]:hover{
+    background:#000000!important;
+    color:#ffffff!important;
+    border-color:#ffffff!important;
+  }
+  .btn.favorite[aria-pressed="true"]{
+    background:#ffffff!important;color:#000000!important;border-color:#ffffff!important;
+  }
+  .btn.danger,.btn.danger:hover{
+    background:#000000!important;color:#ffffff!important;border-color:#ffffff!important;
+  }
+  .library-tabs button{border-width:1px!important}
+  .library-tabs button.active{
+    background:#ffffff!important;color:#000000!important;
+    border-color:#ffffff!important;border-bottom:2px solid #ffffff!important;
+  }
+  .page-actions .btn,.card-actions .btn,.marketplace-actions .btn,
+  .library-links .btn,.library-repo-actions .btn{
+    min-height:44px!important;
+  }
+  @media(max-width:600px){
+    .btn.primary,.submit-tool,.search-submit,
+    .library-card .library-open,.detail .btn.primary,
+    button.primary,[data-variant="primary"]{
+      min-height:48px!important;
+    }
+  }
+  @media(prefers-reduced-motion:reduce){
+    button,.btn,.icon-button,.shortcut,.submit-tool,.search-submit,.back{transition:none!important}
+  }
+</style>
+
+
+<style id="ocode-pure-black-surface-system">
+  :root{
+    --bg:#000000!important;
+    --panel:#080808!important;
+    --line:#292929!important;
+    --line-strong:#454545!important;
+    --fg:#f5f5f5!important;
+    --muted:#a6a6a6!important;
+    --ui-surface:#080808!important;
+    --ui-border:#292929!important;
+  }
+  html,body{background:#000!important;color:#f5f5f5}
+  body,.layout,main,.main,.content,.workspace,.app-shell{
+    background:#000!important;
+    background-image:none!important;
+  }
+  .layout{border-color:#292929!important}
+  .sidebar,.topbar,footer,.side-card,.stat,.searchbar,.searchbox,.filter,
+  .filter-panel,.nav-search-wrap,.page-panel,.page-tile,.card,.detail-panel,
+  .library-card,.library-repo-main,.library-repo-side,.library-install,
+  .library-empty,.marketplace-card,.workspace-panel,.workspace-card,
+  .code-canvas,.command,.library-readme,.library-source,.tool-card{
+    background:#080808!important;
+    background-image:none!important;
+    border-color:#303030!important;
+    box-shadow:none!important;
+  }
+  .sidebar,.topbar,footer{background:#000!important}
+  .nav a,.nav a:hover,.nav a.active,.page-tile:hover,.card:hover,
+  .library-file-list tr:hover,.filter-chip,.filter-chip.active,
+  .filter-toggle,.version,.shortcut{
+    background:#111!important;
+    background-image:none!important;
+    border-color:#454545!important;
+    color:#f2f2f2!important;
+  }
+  .home-hero,.home-hero-copy,.home-hero-media,.home-intro-grid .page-panel,
+  .community-section,.library-repo-title,.library-file-toolbar{
+    background:#080808!important;
+    background-image:none!important;
+    border-color:#303030!important;
+  }
+  .home-hero-media:after{background:#000!important;opacity:.12}
+  .home-hero-media span{background:#000!important;color:#fff!important;border-color:#555!important}
+  .tool-card,.tool-card:nth-child(n){
+    background:#080808!important;
+    background-image:none!important;
+    border-top:1px solid #454545!important;
+  }
+  .tool-icon,.tool-card .tool-icon{
+    background:#111!important;
+    border-color:#555!important;
+    /* Preserve each library/tool's original icon color. */
+  }
+  .library-brand img,.library-repo-title img{background:#111!important}
+  .library-install,.library-repo-main,.library-repo-side{background:#080808!important}
+  .command,.code-canvas pre{background:#050505!important}
+  input,textarea,select,.workspace-field input,.workspace-field textarea,
+  .workspace-field select{
+    background:#050505!important;
+    color:#f5f5f5!important;
+    border-color:#454545!important;
+  }
+  .searchbox input,.nav-search-wrap input{background:transparent!important}
+  .drawer-scrim{background:#000d!important}
+  /* Neutralize leftover blue/purple surface accents without recoloring brand artwork. */
+  .nav a.active{box-shadow:inset 2px 0 0 #fff!important}
+  .nav a:hover,.nav a.active{border-color:#555!important}
+  .library-tabs button.active{border-bottom-color:#fff!important}
+  .library-install,.library-empty{border-color:#454545!important}
+  .library-repo-actions .btn:not(.primary):hover,
+  .library-file-toolbar .btn:hover{background:#fff!important;color:#000!important;border-color:#fff!important}
+  @media(max-width:768px){
+    .topbar,.sidebar{background:#000!important;border-color:#444!important}
+  }
+</style>
+
+
+<style id="ocode-home-prompt-composer">
+  .home-prompt-section{max-width:1040px;margin:34px auto 42px;padding:0 4px}
+  .home-prompt-composer{border:1px solid #454545;background:#050505;padding:20px 22px 14px;display:grid;gap:16px}
+  .home-prompt-composer:focus-within{border-color:#fff}
+  .home-prompt-composer textarea{width:100%;min-height:86px;max-height:240px;resize:vertical;border:0!important;outline:0!important;background:transparent!important;color:#fff!important;padding:8px 4px;font:600 clamp(18px,2.2vw,25px)/1.45 var(--mono)!important}
+  .home-prompt-composer textarea::placeholder{color:#777}
+  .home-prompt-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .home-prompt-tools{display:flex;align-items:center;gap:12px;min-width:0}
+  .home-prompt-tools select{min-height:42px;padding:0 12px;background:#000!important;color:#fff!important;border:1px solid #555!important;font:12px var(--mono)}
+  .home-prompt-hint{font-size:11px;color:#888}
+  .home-prompt-send{width:52px;height:52px;display:grid;place-items:center;background:#fff!important;color:#000!important;border:1px solid #fff!important}
+  .home-prompt-send svg{width:25px;height:25px;stroke-width:2.5}
+  .home-prompt-send:hover{background:#000!important;color:#fff!important}
+  .home-prompt-suggestions{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .home-prompt-suggestions button{min-height:54px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:0 18px;background:#000!important;color:#eee!important;border:1px solid #303030!important;font:500 15px var(--mono)}
+  .home-prompt-suggestions button:hover{background:#fff!important;color:#000!important;border-color:#fff!important}
+  .home-prompt-suggestions svg{width:22px;height:22px;flex:0 0 auto}
+  .home-prompt-suggestions .home-prompt-clear{width:54px;padding:0}
+  .home-prompt-status{text-align:center;min-height:18px;margin:10px 0 0;color:#777;font-size:11px}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  @media(max-width:680px){
+    .home-prompt-section{margin:24px 0 32px;padding:0}
+    .home-prompt-composer{padding:14px;gap:12px}
+    .home-prompt-composer textarea{min-height:100px;font-size:17px!important}
+    .home-prompt-hint{display:none}
+    .home-prompt-suggestions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .home-prompt-suggestions button{min-height:48px;padding:0 8px;font-size:11px;gap:7px}
+    .home-prompt-suggestions .home-prompt-clear{width:auto;grid-column:1/-1}
+  }
+</style>
+
+
+<style id="ocode-agent-prompt-queue">
+ .agent-queue-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 0;border-bottom:1px solid #303030}
+ .agent-queue-toolbar p,.agent-task-footer{font-size:11px;color:#888;margin:5px 0 0}
+ .agent-task-list{display:grid;gap:10px;margin:16px 0}
+ .agent-task-card{background:#080808;border:1px solid #303030;padding:18px}
+ .agent-task-top,.agent-task-footer{display:flex;justify-content:space-between;align-items:center;gap:12px}
+ .agent-task-mode,.agent-task-state{font:11px var(--mono);color:#aaa;letter-spacing:.06em}
+ .agent-task-card>p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;margin:16px 0}
+ .agent-task-footer .page-actions{margin:0;gap:8px}
+ .agent-connection-note{margin-top:20px}
+ .agent-empty{margin-top:16px}
+ @media(max-width:600px){.agent-task-footer{align-items:flex-start;flex-direction:column}.agent-task-footer .page-actions{width:100%}.agent-task-footer .btn{flex:1}}
+</style>
+
+
+<style id="ocode-agent-queue-lifecycle">
+ .agent-queue-toolbar .page-actions{margin:0;gap:8px}
+ .agent-task-state{padding:5px 8px;border:1px solid #555;color:#fff!important}
+ .agent-task-card[data-status="READY"]{border-color:#666}
+ .agent-task-footer .page-actions{flex-wrap:wrap}
+ .agent-task-footer .btn{min-height:38px;padding:0 10px;font-size:11px}
+ @media(max-width:600px){.agent-queue-toolbar{align-items:flex-start;flex-direction:column}.agent-queue-toolbar .page-actions{width:100%}.agent-queue-toolbar .btn{flex:1}.agent-task-footer .page-actions{width:100%}}
+</style>
+
+<style id="ocode-agent-queue-filters">.agent-queue-filters{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:10px;margin:16px 0}.agent-queue-filters input,.agent-queue-filters select{min-height:44px;padding:0 12px;background:#050505!important;color:#fff!important;border:1px solid #454545!important}.agent-task-card[hidden]{display:none!important}@media(max-width:600px){.agent-queue-filters{grid-template-columns:1fr}}</style>
+<style id="ocode-cli-hub-final-polish">
+:root{--bg:#020202;--panel:#070707;--line:#171717;--line-strong:#292929;--fg:#f3f3f3;--muted:#929292}
+html,body{background:#020202!important;color:var(--fg)}
+body{background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.025),transparent 42%),#020202!important}
+.layout{background:linear-gradient(180deg,#070707,#020202)!important;border-color:#202020!important}
+.content{background:transparent!important}
+.sidebar,.topbar,footer{background:rgba(3,3,3,.985)!important}
+.home-hero,.card,.detail-panel,.page-panel,.page-tile,.library-card,.stat,.side-card{background:#070707!important;border-color:#292929!important}
+.home-hero{background:linear-gradient(110deg,#080808,#030303)!important}
+.home-hero-media{background:#020202!important}
+.searchbox,.filter,.search-submit,.btn,.back,.command,.code-canvas,.filter-panel{background-color:#050505!important}
+.nav a:hover,.nav a.active,.page-tile:hover{background:#141414!important}
+.topbar,.sidebar{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.community-section .library-links{gap:6px;align-items:center}
+.community-section .library-links .btn{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto!important;width:auto;min-width:0;min-height:27px;height:27px;padding:3px 8px!important;font-size:10px!important;line-height:1.1;font-weight:650;letter-spacing:0;border-radius:0!important;white-space:nowrap}
+.community-section .library-links .library-open{background:#fff!important;color:#050505!important;border:1px solid #fff!important}
+.community-section .library-links .library-open:hover{background:#dedede!important;border-color:#dedede!important}
+.community-section .library-links .library-download{background:#090909!important;color:#eee!important;border:1px solid #555!important}
+.community-section .library-links .library-download:hover{background:#fff!important;color:#000!important;border-color:#fff!important}
+@media(max-width:768px){.community-section .library-links{gap:5px}.community-section .library-links .btn{min-height:26px;height:26px;padding:3px 7px!important;font-size:9px!important}}
+@media(prefers-reduced-motion:no-preference){.layout{animation:workspace-bg-in .45s ease-out both}@keyframes workspace-bg-in{from{opacity:.92}to{opacity:1}}}
+</style>
+<style id="community-trending-equal-buttons">
+.library-card .library-links{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;width:100%!important;align-items:stretch!important}
+.library-card .library-links .btn{box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-width:0!important;max-width:none!important;height:32px!important;min-height:32px!important;max-height:32px!important;padding:0 6px!important;margin:0!important;flex:none!important;font-size:10px!important;line-height:1!important;white-space:nowrap!important;border-radius:0!important}
+@media(max-width:768px){.library-card .library-links{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}.library-card .library-links .btn{height:30px!important;min-height:30px!important;max-height:30px!important}}
+</style>
+<style>
+
+/* OCode.js CLI Hub — unified control sizing */
+:root{--ocode-control-height:40px;--ocode-control-width:40px}
+button,.btn,.back,.submit-tool,.shortcut,.search-submit,.filter-chip,.filter-toggle,.copy-code,.page-tile,
+.library-tabs button,.library-repo-actions button,.library-repo-actions .btn,.library-links .btn,
+.card-actions .btn,.marketplace-actions .btn,.catalog-retry,.catalog-error-link{
+  box-sizing:border-box!important;
+  height:var(--ocode-control-height)!important;
+  min-height:var(--ocode-control-height)!important;
+  max-height:var(--ocode-control-height)!important;
+  line-height:1!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+}
+button,.btn,.back,.submit-tool,.shortcut,.search-submit,.filter-chip,.filter-toggle,.copy-code,
+.page-tile,.library-tabs button,.library-repo-actions button,.catalog-retry,.catalog-error-link{
+  padding:0 12px!important;
+  white-space:nowrap;
+}
+.icon-button{
+  width:var(--ocode-control-width)!important;
+  min-width:var(--ocode-control-width)!important;
+  max-width:var(--ocode-control-width)!important;
+  height:var(--ocode-control-height)!important;
+  min-height:var(--ocode-control-height)!important;
+  max-height:var(--ocode-control-height)!important;
+  padding:0!important;
+}
+.card-actions,.library-links,.marketplace-actions,.library-repo-actions{
+  align-items:stretch!important;
+}
+.card-actions .btn,.library-links .btn,.marketplace-actions .btn,.library-repo-actions .btn{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:0!important;
+  flex:1 1 0!important;
+}
+.library-links{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.library-links .btn{padding:0 6px!important;font-size:11px!important}
+@media(max-width:768px){
+  button,.btn,.back,.submit-tool,.shortcut,.search-submit,.filter-chip,.filter-toggle,.copy-code,
+  .page-tile,.library-tabs button,.library-repo-actions button,.library-repo-actions .btn,
+  .library-links .btn,.card-actions .btn,.marketplace-actions .btn,.catalog-retry,.catalog-error-link{
+    height:40px!important;min-height:40px!important;max-height:40px!important;
+  }
+  .icon-button{width:40px!important;min-width:40px!important;max-width:40px!important}
+}
+
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<a class="brand" href="#" aria-label="OCode.js CLI Hub"><span class="brand-mark">&gt;_</span><span>OCode.js<small>CLI HUB</small></span></a>
+<label class="nav-search-wrap"><span>⌕</span><input id="nav-search" type="search" placeholder="Tìm trang điều hướng…" aria-label="Tìm trang điều hướng"></label><nav class="nav" aria-label="Main navigation" id="main-nav"></nav>
+<div class="side-card"><strong>OCode.js</strong><p>Open-source CLI hub for developers and AI agents.</p><span class="version">v1.0.0</span></div>
+</aside>
+<div class="drawer-scrim" id="drawer-scrim"></div>
+<header class="topbar"><button class="icon-button menu-toggle" id="menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false">☰</button><span class="mbrand"><b>&gt;_</b>OCode.js<small>CLI HUB</small></span><button class="icon-button mobile-profile" id="open-profile" type="button" aria-label="Tôi" title="Tôi"><i data-lucide="user-round" aria-hidden="true"></i><span class="profile-label">Tôi</span></button><a class="submit-tool" href="https://github.com/zskbot/ocodejs-cli/issues/new?template=tool-submission.md" target="_blank" rel="noopener noreferrer">+ Gửi công cụ</a><button class="icon-button" id="theme-toggle" type="button" aria-label="Đổi giao diện sáng/tối">☾</button><button class="shortcut desktop-search" id="desktop-search" type="button">⌕ <span>Ctrl + K</span></button></header>
+<main class="content" id="app" aria-live="polite"><p>Loading catalog…</p></main>
+<footer><span>© 2026 OCode.js. Open-source developer tools.</span><span><a href="https://github.com/zskbot/ocodejs-cli">GitHub</a> | <a href="https://github.com/zskbot/ocodejs-cli#readme">Docs</a> | <a href="https://github.com/zskbot/ocodejs-cli/issues/new">Contribute</a> | <a href="https://github.com/zskbot/ocodejs-cli/blob/main/LICENSE">License</a></span></footer>
+</div>
+<script>
+"use strict";
+let catalogBootWatchdog;
+function showCatalogBootFailure(message){
+  const host=document.querySelector("#app");
+  if(!host)return;
+  const detail=String(message||"Application initialization did not complete").slice(0,500);
+  host.innerHTML='<section class="catalog-error" role="alert"><div class="catalog-error-mark">!</div><h1>Catalog startup failed</h1><p>OCode.js CLI Hub stopped before the catalog finished loading.</p><p class="catalog-error-detail"></p><button class="catalog-retry" type="button" id="catalog-boot-retry">Reload page ↻</button><p class="catalog-error-help">Diagnostic: '+detail.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))+'</p></section>';
+  document.querySelector("#catalog-boot-retry")?.addEventListener("click",()=>location.reload(),{once:true});
+}
+window.addEventListener("error",event=>{
+  const host=document.querySelector("#app");
+  if(host&&(host.querySelector(".catalog-loading")||/Loading catalog/i.test(host.textContent)))showCatalogBootFailure(event.message||"JavaScript runtime error");
+});
+window.addEventListener("unhandledrejection",event=>{
+  const host=document.querySelector("#app");
+  if(host&&(host.querySelector(".catalog-loading")||/Loading catalog/i.test(host.textContent)))showCatalogBootFailure(event.reason?.message||event.reason||"Unhandled promise rejection");
+});
+catalogBootWatchdog=setTimeout(()=>{
+  const host=document.querySelector("#app");
+  if(host&&(host.querySelector(".catalog-loading")||/Loading catalog/i.test(host.textContent)))showCatalogBootFailure("Startup watchdog: application did not reach catalog loading within 20 seconds");
+},20000);
+const $=s=>document.querySelector(s);
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let tools=[],query="",category="",language="",view="home",favorites=new Set();
+try{favorites=new Set(JSON.parse(localStorage.getItem("ocodejs-cli-favorites")||"[]"))}catch{}
+let projects=[],workspaceEvents=[];
+try{projects=JSON.parse(localStorage.getItem("ocodejs-cli-projects")||"[]");if(!Array.isArray(projects))projects=[]}catch{}
+try{workspaceEvents=JSON.parse(localStorage.getItem("ocodejs-cli-activity")||"[]");if(!Array.isArray(workspaceEvents))workspaceEvents=[]}catch{}
+function persistWorkspace(){try{localStorage.setItem("ocodejs-cli-projects",JSON.stringify(projects));localStorage.setItem("ocodejs-cli-activity",JSON.stringify(workspaceEvents))}catch{}}
+function recordWorkspaceEvent(action,detail){workspaceEvents.unshift({action,detail,at:new Date().toISOString()});workspaceEvents=workspaceEvents.slice(0,30);persistWorkspace()}
+function formatDate(value){const date=new Date(value);return Number.isNaN(date.getTime())?"Unknown date":date.toLocaleDateString()}
+
+const icons={"ripgrep":"rg","fd":"fd","fzf":"fzf","lazygit":"lg","k9s":"k9s","jq":"jq","yq":"yq","dnspyre":"dns","cli-anything-hub":"AI","clihub":"CH"};
+const pageDefinitions=[["home","Home","Workspace","Workspace overview","ready"],["dashboard","Dashboard","Workspace","Workspace activity and shortcuts","ready"],["projects","Projects","Workspace","Organize project workspaces","ready"],["new-project","New Project","Workspace","Start a project from a template or blank workspace","ready"],["environments","Environments","Workspace","Development environment profiles","ready"],["editor","Code Editor","Development","Code editing workspace entry point","foundation"],["files","File Explorer","Development","Project file tree and file operations","foundation"],["terminal","Terminal","Development","Terminal entry point; secure execution backend required","foundation"],["preview","Preview","Development","Application preview and responsive testing","foundation"],["build","Build & Run","Development","Build configurations and output","foundation"],["agents","Agents","AI Agents","AI agent workspace and capabilities","foundation"],["agent-tasks","Agent Tasks","AI Agents","Tasks assigned to AI agents","foundation"],["chat","Chat","AI Agents","AI conversation workspace","foundation"],["prompts","Prompts","AI Agents","Reusable prompt library","foundation"],["models","Models","AI Agents","Model provider configuration","foundation"],["tools","Available Tools","Tools","Search and browse the CLI tools catalog","ready"],["tool-details","Tool Details","Tools","Inspect a selected CLI tool","ready"],["favorites","Favorites","Tools","Saved CLI tools","ready"],["integrations","Integrations","Tools","External developer service connections","foundation"],["github","GitHub","Developer Hub","Repository and source control entry point","foundation"],["api","API Reference","Developer Hub","API endpoint reference","foundation"],["docs","Documentation","Developer Hub","Guides and project documentation","ready"],["activity","Activity & Logs","System","Workspace activity and diagnostics","ready"],["settings","Settings","System","Application preferences","ready"],["about","About","System","Project information and open-source links","ready"],["marketplace","Marketplace","Developer Hub","Discover extensions, developer apps and cloud tools across VS Code, GitHub and Google","foundation"]
+,["project-settings","Project Settings","Project Management","Configure project metadata and workspace preferences","foundation"]
+,["project-templates","Project Templates","Project Management","Browse starter templates and project presets","foundation"]
+,["dependencies","Dependencies","Project Management","Review package dependencies and version ranges","foundation"]
+,["scripts","Scripts","Project Management","Inspect project scripts and task shortcuts","foundation"]
+,["workspace-import","Import Project","Project Management","Import an existing project into the local workspace","foundation"]
+,["code-review","Code Review","Code Quality","Review changes and inspect code quality signals","foundation"]
+,["lint","Lint & Format","Code Quality","Configure linting and formatting workflows","foundation"]
+,["type-check","Type Checking","Code Quality","Review static type checking configuration","foundation"]
+,["security","Security Scan","Code Quality","Inspect dependency and source security checks","foundation"]
+,["accessibility","Accessibility","Code Quality","Review accessibility checks and interface standards","foundation"]
+,["unit-tests","Unit Tests","Testing & QA","Organize unit test suites and test cases","foundation"]
+,["integration-tests","Integration Tests","Testing & QA","Plan integration tests across application modules","foundation"]
+,["e2e-tests","E2E Testing","Testing & QA","Manage browser end-to-end test workflows","foundation"]
+,["test-reports","Test Reports","Testing & QA","Review test results and coverage reports","foundation"]
+,["performance","Performance","Testing & QA","Inspect performance budgets and optimization tasks","foundation"]
+,["deployments","Deployments","Deploy & Infrastructure","Review deployment targets and release history","foundation"]
+,["hosting","Hosting","Deploy & Infrastructure","Configure static and application hosting targets","foundation"]
+,["domains","Domains & DNS","Deploy & Infrastructure","Manage domain and DNS configuration references","foundation"]
+,["environment-vars","Environment Variables","Deploy & Infrastructure","Document environment variable requirements securely","foundation"]
+,["monitoring","Monitoring","Deploy & Infrastructure","Observe application health and runtime signals","foundation"]
+,["releases","Releases","Community & Resources","Prepare release notes and version milestones","foundation"]
+,["changelog","Changelog","Community & Resources","Browse project and dependency change history","foundation"]
+,["roadmap","Roadmap","Community & Resources","Track planned features and development milestones","foundation"]
+,["community","Community","Community & Resources","Find community channels and contribution paths","foundation"]
+,["examples","Examples","Community & Resources","Explore example projects and implementation patterns","foundation"]].map(([id,title,group,description,status])=>({id,title,group,description,status}));
+function buildNavigation(){const nav=$("#main-nav");if(!nav)return;const q=($("#nav-search")?.value||"").trim().toLocaleLowerCase("vi");const visible=pageDefinitions.filter(p=>!q||[p.title,p.group,p.description].join(" ").toLocaleLowerCase("vi").includes(q));const groups=[...new Set(visible.map(p=>p.group))];nav.innerHTML=groups.map(g=>'<section class="nav-group"><div class="nav-group-label">'+esc(g)+' <span>'+visible.filter(p=>p.group===g).length+'</span></div>'+visible.filter(p=>p.group===g).map(p=>'<a href="#page='+p.id+'" data-page="'+p.id+'" aria-current="'+(view===p.id?"page":"false")+'"><span class="nav-icon"><i data-lucide="'+(routeLucideIcons[p.id]||"circle") +'"></i></span>'+esc(p.title)+'</a>').join("")+'</section>').join("")||'<p class="nav-empty">Không tìm thấy trang phù hợp.</p>';refreshIcons()}
+function setPage(id,hash=true){const p=pageDefinitions.find(x=>x.id===id)||pageDefinitions[0];view=p.id;document.querySelectorAll("[data-page]").forEach(a=>a.classList.toggle("active",a.dataset.page===p.id));if(hash&&location.hash!=="#page="+p.id)history.pushState({page:p.id},"","#page="+p.id);closeDrawer();render();window.scrollTo(0,0)}
+const communityLibraries=[
+ {name:"React",pkg:"react",icon:"react",description:"Thư viện UI component phổ biến để xây dựng giao diện web.",url:"https://react.dev",repo:"https://github.com/facebook/react",category:"UI"},
+ {name:"Next.js",pkg:"next",icon:"nextdotjs",description:"Framework React cho ứng dụng full-stack, SSR và static generation.",url:"https://nextjs.org",repo:"https://github.com/vercel/next.js",category:"Framework"},
+ {name:"Vite",pkg:"vite",icon:"vite",description:"Công cụ build frontend nhanh với dev server tối ưu.",url:"https://vite.dev",repo:"https://github.com/vitejs/vite",category:"Build"},
+ {name:"TypeScript",pkg:"typescript",icon:"typescript",description:"JavaScript có kiểu tĩnh, hỗ trợ phát triển ứng dụng quy mô lớn.",url:"https://www.typescriptlang.org",repo:"https://github.com/microsoft/TypeScript",category:"Language"},
+ {name:"Tailwind CSS",pkg:"tailwindcss",icon:"tailwindcss",description:"Utility-first CSS framework để xây dựng giao diện trực tiếp trong markup.",url:"https://tailwindcss.com",repo:"https://github.com/tailwindlabs/tailwindcss",category:"CSS"},
+ {name:"Vue",pkg:"vue",icon:"vuedotjs",description:"Framework JavaScript linh hoạt cho giao diện người dùng.",url:"https://vuejs.org",repo:"https://github.com/vuejs/core",category:"UI"},
+ {name:"Svelte",pkg:"svelte",icon:"svelte",description:"UI framework biên dịch component thành JavaScript tối ưu.",url:"https://svelte.dev",repo:"https://github.com/sveltejs/svelte",category:"UI"},
+ {name:"Astro",pkg:"astro",icon:"astro",description:"Web framework hướng nội dung, tối ưu hiệu năng và ít JavaScript mặc định.",url:"https://astro.build",repo:"https://github.com/withastro/astro",category:"Framework"},
+ {name:"Express",pkg:"express",icon:"express",description:"Minimal Node.js web framework cho API và server ứng dụng.",url:"https://expressjs.com",repo:"https://github.com/expressjs/express",category:"Backend"},
+ {name:"Prisma",pkg:"prisma",icon:"prisma",description:"ORM toolkit cho truy vấn dữ liệu có kiểu và quản lý schema.",url:"https://www.prisma.io",repo:"https://github.com/prisma/prisma",category:"Database"}
+];
+function formatDownloads(value){return Number(value||0).toLocaleString("en-US")}
+const libraryBrandColors={react:"61DAFB",nextdotjs:"FFFFFF",vite:"646CFF",typescript:"3178C6",tailwindcss:"06B6D4",vuedotjs:"4FC08D",svelte:"FF3E00",astro:"BC52EE",express:"FFFFFF",prisma:"5A67D8"};
+function renderLibraryCards(items){return items.map((lib,index)=>'<article class="library-card" style="--library-brand-color:#'+(libraryBrandColors[lib.icon]||"64748b")+'"><div class="library-card-top"><span class="library-rank">#'+(index+1)+'</span><span class="library-category">'+esc(lib.category)+'</span></div><div class="library-brand"><img src="https://cdn.simpleicons.org/'+esc(lib.icon)+'/'+(libraryBrandColors[lib.icon]||"FFFFFF")+'" alt="'+esc(lib.name)+' logo" loading="lazy" decoding="async" onerror="this.hidden=true"><div><h3>'+esc(lib.name)+'</h3><span class="library-package">npm · '+esc(lib.pkg)+'</span></div></div><p>'+esc(lib.description)+'</p><div class="library-downloads"><strong>'+(lib.downloads==null?'Loading…':formatDownloads(lib.downloads))+'</strong><span>downloads / 30 days · #'+(index+1)+' trending</span></div><div class="library-links"><button class="btn primary library-open" type="button" data-open-library="'+esc(lib.pkg)+'">View →</button><button class="btn library-download" type="button" data-download-library="'+esc(lib.pkg)+'">Download ↓</button></div></article>').join("")}
+let libraryState={pkg:"",owner:"",repo:"",path:"",tab:"code",repoData:null,branch:"",branches:[],files:[],currentFile:null,currentSource:""};
+function libraryByPkg(pkg){return communityLibraries.find(x=>x.pkg===pkg)}
+function repoCoordinates(url){const parts=new URL(url).pathname.split("/").filter(Boolean);return {owner:parts[0],repo:parts[1]}}
+function libraryApi(path){const base="https://api.github.com/repos/"+encodeURIComponent(libraryState.owner)+"/"+encodeURIComponent(libraryState.repo)+"/contents/"+path.split("/").filter(Boolean).map(encodeURIComponent).join("/");return base+"?ref="+encodeURIComponent(libraryState.branch||libraryState.repoData?.default_branch||"main")}
+async function githubJson(url){const r=await fetch(url,{headers:{Accept:"application/vnd.github+json"}});if(!r.ok)throw Error("GitHub API "+r.status);return r.json()}
+
+function renderLibraryReadme(markdown){let html=esc(markdown);html=html.replace(/^### (.+)$/gm,"<h3>$1</h3>").replace(/^## (.+)$/gm,"<h2>$1</h2>").replace(/^# (.+)$/gm,"<h1>$1</h1>").replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/\*([^*]+)\*/g,"<em>$1</em>");const tick=String.fromCharCode(96);html=html.replace(new RegExp(tick+"([^"+tick+"]+)"+tick,"g"),"<code>$1</code>").replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>').replace(/^> (.+)$/gm,"<blockquote>$1</blockquote>");return html.split(/\n{2,}/).map(part=>/^<h[1-3]>|^<blockquote>/.test(part)?part:"<p>"+part.replace(/\n/g,"<br>")+"</p>").join("")}
+function renderLibraryFileFilter(query){const rows=document.querySelectorAll("#library-file-rows tr");let visible=0;rows.forEach(row=>{const show=row.textContent.toLowerCase().includes(query.toLowerCase());row.hidden=!show;if(show)visible++});let empty=document.querySelector(".library-filter-empty");if(!visible&&rows.length){if(!empty)$("#library-file-rows")?.insertAdjacentHTML("afterend",'<div class="library-filter-empty">No files match this filter.</div>')}else empty?.remove()}
+function renderLibrarySourceSearch(query){const source=libraryState.currentSource||"",lines=source.split("\n"),view=$("#library-source-code"),numbers=document.querySelector(".library-line-numbers");if(!view||!numbers)return;const matches=[];const needle=query.toLowerCase();lines.forEach((line,i)=>{if(!needle||line.toLowerCase().includes(needle))matches.push(i)});view.innerHTML=matches.map(i=>'<span class="library-code-row" id="source-line-'+(i+1)+'">'+esc(lines[i])+'</span>').join("\n");numbers.textContent=matches.map(i=>String(i+1)).join("\n");const count=document.querySelector(".library-code-head span");if(count)count.textContent=needle?matches.length+" matching lines":lines.length+" lines"}
+
+function libraryInstallCommands(lib){return ["npm install "+lib.pkg,"pnpm add "+lib.pkg,"yarn add "+lib.pkg,"bun add "+lib.pkg]}
+async function downloadLibrary(pkg){const lib=libraryByPkg(pkg);if(!lib)return;const coords=repoCoordinates(lib.repo);const button=document.querySelector('[data-download-library="'+CSS.escape(pkg)+'"]');if(button){button.disabled=true;button.textContent="Preparing…"}try{const meta=await githubJson("https://api.github.com/repos/"+encodeURIComponent(coords.owner)+"/"+encodeURIComponent(coords.repo));const branch=meta.default_branch||"main";window.location.href="https://github.com/"+coords.owner+"/"+coords.repo+"/archive/refs/heads/"+encodeURIComponent(branch)+".zip"}catch(err){if(button){button.disabled=false;button.textContent="Download ↓"}alert("Could not prepare repository download: "+err.message)}}
+function renderLibraryDetail(pkg,push=true){const lib=libraryByPkg(pkg);if(!lib)return;const coords=repoCoordinates(lib.repo);libraryState={pkg,owner:coords.owner,repo:coords.repo,path:"",tab:"code",repoData:null,branch:""};if(push)history.pushState({library:pkg},"","#library="+encodeURIComponent(pkg));$("#app").innerHTML='<section class="library-repo-shell"><div class="library-ocode-brand"><div><strong>&gt;_ OCode.js CLI HUB</strong><small>OPEN SOURCE REPOSITORY EXPLORER</small></div><button class="btn" id="library-back">← Community / Trending</button></div><section class="library-repo" style="--library-accent:#'+(libraryBrandColors[lib.icon]||"347cff")+'"><div class="library-repo-head"><div class="library-repo-title"><img src="https://cdn.simpleicons.org/'+esc(lib.icon)+'/'+(libraryBrandColors[lib.icon]||"FFFFFF")+'" alt="'+esc(lib.name)+'"><div><h1>'+esc(lib.name)+'</h1><p>'+esc(coords.owner)+' / '+esc(coords.repo)+' · '+esc(lib.category)+'</p></div></div><div class="library-repo-actions"><a class="btn primary" href="'+esc(lib.repo)+'" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a class="btn" href="'+esc(lib.repo)+'/issues" target="_blank" rel="noopener noreferrer">Issues ↗</a><a class="btn" href="'+esc(lib.repo)+'/pulls" target="_blank" rel="noopener noreferrer">Pull requests ↗</a><a class="btn" href="'+esc(lib.repo)+'/releases" target="_blank" rel="noopener noreferrer">Releases ↗</a><a class="btn" href="'+esc(lib.repo)+'/stargazers" target="_blank" rel="noopener noreferrer">Star ☆</a><a class="btn" href="'+esc(lib.repo)+'/fork" target="_blank" rel="noopener noreferrer">Fork ↗</a><a class="btn" href="'+esc(lib.repo)+'/discussions" target="_blank" rel="noopener noreferrer">Discussions ↗</a><a class="btn" href="'+esc(lib.repo)+'/archive/refs/heads/main.zip" target="_blank" rel="noopener noreferrer">Download ZIP ↓</a></div></div><div class="library-repo-overview"><p>'+esc(lib.description)+' · Browse repository source and activity inside OCode.js.</p><span class="overview-stat">Default branch <b id="library-current-branch">Loading…</b></span><span class="overview-stat">Language <b id="library-primary-language">—</b></span><span class="overview-stat">Updated <b id="library-updated-at">—</b></span></div><div class="library-tabs"><button class="active" data-library-tab="code">Code</button><button data-library-tab="readme">README</button><button data-library-tab="commits">Commits</button><button data-library-tab="branches">Branches</button><button data-library-tab="tags">Tags</button><button data-library-tab="contributors">Contributors</button><button data-library-tab="issues">Issues</button><button data-library-tab="pulls">Pull requests</button><button data-library-tab="actions">Actions</button><button data-library-tab="releases">Releases</button></div><div class="library-repo-grid"><section class="library-repo-main" id="library-content"><div class="library-loading">Loading repository files…</div></section><aside class="library-repo-side"><div class="library-install"><h3>Install package</h3><p>Choose your package manager</p>'+libraryInstallCommands(lib).map(cmd=>'<div class="library-install-row"><code style="flex:1">'+esc(cmd)+'</code><button class="btn" data-copy="'+esc(cmd)+'">Copy</button></div>').join("")+'</div><h3>About</h3><p>'+esc(lib.description)+'</p>'+(lib.pkg==="typescript"?'<div class="library-ts-note"><strong>TypeScript compiler workspace</strong><br>Explore compiler source, language services, tests and project configuration. Switch branches and inspect files directly in OCode.js.</div><div class="library-ts-overview"><div class="library-ts-stat"><strong>TS</strong><span>Language</span></div><div class="library-ts-stat"><strong>MIT</strong><span>License</span></div><div class="library-ts-stat"><strong>Microsoft</strong><span>Maintainer</span></div></div>':"")+'<div class="library-meta-list" id="library-meta"><span>Loading repository metadata…</span></div><p><a href="'+esc(lib.url)+'" target="_blank" rel="noopener noreferrer">Official website ↗</a></p><p><a href="https://www.npmjs.com/package/'+encodeURIComponent(lib.pkg)+'" target="_blank" rel="noopener noreferrer">npm package ↗</a></p><p><a href="'+esc(lib.repo)+'/actions" target="_blank" rel="noopener noreferrer">GitHub Actions ↗</a></p></aside></div></section></section>';
+if(pkg==="react")document.querySelector(".library-tabs").insertAdjacentHTML("beforeend","<button data-library-tab=\"commits\">Commits</button><button data-library-tab=\"branches\">Branches</button><button data-library-tab=\"tags\">Tags</button><button data-library-tab=\"contributors\">Contributors</button>");
+if(pkg==="next")document.querySelector(".library-tabs").insertAdjacentHTML("beforeend","<button data-library-tab=\"commits\">Commits</button><button data-library-tab=\"branches\">Branches</button><button data-library-tab=\"tags\">Tags</button><button data-library-tab=\"contributors\">Contributors</button>");
+if(pkg==="react")$("#library-content").insertAdjacentHTML("beforebegin","<div class=\"react-workspace\"><h2>React development workspace</h2><p>Build component-driven interfaces · Official React resources · Starter commands</p><div class=\"library-starter-grid\"><div class=\"library-starter\"><strong>React + JavaScript (Vite)</strong><code>npm create vite@latest my-react-app -- --template react</code><button class=\"btn\" data-copy=\"npm create vite@latest my-react-app -- --template react\">Copy command</button></div><div class=\"library-starter\"><strong>React + TypeScript (Vite)</strong><code>npm create vite@latest my-react-app -- --template react-ts</code><button class=\"btn\" data-copy=\"npm create vite@latest my-react-app -- --template react-ts\">Copy command</button></div><div class=\"library-starter\"><strong>Run development server</strong><code>cd my-react-app && npm install && npm run dev</code><button class=\"btn\" data-copy=\"cd my-react-app && npm install && npm run dev\">Copy command</button></div><div class=\"library-starter\"><strong>Production build</strong><code>npm run build && npm run preview</code><button class=\"btn\" data-copy=\"npm run build && npm run preview\">Copy command</button></div></div><div class=\"library-workspace-links\"><a class=\"btn\" href=\"https://react.dev/learn\" target=\"_blank\" rel=\"noopener noreferrer\">Learn React ↗</a><a class=\"btn\" href=\"https://react.dev/reference/react\" target=\"_blank\" rel=\"noopener noreferrer\">API Reference ↗</a><a class=\"btn\" href=\"https://react.dev/learn/react-compiler\" target=\"_blank\" rel=\"noopener noreferrer\">React Compiler ↗</a><a class=\"btn\" href=\"https://github.com/facebook/react\" target=\"_blank\" rel=\"noopener noreferrer\">React source ↗</a></div></div>");
+if(pkg==="next")$("#library-content").insertAdjacentHTML("beforebegin","<div class=\"next-workspace\"><h2>Next.js full-stack workspace</h2><p>App Router · Server Components · Route Handlers · Production builds</p><div class=\"library-starter-grid\"><div class=\"library-starter\"><strong>Create a Next.js app</strong><code>npx create-next-app@latest my-next-app</code><button class=\"btn\" data-copy=\"npx create-next-app@latest my-next-app\">Copy command</button></div><div class=\"library-starter\"><strong>Run development server</strong><code>cd my-next-app && npm run dev</code><button class=\"btn\" data-copy=\"cd my-next-app && npm run dev\">Copy command</button></div><div class=\"library-starter\"><strong>Production build</strong><code>npm run build && npm run start</code><button class=\"btn\" data-copy=\"npm run build && npm run start\">Copy command</button></div><div class=\"library-starter\"><strong>Install package</strong><code>npm install next react react-dom</code><button class=\"btn\" data-copy=\"npm install next react react-dom\">Copy command</button></div></div><div class=\"library-workspace-links\"><a class=\"btn\" href=\"https://nextjs.org/docs\" target=\"_blank\" rel=\"noopener noreferrer\">Next.js Docs ↗</a><a class=\"btn\" href=\"https://nextjs.org/learn\" target=\"_blank\" rel=\"noopener noreferrer\">Learn Next.js ↗</a><a class=\"btn\" href=\"https://nextjs.org/docs/app/building-your-application/routing\" target=\"_blank\" rel=\"noopener noreferrer\">Routing ↗</a><a class=\"btn\" href=\"https://nextjs.org/docs/app/building-your-application/data-fetching\" target=\"_blank\" rel=\"noopener noreferrer\">Data Fetching ↗</a><a class=\"btn\" href=\"https://nextjs.org/docs/app/building-your-application/rendering\" target=\"_blank\" rel=\"noopener noreferrer\">Rendering ↗</a><a class=\"btn\" href=\"https://github.com/vercel/next.js/tree/canary/examples\" target=\"_blank\" rel=\"noopener noreferrer\">Official examples ↗</a></div></div>");
+if(pkg==="vite")document.querySelector(".library-tabs").insertAdjacentHTML("beforeend","<button data-library-tab=\"commits\">Commits</button><button data-library-tab=\"branches\">Branches</button><button data-library-tab=\"tags\">Tags</button><button data-library-tab=\"contributors\">Contributors</button>");if(pkg==="vite")$("#library-content").insertAdjacentHTML("beforebegin","<div class=\"vite-workspace\"><h2>Vite project workspace</h2><p>Quick start · Framework templates · Build commands</p><div class=\"vite-repo-note\">Copy a starter command and run it in your terminal.</div><div class=\"vite-template-grid\"><div class=\"vite-template\"><div><strong>Vanilla</strong><code>npm create vite@latest my-app</code></div><button class=\"btn\" data-copy=\"npm create vite@latest my-app\">Copy</button></div><div class=\"vite-template\"><div><strong>React</strong><code>npm create vite@latest my-app -- --template react</code></div><button class=\"btn\" data-copy=\"npm create vite@latest my-app -- --template react\">Copy</button></div><div class=\"vite-template\"><div><strong>React + TS</strong><code>npm create vite@latest my-app -- --template react-ts</code></div><button class=\"btn\" data-copy=\"npm create vite@latest my-app -- --template react-ts\">Copy</button></div><div class=\"vite-template\"><div><strong>Vue</strong><code>npm create vite@latest my-app -- --template vue</code></div><button class=\"btn\" data-copy=\"npm create vite@latest my-app -- --template vue\">Copy</button></div><div class=\"vite-template\"><div><strong>Vue + TS</strong><code>npm create vite@latest my-app -- --template vue-ts</code></div><button class=\"btn\" data-copy=\"npm create vite@latest my-app -- --template vue-ts\">Copy</button></div><div class=\"vite-template\"><div><strong>Svelte</strong><code>npm create vite@latest my-app -- --template svelte</code></div><button class=\"btn\" data-copy=\"npm create vite@latest my-app -- --template svelte\">Copy</button></div></div><div class=\"library-repo-actions\"><a class=\"btn\" href=\"https://vite.dev/guide/\" target=\"_blank\" rel=\"noopener noreferrer\">Getting started</a><a class=\"btn\" href=\"https://vite.dev/config/\" target=\"_blank\" rel=\"noopener noreferrer\">Config</a><a class=\"btn\" href=\"https://vite.dev/plugins/\" target=\"_blank\" rel=\"noopener noreferrer\">Plugins</a></div></div>");$("#library-back").addEventListener("click",()=>{history.pushState({page:"home"},"","#page=home");view="home";renderHome();refreshIcons();window.scrollTo(0,0)});loadLibraryRepo();refreshIcons()}
+async function loadLibraryBranches(){const select=$("#library-branch-select");if(!select)return;try{const branches=await githubJson("https://api.github.com/repos/"+libraryState.owner+"/"+libraryState.repo+"/branches?per_page=100");if(!$("#library-branch-select"))return;select.innerHTML=branches.map(b=>'<option value="'+esc(b.name)+'" '+(b.name===libraryState.branch?"selected":"")+'>'+esc(b.name)+'</option>').join("")}catch(err){select.innerHTML='<option>'+esc(libraryState.branch||"main")+'</option>'}}
+async function loadLibraryRepo(){const host=$("#library-content");if(!host)return;try{const meta=await githubJson("https://api.github.com/repos/"+libraryState.owner+"/"+libraryState.repo);if(!$("#library-content"))return;libraryState.repoData=meta;libraryState.branch=meta.default_branch||"main";$("#library-meta").innerHTML='<span>★ '+Number(meta.stargazers_count||0).toLocaleString()+' stars</span><span>⑂ '+Number(meta.forks_count||0).toLocaleString()+' forks</span><span>◉ '+Number(meta.open_issues_count||0).toLocaleString()+' open issues</span><span>License: '+esc(meta.license?.spdx_id||"Not specified")+'</span><span>Default branch: '+esc(meta.default_branch||"main")+'</span><span>Language: '+esc(meta.language||"Not specified")+'</span><span>Updated: '+esc(meta.updated_at?new Date(meta.updated_at).toLocaleDateString():"—")+'</span>';const results=await Promise.allSettled([githubJson(libraryApi("")),githubJson("https://api.github.com/repos/"+libraryState.owner+"/"+libraryState.repo+"/branches?per_page=100")]);const files=results[0].status==="fulfilled"?results[0].value:[];libraryState.branches=results[1].status==="fulfilled"?results[1].value:[];renderLibraryFiles(files)}catch(err){host.innerHTML='<div class="library-empty">Could not load public GitHub repository data: '+esc(err.message)+'. Open the upstream repository directly.</div>'}}
+function renderLibraryFiles(files){const host=$("#library-content");if(!host)return;libraryState.files=files;const dirs=libraryState.path?libraryState.path.split("/"):[];const branchOptions=libraryState.branches.map(b=>'<option value="'+esc(b.name)+'"'+(b.name===libraryState.branch?" selected":"")+'>'+esc(b.name)+'</option>').join("");host.innerHTML='<div class="library-file-toolbar"><div class="library-breadcrumbs"><button data-library-path="">'+esc(libraryState.repo)+'</button>'+dirs.map((part,i)=>'<span>/</span><button data-library-path="'+esc(dirs.slice(0,i+1).join("/"))+'">'+esc(part)+'</button>').join("")+'</div><select class="library-branch-select" id="library-branch-select" aria-label="Select repository branch">'+(branchOptions||'<option>'+esc(libraryState.branch)+'</option>')+'</select><a class="btn" href="https://github.com/'+libraryState.owner+'/'+libraryState.repo+'/tree/'+encodeURIComponent(libraryState.branch)+'/'+libraryState.path+'" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div><div class="library-file-filter"><input class="library-file-search" id="library-file-search" placeholder="Filter files in this folder…" aria-label="Filter repository files"><span>'+files.length+' items</span></div><table class="library-file-list"><tbody id="library-file-rows">'+files.map(file=>'<tr data-library-file="'+esc(file.path)+'" data-library-type="'+(file.type==="dir"?"dir":"file")+'"><td>'+(file.type==="dir"?"📁":"▤")+' '+esc(file.name)+'</td><td>'+(file.type==="dir"?"Directory":file.size?formatDownloads(file.size)+" bytes":"File")+'</td></tr>').join("")+'</tbody></table><div class="library-file-toolbar"><span>'+files.length+' items · branch '+esc(libraryState.branch)+'</span><button class="btn" data-library-readme="true">Open README</button></div>';if(!files.length)host.innerHTML+='<div class="library-empty">This directory is empty.</div>'}
+async function openLibraryPath(path){libraryState.path=path;const host=$("#library-content");if(host)host.innerHTML='<div class="library-loading">Loading '+esc(path||"repository root")+'…</div>';try{const files=await githubJson(libraryApi(path));if(Array.isArray(files))renderLibraryFiles(files);else await openLibraryFile(files)}catch(err){if(host)host.innerHTML='<div class="library-empty">Unable to load this path: '+esc(err.message)+'</div>'}}
+async function openLibraryFile(file){const host=$("#library-content");if(!host)return;libraryState.currentFile=file;host.innerHTML='<div class="library-file-toolbar"><button class="btn" id="library-file-back">← Back to files</button><strong>'+esc(file.path)+'</strong></div><div class="library-loading">Loading source…</div>';$("#library-file-back").onclick=()=>openLibraryPath(libraryState.path);try{const raw=await fetch(file.download_url);if(!raw.ok)throw Error("HTTP "+raw.status);const source=await raw.text();libraryState.currentSource=source;const lines=source.split("\n");const lineNums=lines.map((_,i)=>String(i+1)).join("\n");host.innerHTML='<div class="library-code-head"><strong>'+esc(file.path)+'</strong><span>'+esc((file.name.split(".").pop()||"FILE").toUpperCase())+' · '+lines.length+' lines</span><button class="btn" data-copy-source="true">Copy</button><a class="btn" href="'+esc(file.download_url)+'" target="_blank" rel="noopener noreferrer">Raw ↗</a><a class="btn" href="https://github.com/'+libraryState.owner+'/'+libraryState.repo+'/blob/'+encodeURIComponent(libraryState.branch)+'/'+file.path.split("/").map(encodeURIComponent).join("/")+'" target="_blank" rel="noopener noreferrer">Permalink ↗</a></div><div class="library-code-head"><input id="library-source-search" class="library-file-search" placeholder="Find in this file…" aria-label="Find in source file"><span>'+formatDownloads(source.length)+' chars</span></div><div class="library-code-view"><div class="library-line-numbers">'+lineNums+'</div><pre id="library-source-code">'+esc(source)+'</pre></div>'}catch(err){const el=host.querySelector(".library-loading");if(el)el.textContent="Unable to load source: "+err.message}}
+async function showLibraryTab(tab){libraryState.tab=tab;document.querySelectorAll("[data-library-tab]").forEach(b=>b.classList.toggle("active",b.dataset.libraryTab===tab));const host=$("#library-content");if(!host)return;if(tab==="code"){openLibraryPath("");return}if(tab==="readme"){host.innerHTML='<div class="library-loading">Loading README…</div>';try{const data=await githubJson("https://api.github.com/repos/"+libraryState.owner+"/"+libraryState.repo+"/readme?ref="+encodeURIComponent(libraryState.branch||"main"));const raw=await fetch(data.download_url);const md=await raw.text();host.innerHTML='<div class="library-file-toolbar"><strong>README.md</strong><a class="btn" href="'+esc(data.html_url)+'" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></div><article class="library-readme">'+renderLibraryReadme(md)+'</article>'}catch(err){host.innerHTML='<div class="library-empty">README unavailable: '+esc(err.message)+'</div>'}return}const endpoint=tab==="releases"?"releases":tab==="pulls"?"pulls?state=open&per_page=30":tab==="actions"?"actions/runs?per_page=30":tab==="commits"?"commits?per_page=30":tab==="branches"?"branches?per_page=100":tab==="tags"?"tags?per_page=100":tab==="contributors"?"contributors?per_page=100":"issues?state=open&per_page=30";host.innerHTML='<div class="library-loading">Loading '+tab+'…</div>';try{const data=await githubJson("https://api.github.com/repos/"+libraryState.owner+"/"+libraryState.repo+"/"+endpoint);const rows=tab==="actions"?(data.workflow_runs||[]):data;host.innerHTML=rows.length?rows.map(item=>'<div class="library-file-toolbar"><div><strong>'+esc(item.name||item.title||item.display_title||item.commit?.message?.split("\n")[0]||item.login||item.sha?.slice(0,12)||"Untitled")+'</strong><p class="community-note">'+esc(item.tag_name||item.commit?.author?.date||item.commit?.committer?.date||item.pushed_at||("#"+(item.number||item.id)+" · "+(item.state||item.status||(item.protected===true?"Protected":item.protected===false?"Unprotected":""))))+' · '+esc(item.published_at||item.created_at||"")+(item.conclusion?' · '+esc(item.conclusion):"")+'</p></div><a class="btn" href="'+esc(item.html_url||item.url||"#")+'" target="_blank" rel="noopener noreferrer">Open ↗</a></div>').join(""):'<div class="library-empty">No '+tab+' found.</div>'}catch(err){host.innerHTML='<div class="library-empty">Unable to load '+tab+': '+esc(err.message)+'</div>'}}
+
+async function loadCommunityRankings(){
+ const host=$("#community-library-grid");if(!host)return;
+ const results=await Promise.all(communityLibraries.map(async lib=>{try{const response=await fetch("https://api.npmjs.org/downloads/point/last-month/"+encodeURIComponent(lib.pkg));if(!response.ok)throw Error("npm API "+response.status);const data=await response.json();return {...lib,downloads:Number(data.downloads)||0}}catch{return {...lib,downloads:null}}}));
+ const available=results.filter(x=>x.downloads!==null).sort((a,b)=>b.downloads-a.downloads);
+ const unavailable=results.filter(x=>x.downloads===null);
+ host.innerHTML=renderLibraryCards([...available,...unavailable]);
+ const status=$("#community-status");if(status)status.textContent=available.length===communityLibraries.length?"Live npm registry · last 30 days · refreshed on page load":"npm registry partially unavailable · showing available figures";
+}
+function renderHome(){const picks=pageDefinitions.filter(p=>["dashboard","projects","new-project","environments","tools","agents","github","docs","marketplace"].includes(p.id));$("#app").innerHTML=`<section class="home-hero"><div class="home-hero-copy"><div class="page-kicker">OPEN-SOURCE DEVELOPER ECOSYSTEM</div><h1>Discover. Build. <span>Ship.</span></h1><p class="subtitle">OCode.js CLI Hub — khám phá thư viện, công cụ và nền tảng mã nguồn mở để xây dựng sản phẩm.</p><div class="page-actions"><button class="btn primary" data-go-page="tools">Explore CLI tools →</button><a class="btn" href="https://github.com/zskbot/ocodejs-cli" target="_blank" rel="noopener noreferrer">View source ↗</a></div></div><div class="home-hero-media"><img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" alt="Animated developer coding workspace" fetchpriority="high"><span>OPEN SOURCE / BUILD IN PUBLIC</span></div></section><section class="home-prompt-section" aria-labelledby="home-prompt-title">
+  <form class="home-prompt-composer" id="home-prompt-form">
+    <label class="sr-only" id="home-prompt-title" for="home-prompt-input">Ask OCode.js CLI Hub to build</label>
+    <textarea id="home-prompt-input" name="prompt" rows="2" maxlength="3000" placeholder="Ask OCode.js CLI Hub to build..." autocomplete="off"></textarea>
+    <div class="home-prompt-toolbar">
+      <div class="home-prompt-tools">
+        <select id="home-prompt-mode" aria-label="Prompt mode">
+          <option value="build">⌘ Build</option>
+          <option value="debug">⌁ Debug</option>
+          <option value="explain">文 Explain</option>
+          <option value="design">▧ Design</option>
+        </select>
+        <span class="home-prompt-hint">Describe what you want to create</span>
+      </div>
+      <button class="home-prompt-send" type="submit" aria-label="Save prompt" title="Save prompt"><i data-lucide="arrow-up"></i></button>
+    </div>
+  </form>
+  <div class="home-prompt-suggestions" aria-label="Prompt examples">
+    <button type="button" data-prompt-preset="Build a responsive contact form with validation, accessible fields, and a clean success state."><i data-lucide="mail"></i><span>Contact Form</span></button>
+    <button type="button" data-prompt-preset="Build an image editor workspace with upload, crop, rotate, filters, and export controls."><i data-lucide="image"></i><span>Image Editor</span></button>
+    <button type="button" data-prompt-preset="Create a polished mini game with keyboard and touch controls, score tracking, and restart."><i data-lucide="gamepad-2"></i><span>Mini Game</span></button>
+    <button type="button" data-prompt-preset="Create a finance calculator with editable inputs, clear breakdowns, and responsive results."><i data-lucide="activity"></i><span>Finance Calculator</span></button>
+    <button class="home-prompt-clear" type="button" id="home-prompt-clear" aria-label="Clear prompt" title="Clear prompt"><i data-lucide="rotate-ccw"></i></button>
+  </div>
+  <p class="home-prompt-status" id="home-prompt-status" role="status" aria-live="polite">Choose an example or describe your own idea.</p>
+</section><div class="home-intro-grid"><div class="page-panel"><div class="page-kicker">ABOUT THE LIBRARY</div><h2>Thư viện dành cho builder</h2><p>Khám phá các thư viện và framework được cộng đồng sử dụng, xem tài liệu chính thức, mã nguồn, hệ sinh thái npm và công cụ CLI trong một nơi.</p></div><div class="page-panel"><div class="page-kicker">CURATED DIRECTORY</div><h2>Chọn đúng công nghệ</h2><p>Thông tin từng thư viện dẫn về website và repository upstream. Bảng xếp hạng được sắp xếp bằng lượt tải npm 30 ngày gần nhất trong nhóm thư viện được tuyển chọn.</p></div></div><section class="community-section"><div class="section-head"><div><div class="page-kicker">COMMUNITY / TRENDING</div><h2>Top thư viện được sử dụng nhiều</h2></div><span class="result-count" id="community-status">Loading npm download statistics…</span></div><p class="community-note">Xếp hạng tương đối trong danh sách tuyển chọn OCode.js, dựa trên lượt tải npm 30 ngày gần nhất — không phải bảng xếp hạng toàn bộ npm.</p><div class="library-grid" id="community-library-grid">${renderLibraryCards(communityLibraries)}</div><div class="library-source">Statistics: <a href="https://github.com/npm/registry/blob/main/docs/download-counts.md" target="_blank" rel="noopener noreferrer">npm download counts API ↗</a> · Brand marks: <a href="https://simpleicons.org" target="_blank" rel="noopener noreferrer">Simple Icons ↗</a></div></section><section class="home-tools-section"><div class="section-head"><h2>OCode.js workspace</h2><span class="result-count">25 pages · ${tools.length} CLI tools</span></div><div class="page-panel"><h2>Developer workspace</h2><p>Quản lý project local, tìm công cụ terminal và mở các khu vực phát triển trong giao diện OCode.js.</p><div class="page-actions"><button class="btn primary" data-go-page="dashboard">Open dashboard →</button><button class="btn" data-go-page="projects">Manage projects →</button><button class="btn" data-go-page="tools">Browse CLI catalog →</button></div></div><div class="section-head"><h2>Quick access</h2></div><div class="page-grid">${picks.map(p=>'<button class="page-tile" data-go-page="'+p.id+'"><strong>'+esc(p.title)+' →</strong><span>'+esc(p.description)+'</span><small class="page-status">'+(p.status==="ready"?"READY":"UI FOUNDATION")+'</small></button>').join("")}</div></section>`;loadCommunityRankings();refreshIcons()}
+
+function renderDashboard(){
+ const recent=workspaceEvents.slice(0,4);
+ $("#app").innerHTML='<section class="page-intro"><div class="page-kicker">WORKSPACE / OVERVIEW</div><h1>Dashboard</h1><p class="subtitle">A local overview of your projects and CLI Hub activity.</p></section><div class="workspace-stats"><div class="page-panel"><strong>'+projects.length+'</strong><span>Projects</span></div><div class="page-panel"><strong>'+tools.length+'</strong><span>Catalog tools</span></div><div class="page-panel"><strong>'+favorites.size+'</strong><span>Favorites</span></div></div><div class="page-panel"><div class="workspace-heading"><h2>Projects</h2><button class="btn primary" data-go-page="new-project">+ New project</button></div>'+(projects.length?projects.slice(0,5).map(project=>'<div class="workspace-row"><div><strong>'+esc(project.name)+'</strong><p>'+esc(project.description||"No description")+'</p></div><span class="workspace-meta">'+esc(project.template)+'</span></div>').join(""):'<p>No projects yet. Create your first project to populate this dashboard.</p>')+'</div><div class="page-panel"><h2>Recent activity</h2>'+(recent.length?recent.map(event=>'<div class="workspace-row"><div><strong>'+esc(event.action)+'</strong><p>'+esc(event.detail)+'</p></div><span class="workspace-meta">'+esc(formatDate(event.at))+'</span></div>').join(""):'<p>No activity recorded yet.</p>')+'</div><div class="page-actions"><button class="btn" data-go-page="projects">Manage projects →</button><button class="btn" data-go-page="environments">View environments →</button><button class="btn" data-go-page="activity">Open activity log →</button></div>';
+}
+function renderProjects(){
+ $("#app").innerHTML='<section class="page-intro"><div class="page-kicker">WORKSPACE / PROJECTS</div><h1>Projects</h1><p class="subtitle">Projects are saved locally in this browser. No cloud sync is configured.</p></section><div class="page-actions"><button class="btn primary" data-go-page="new-project">+ New project</button></div><div class="workspace-list">'+(projects.length?projects.map(project=>'<article class="page-panel workspace-project"><div class="workspace-heading"><h2>'+esc(project.name)+'</h2><button class="btn danger" data-delete-project="'+esc(project.id)+'" type="button">Delete</button></div><p>'+esc(project.description||"No description provided.")+'</p><div class="workspace-meta">'+esc(project.template)+' · Created '+esc(formatDate(project.createdAt))+'</div></article>').join(""):'<div class="page-panel workspace-empty"><h2>No projects yet</h2><p>Create a local project record to start organizing your work.</p><button class="btn primary" data-go-page="new-project">Create first project →</button></div>')+'</div>';
+}
+function renderNewProject(){
+ $("#app").innerHTML='<section class="page-intro"><div class="page-kicker">WORKSPACE / CREATE</div><h1>New Project</h1><p class="subtitle">Create a project workspace record saved in this browser.</p></section><form class="page-panel workspace-form" id="project-form"><label class="workspace-field">Project name<input class="filter" name="name" maxlength="80" required placeholder="e.g. My OCode.js app"></label><label class="workspace-field">Description<textarea class="filter" name="description" rows="3" maxlength="240" placeholder="What are you building?"></textarea></label><label class="workspace-field">Project template<select class="filter" name="template"><option>Static website</option><option>Full-stack application</option><option>CLI tool</option><option>Documentation site</option><option>Blank workspace</option></select></label><div class="page-actions"><button class="btn primary" type="submit">Create project</button><button class="btn" type="button" data-go-page="projects">Cancel</button></div><p class="workspace-note">This creates project metadata only. It does not generate source files, provision services or deploy an application.</p></form>';
+}
+function renderEnvironments(){
+ const environments=[["Browser workspace","Local browser storage","READY"],["Node.js 22","CI validation runtime","CONFIGURED"],["Static hosting","GitHub Pages-compatible frontend","CONFIGURATION REQUIRED"],["Backend services","API, database and secrets","NOT CONNECTED"]];
+ $("#app").innerHTML='<section class="page-intro"><div class="page-kicker">WORKSPACE / ENVIRONMENTS</div><h1>Environments</h1><p class="subtitle">Runtime profiles and integration readiness. No secrets are stored in this page.</p></section><div class="page-grid">'+environments.map(item=>'<article class="page-panel"><h2>'+esc(item[0])+'</h2><p>'+esc(item[1])+'</p><span class="page-status">'+esc(item[2])+'</span></article>').join("")+'</div>';
+}
+function renderActivity(){
+ $("#app").innerHTML='<section class="page-intro"><div class="page-kicker">SYSTEM / ACTIVITY</div><h1>Activity & Logs</h1><p class="subtitle">Recent actions recorded by this browser workspace.</p></section><div class="page-panel">'+(workspaceEvents.length?workspaceEvents.map(event=>'<div class="workspace-row"><div><strong>'+esc(event.action)+'</strong><p>'+esc(event.detail)+'</p></div><span class="workspace-meta">'+esc(new Date(event.at).toLocaleString())+'</span></div>').join(""):'<p>No local activity yet.</p>')+'</div><p class="workspace-note">Logs are local to this browser and are not server audit logs.</p>';
+}
+
+function loadPromptQueue(){try{const value=JSON.parse(localStorage.getItem("ocodejs-cli-prompt-queue")||"[]");return Array.isArray(value)?value:[]}catch{return[]}}
+function savePromptQueue(queue){try{localStorage.setItem("ocodejs-cli-prompt-queue",JSON.stringify(queue.slice(0,50)))}catch{}}
+function renderAgentQueue(){
+ const queue=loadPromptQueue();
+ const rows=queue.length?queue.map(item=>'<article class="agent-task-card"><div class="agent-task-top"><span class="agent-task-mode">'+esc(String(item.mode||"build").toUpperCase())+'</span><span class="agent-task-state">'+esc(item.status||"QUEUED")+'</span></div><p>'+esc(item.prompt)+'</p><div class="agent-task-footer"><span>'+esc(formatDate(item.createdAt))+'</span><div class="page-actions"><button class="btn" type="button" data-agent-status="'+esc(item.id)+'" data-next-status="'+(item.status==="READY"?"QUEUED":"READY")+'">'+(item.status==="READY"?"Move to queue":"Mark ready")+'</button><button class="btn" type="button" data-agent-copy="'+esc(item.id)+'">Copy prompt</button><button class="btn" type="button" data-agent-download="'+esc(item.id)+'">Export .md</button><button class="btn" type="button" data-agent-remove="'+esc(item.id)+'">Remove</button></div></div></article>').join(""):'<div class="page-panel agent-empty"><h2>No prompts yet</h2><p>Submit a build request from Home. It will appear here as a locally saved task.</p><button class="btn primary" data-go-page="home">Create a prompt</button></div>';
+ $("#app").innerHTML='<section class="page-intro"><div class="page-kicker">AI AGENTS / TASK QUEUE</div><h1>Agents</h1><p class="subtitle">Prompt inbox for organizing build requests before an AI execution service is connected.</p><span class="page-status">LOCAL QUEUE · '+queue.length+' TASKS · '+queue.filter(x=>x.status==="READY").length+' READY</span></section><div class="agent-queue-toolbar"><div><strong>Prompt queue</strong><p>Tasks are saved in this browser only.</p></div><div class="page-actions"><button class="btn" type="button" data-agent-export>Export JSON</button><button class="btn" type="button" data-agent-clear>Clear queue</button></div></div><div class="agent-queue-filters"><input id="agent-queue-search" type="search" placeholder="Search prompts..." aria-label="Search prompts"><select id="agent-queue-status" aria-label="Filter by task status"><option value="ALL">All statuses</option><option value="QUEUED">Queued</option><option value="READY">Ready</option></select></div><div class="agent-task-list">'+rows+'</div><div class="page-panel agent-connection-note"><h2>Execution status</h2><p>Agent runtime, model provider, project file access and build execution are not connected. Queue status is a local planning aid; no code is generated or run yet.</p></div>';
+}
+function renderWorkspace(){
+ if(view==="home"){renderHome();return}
+ if(view==="tools"||view==="favorites"){renderCatalog();return}
+ if(view==="dashboard"){renderDashboard();return}
+ if(view==="projects"){renderProjects();return}
+ if(view==="new-project"){renderNewProject();return}
+ if(view==="environments"){renderEnvironments();return}
+ if(view==="activity"){renderActivity();return}
+ if(view==="agents"){renderAgentQueue();return}
+ const p=pageDefinitions.find(x=>x.id===view)||pageDefinitions[0];
+ const related=pageDefinitions.filter(x=>x.group===p.group&&x.id!==p.id);
+ let panel='<div class="page-panel"><h2>Implementation status</h2><p>This page is part of the 25-page interface foundation. Navigation and page structure are available. Real execution, project persistence, provider credentials and remote integrations are not configured in this static frontend yet.</p><p>Next layer: connect a backend, define permissions, then wire actions to verified APIs. No fake terminal or agent execution is presented as live.</p></div>';
+ if(p.id==="about")panel='<div class="page-panel"><h2>OCode.js CLI Hub</h2><p>Open-source directory and workspace interface for terminal tools, developer workflows and AI agents.</p><a class="btn primary" href="https://github.com/zskbot/ocodejs-cli" target="_blank" rel="noopener">View GitHub ↗</a></div>';
+ if(p.id==="docs")panel='<div class="page-panel"><h2>Documentation</h2><p>Read the maintained repository documentation.</p><a class="btn primary" href="https://github.com/zskbot/ocodejs-cli#readme" target="_blank" rel="noopener">Open README ↗</a></div>';
+ if(p.id==="marketplace")panel='<section class="marketplace-grid" aria-label="Developer marketplaces"><article class="marketplace-card marketplace-vscode"><div class="marketplace-card-head"><span class="marketplace-brand-icon"><i data-lucide="code-2"></i></span><span class="marketplace-tag">EDITOR EXTENSIONS</span></div><h2>Visual Studio Code</h2><p>Discover extensions, themes, language support, debuggers and developer productivity tools for VS Code.</p><div class="marketplace-actions"><a class="btn primary" href="https://marketplace.visualstudio.com/vscode" target="_blank" rel="noopener noreferrer">Explore VS Code Marketplace ↗</a><a class="btn" href="https://code.visualstudio.com/docs/editor/extension-marketplace" target="_blank" rel="noopener noreferrer">Documentation ↗</a></div></article><article class="marketplace-card marketplace-github"><div class="marketplace-card-head"><span class="marketplace-brand-icon"><i data-lucide="github"></i></span><span class="marketplace-tag">APPS & ACTIONS</span></div><h2>GitHub Marketplace</h2><p>Find GitHub Apps, Actions and developer tools to automate repositories, CI/CD, code review and project workflows.</p><div class="marketplace-actions"><a class="btn primary" href="https://github.com/marketplace" target="_blank" rel="noopener noreferrer">Explore GitHub Marketplace ↗</a><a class="btn" href="https://docs.github.com/en/apps" target="_blank" rel="noopener noreferrer">Developer docs ↗</a></div></article><article class="marketplace-card marketplace-google"><div class="marketplace-card-head"><span class="marketplace-brand-icon"><i data-lucide="cloud"></i></span><span class="marketplace-tag">CLOUD SOLUTIONS</span></div><h2>Google Cloud Marketplace</h2><p>Explore deployable software, APIs, datasets and infrastructure solutions for Google Cloud.</p><div class="marketplace-actions"><a class="btn primary" href="https://console.cloud.google.com/marketplace" target="_blank" rel="noopener noreferrer">Explore Google Cloud Marketplace ↗</a><a class="btn" href="https://cloud.google.com/marketplace/docs" target="_blank" rel="noopener noreferrer">Marketplace docs ↗</a></div></article></section><div class="page-panel marketplace-note"><h2>Marketplace connections</h2><p>These links open the official provider marketplaces. OCode.js does not yet install extensions, authorize accounts, purchase services or sync marketplace assets automatically. Connectors and OAuth flows will be added only when configured and verified.</p></div>';if(p.id==="github")panel='<div class="page-panel"><h2>Source repository</h2><p>Repository access is provided through GitHub. No authenticated session or live sync is claimed.</p><a class="btn primary" href="https://github.com/zskbot/ocodejs-cli" target="_blank" rel="noopener">Open repository ↗</a></div>';
+ if(p.id==="settings")panel='<div class="page-panel"><h2>Preferences</h2><p>Theme and saved catalog favorites are stored locally in this browser.</p><div class="page-actions"><button class="btn" id="page-theme">Toggle theme</button><a class="btn" href="settings.html">Compatibility settings ↗</a></div></div>';
+ if(p.id==="api")panel='<div class="page-panel"><h2>API status</h2><p>No application API server is configured in this static GitHub Pages build. Endpoints will be documented when a backend is introduced.</p></div>';
+ $("#app").innerHTML='<section class="page-intro"><div class="page-kicker">'+esc(p.group)+' / OCODE.JS</div><h1>'+esc(p.title)+'</h1><p class="subtitle">'+esc(p.description)+'</p><span class="page-status">'+(p.status==="ready"?"READY":"UI FOUNDATION")+'</span></section>'+panel+'<div class="section-head"><h2>Explore '+esc(p.group)+'</h2></div><div class="page-grid">'+related.map(x=>'<button class="page-tile" data-go-page="'+x.id+'"><span class="page-tile-icon"><i data-lucide="'+(routeLucideIcons[x.id]||"circle")+'"></i></span><strong>'+esc(x.title)+' →</strong><span>'+esc(x.description)+'</span><small class="page-status">'+(x.status==="ready"?"READY":"UI FOUNDATION")+'</small></button>').join("")+'</div>';
+ $("#page-theme")?.addEventListener("click",()=>$("#theme-toggle").click());
+}
+function renderCatalog(){const result=filtered(),cats=[...new Set(tools.map(t=>t.category))].sort(),langs=[...new Set(tools.map(t=>t.language))].sort();$("#app").innerHTML='<section class="page-intro"><div class="page-kicker">TOOLS / CATALOG</div><h1>'+(view==="favorites"?"Favorites":"Available Tools")+'</h1><p class="subtitle">Search and filter curated command-line tools.</p></section><div class="searchbar"><div class="search-row"><label class="searchbox">⌕ <input id="search" type="search" placeholder="Search tools…" value="'+esc(query)+'" aria-label="Search tools"></label><button class="filter-toggle" id="filter-toggle">☷</button></div><div class="filter-chips">'+ '<button class="filter-chip" data-category="">All</button>'+cats.map(c=>'<button class="filter-chip" data-category="'+esc(c)+'">'+esc(c)+'</button>').join("")+langs.map(l=>'<button class="filter-chip" data-language="'+esc(l)+'">'+esc(l)+'</button>').join("")+'</div><div class="filter-panel" id="filter-panel"><select class="filter" id="category"><option value="">All Categories</option>'+cats.map(c=>'<option '+(c===category?"selected":"")+'>'+esc(c)+'</option>').join("")+'</select><select class="filter" id="language"><option value="">All Languages</option>'+langs.map(l=>'<option '+(l===language?"selected":"")+'>'+esc(l)+'</option>').join("")+'</select></div></div><div class="section-head"><h2>'+ (view==="favorites"?"Saved tools":"Available Tools")+'</h2><span class="result-count">'+result.length+' / '+tools.length+' tools</span></div><div class="grid">'+(result.length?result.map(card).join(""):'<div class="empty">No tools found.</div>')+'</div>';$("#search")?.addEventListener("input",e=>{query=e.target.value;renderKeepFocus()});$("#category")?.addEventListener("change",e=>{category=e.target.value;renderCatalog()});$("#language")?.addEventListener("change",e=>{language=e.target.value;renderCatalog()});$("#filter-toggle")?.addEventListener("click",()=>$("#filter-panel").classList.toggle("open"))}
+
+function filtered(){const q=query.trim().toLocaleLowerCase("vi");return tools.filter(t=>(!category||t.category===category)&&(!language||t.language===language)&&(!q||[t.name,t.description,t.language,t.category,t.install].join(" ").toLocaleLowerCase("vi").includes(q))&&(view!=="favorites"||favorites.has(t.id)))}
+const toolLucideIcons={ripgrep:"search",fd:"folder-search",fzf:"list-filter",lazygit:"git-branch",k9s:"boxes",jq:"braces",yq:"file-code",dnspyre:"globe", "cli-anything-hub":"bot",clihub:"terminal"};
+const toolBrandStyle={dnspyre:{icon:"globe",color:"#38bdf8",bg:"#0b2634"},"cli-anything-hub":{icon:"bot",color:"#c084fc",bg:"#241333"},clihub:{icon:"workflow",color:"#60a5fa",bg:"#10243d"},ripgrep:{icon:"search",color:"#f97316",bg:"#321b10"},fd:{icon:"folder-search",color:"#eab308",bg:"#30280e"},fzf:{icon:"list-filter",color:"#22c55e",bg:"#102c1a"},lazygit:{icon:"git-branch",color:"#f97316",bg:"#321b10"},k9s:{icon:"boxes",color:"#38bdf8",bg:"#0b2634"},jq:{icon:"braces",color:"#a3a3a3",bg:"#242424"},yq:{icon:"file-code",color:"#22c55e",bg:"#102c1a"}};
+function card(t){const brand=toolBrandStyle[t.id]||{icon:"terminal",color:"#cbd5e1",bg:"#202832"};return `<article class="card tool-card" style="--tool-accent:${brand.color};--tool-tint:${brand.bg}"><div class="card-head"><span class="tool-icon"><i data-lucide="${brand.icon}"></i></span><h3>${esc(t.name)}</h3></div><p>${esc(t.description)}</p><div class="meta"><span class="tool-language">${esc(t.language)}</span><span>• ${esc(t.category)}</span></div><div class="card-actions"><button class="btn primary" data-detail="${esc(t.id)}" type="button">View →</button><button class="btn" data-copy="${esc(t.install)}" type="button">Copy</button><a class="btn" href="${esc(t.repo)}" target="_blank" rel="noopener noreferrer">GitHub ↗</a><button class="btn favorite" data-fav="${esc(t.id)}" aria-pressed="${favorites.has(t.id)}" aria-label="Toggle favorite" type="button">${favorites.has(t.id)?"★":"☆"}</button></div></article>`}
+function refreshIcons(){if(window.lucide&&typeof window.lucide.createIcons==="function")window.lucide.createIcons({attrs:{"stroke-width":1.7}})}
+document.addEventListener("DOMContentLoaded",refreshIcons,{once:true});
+const routeLucideIcons={home:"house",dashboard:"layout-dashboard",projects:"folder-kanban","new-project":"folder-plus",environments:"layers",editor:"code",files:"folder-tree",terminal:"terminal",preview:"monitor",build:"hammer",agents:"bot","agent-tasks":"list-checks",chat:"messages-square",prompts:"message-square-code",models:"brain",tools:"wrench","tool-details":"file-code",favorites:"star",integrations:"plug",github:"github",marketplace:"store",api:"braces",docs:"book-open",activity:"activity",settings:"settings",about:"info","project-settings":"sliders-horizontal","project-templates":"copy",dependencies:"package",scripts:"scroll-text","workspace-import":"folder-input","code-review":"git-pull-request",lint:"scan-check","type-check":"file-check","security":"shield-check",accessibility:"accessibility", "unit-tests":"flask-conical","integration-tests":"workflow","e2e-tests":"mouse-pointer-click","test-reports":"clipboard-list",performance:"gauge",deployments:"rocket",hosting:"server",domains:"globe", "environment-vars":"key-round",monitoring:"chart-no-axes-combined",releases:"tag",changelog:"history",roadmap:"map",community:"users",examples:"code-2"};
+function render(){clearTimeout(catalogBootWatchdog);if(view!=="tools"&&view!=="favorites"){renderWorkspace();refreshIcons();return}renderCatalog();refreshIcons()}
+function renderKeepFocus(){const pos=$("#search")?.selectionStart;render();const input=$("#search");input?.focus({preventScroll:true});if(pos!==undefined)input?.setSelectionRange(pos,pos)}
+function detail(id){const t=tools.find(x=>x.id===id);if(!t)return;$("#app").innerHTML=`<div class="detail"><button class="back" id="back" type="button">← Back to tools</button><h2>${esc(t.name)}</h2><p>${esc(t.description)}</p><p class="meta">${esc(t.language)} · ${esc(t.category)}</p><div class="detail-panel"><strong>INSTALL COMMAND</strong><div class="code-canvas"><button class="copy-code" data-copy="${esc(t.install)}" type="button">Copy code</button><pre class="command">${esc(t.install)}</pre></div></div><div class="detail-panel"><strong>UPSTREAM REPOSITORY</strong><p><a href="${esc(t.repo)}" target="_blank" rel="noopener noreferrer">${esc(t.repo)} ↗</a></p></div></div>`;$("#back").addEventListener("click",render);window.scrollTo(0,0)}
+
+document.addEventListener("click",e=>{
+
+ const statusTask=e.target.closest("[data-agent-status]");
+ if(statusTask){const queue=loadPromptQueue().map(x=>x.id===statusTask.dataset.agentStatus?{...x,status:statusTask.dataset.nextStatus}:x);savePromptQueue(queue);renderAgentQueue();return}
+ const copyTask=e.target.closest("[data-agent-copy]");
+ if(copyTask){const item=loadPromptQueue().find(x=>x.id===copyTask.dataset.agentCopy);if(item)navigator.clipboard?.writeText(item.prompt).catch(()=>{});return}
+ const downloadTask=e.target.closest("[data-agent-download]");
+ if(downloadTask){const item=loadPromptQueue().find(x=>x.id===downloadTask.dataset.agentDownload);if(item){const body="# OCode.js Agent Task\n\n- Mode: "+String(item.mode||"build")+"\n- Status: "+String(item.status||"QUEUED")+"\n- Created: "+String(item.createdAt||"")+"\n\n## Prompt\n\n"+item.prompt+"\n";const url=URL.createObjectURL(new Blob([body],{type:"text/markdown;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="ocodejs-task-"+item.id+".md";a.click();URL.revokeObjectURL(url)}return}
+ if(e.target.closest("[data-agent-export]")){const body=JSON.stringify(loadPromptQueue(),null,2);const url=URL.createObjectURL(new Blob([body],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="ocodejs-agent-queue.json";a.click();URL.revokeObjectURL(url);return}
+ const removeTask=e.target.closest("[data-agent-remove]");
+ if(removeTask){savePromptQueue(loadPromptQueue().filter(x=>x.id!==removeTask.dataset.agentRemove));renderAgentQueue();return}
+ if(e.target.closest("[data-agent-clear]")){savePromptQueue([]);renderAgentQueue();return}
+ const preset=e.target.closest("[data-prompt-preset]");
+ if(preset){const input=$("#home-prompt-input");if(input){input.value=preset.dataset.promptPreset;input.focus();$("#home-prompt-status").textContent="Example loaded. Edit it or save your prompt."}return}
+ if(e.target.closest("#home-prompt-clear")){const input=$("#home-prompt-input");if(input){input.value="";input.focus()}const status=$("#home-prompt-status");if(status)status.textContent="Prompt cleared.";return}
+});
+document.addEventListener("submit",e=>{
+ if(e.target.id!=="home-prompt-form")return;
+ e.preventDefault();
+ const input=$("#home-prompt-input"),status=$("#home-prompt-status");
+ const prompt=String(input?.value||"").trim();
+ if(!prompt){if(status)status.textContent="Enter a prompt or choose an example first.";input?.focus();return}
+ const mode=$("#home-prompt-mode")?.value||"build";
+ const task={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),prompt,mode,status:"QUEUED",createdAt:new Date().toISOString()};
+ const queue=loadPromptQueue();queue.unshift(task);savePromptQueue(queue);
+ try{localStorage.setItem("ocodejs-cli-last-prompt",JSON.stringify({prompt,mode,savedAt:task.createdAt}))}catch{}
+ recordWorkspaceEvent("Prompt queued",mode.toUpperCase()+" · "+prompt.slice(0,110));
+ setPage("agents");
+});
+
+document.addEventListener("submit",e=>{if(e.target.id!=="project-form")return;e.preventDefault();const form=new FormData(e.target);const name=String(form.get("name")||"").trim();if(!name)return;const project={id:Date.now().toString(36),name,description:String(form.get("description")||"").trim(),template:String(form.get("template")||"Blank workspace"),createdAt:new Date().toISOString()};projects.unshift(project);persistWorkspace();recordWorkspaceEvent("Project created",project.name);setPage("projects");});
+document.addEventListener("input",e=>{if(e.target.id==="agent-queue-search"){const q=e.target.value.trim().toLowerCase();const status=$("#agent-queue-status")?.value||"ALL";document.querySelectorAll(".agent-task-card").forEach(card=>{card.hidden=(!card.textContent.toLowerCase().includes(q))||(status!=="ALL"&&card.querySelector(".agent-task-state")?.textContent.trim()!==status)})}});
+document.addEventListener("change",e=>{if(e.target.id==="agent-queue-status"){const q=$("#agent-queue-search")?.value.trim().toLowerCase()||"";const status=e.target.value;document.querySelectorAll(".agent-task-card").forEach(card=>{card.hidden=(!card.textContent.toLowerCase().includes(q))||(status!=="ALL"&&card.querySelector(".agent-task-state")?.textContent.trim()!==status)})}});
+document.addEventListener("input",e=>{if(e.target.id==="library-file-search"){const q=e.target.value.trim().toLowerCase();document.querySelectorAll("[data-library-file]").forEach(row=>{row.hidden=!row.dataset.libraryFile.toLowerCase().includes(q)})}});document.addEventListener("change",e=>{if(e.target.id==="library-branch-select"){libraryState.branch=e.target.value;const label=$("#library-current-branch");if(label)label.textContent=libraryState.branch;openLibraryPath("")}});
+document.addEventListener("input",e=>{if(e.target.id==="library-file-search"){const q=e.target.value.toLowerCase();document.querySelectorAll("#library-file-rows tr").forEach(row=>row.hidden=!row.dataset.libraryFile.split("/").pop().toLowerCase().includes(q))}if(e.target.id==="library-source-search"){const q=e.target.value.toLowerCase();const lines=(libraryState.currentSource||"").split("\n");const matched=lines.map((line,i)=>({line,i})).filter(x=>!q||x.line.toLowerCase().includes(q));const code=$("#library-source-code");const nums=document.querySelector(".library-line-numbers");if(code)code.textContent=matched.map(x=>x.line).join("\n");if(nums)nums.textContent=matched.map(x=>String(x.i+1)).join("\n")}});document.addEventListener("click",e=>{if(e.target.closest("[data-copy-source]")){navigator.clipboard?.writeText(libraryState.currentSource||"").catch(()=>{});return}const downloadLib=e.target.closest("[data-download-library]");if(downloadLib){downloadLibrary(downloadLib.dataset.downloadLibrary);return}const openLib=e.target.closest("[data-open-library]");if(openLib){renderLibraryDetail(openLib.dataset.openLibrary);return}const libTab=e.target.closest("[data-library-tab]");if(libTab){showLibraryTab(libTab.dataset.libraryTab);return}const libPath=e.target.closest("[data-library-path]");if(libPath){openLibraryPath(libPath.dataset.libraryPath);return}const libFile=e.target.closest("[data-library-file]");if(libFile){const file={path:libFile.dataset.libraryFile};if(libFile.dataset.libraryType==="dir"){openLibraryPath(file.path)}else{const api="https://api.github.com/repos/"+libraryState.owner+"/"+libraryState.repo+"/contents/"+file.path.split("/").map(encodeURIComponent).join("/")+"?ref="+encodeURIComponent(libraryState.branch||"main");githubJson(api).then(openLibraryFile).catch(err=>{const h=$("#library-content");if(h)h.innerHTML='<div class="library-empty">'+esc(err.message)+'</div>'})}return}if(e.target.closest("[data-library-readme]")){showLibraryTab("readme");return}const go=e.target.closest("[data-go-page]");if(go){setPage(go.dataset.goPage);return}const pg=e.target.closest("[data-page]");if(pg){e.preventDefault();setPage(pg.dataset.page);return}
+ const chip=e.target.closest("[data-category]");if(chip){category=chip.dataset.category;render();return}
+ const langChip=e.target.closest("[data-language]");if(langChip){language=language===langChip.dataset.language?"":langChip.dataset.language;render();return}
+ if(e.target.closest("#drawer-scrim")){closeDrawer();return}
+ const remove=e.target.closest("[data-delete-project]");if(remove){const project=projects.find(item=>item.id===remove.dataset.deleteProject);projects=projects.filter(item=>item.id!==remove.dataset.deleteProject);if(project)recordWorkspaceEvent("Project deleted",project.name);persistWorkspace();renderProjects();return}
+ const d=e.target.closest("[data-detail]");if(d){detail(d.dataset.detail);return}
+ const f=e.target.closest("[data-fav]");if(f){const id=f.dataset.fav;favorites.has(id)?favorites.delete(id):favorites.add(id);try{localStorage.setItem("ocodejs-cli-favorites",JSON.stringify([...favorites]))}catch{}const y=window.scrollY;render();window.scrollTo(0,y);return}
+ const c=e.target.closest("[data-copy]");if(c){const old=c.textContent;const done=t=>{c.textContent=t;setTimeout(()=>{c.textContent=old},1500)};navigator.clipboard?.writeText(c.dataset.copy).then(()=>done("Copied ✓")).catch(()=>done("Copy failed"));return}
+});
+
+document.addEventListener("change",e=>{if(e.target.matches("#library-branch-select")){const next=e.target.value;if(!next||next===libraryState.branch)return;libraryState.branch=next;libraryState.path="";const label=$("#library-current-branch");if(label)label.textContent=next;openLibraryPath("")}});
+document.addEventListener("input",e=>{if(e.target.matches("#library-file-search"))renderLibraryFileFilter(e.target.value);if(e.target.matches("#library-source-search"))renderLibrarySourceSearch(e.target.value)});
+function closeDrawer(){document.body.classList.remove("drawer-open");$("#menu-toggle")?.setAttribute("aria-expanded","false")}
+$("#menu-toggle").addEventListener("click",()=>{const open=document.body.classList.toggle("drawer-open");$("#menu-toggle").setAttribute("aria-expanded",String(open))});
+$("#open-profile").addEventListener("click",()=>{closeDrawer();setPage("settings")});
+$("#desktop-search").addEventListener("click",()=>$("#search")?.focus());
+document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#search")?.focus()}if(e.key==="/"&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement?.tagName||"")){e.preventDefault();$("#search")?.focus()}});
+$("#theme-toggle").addEventListener("click",()=>{document.body.classList.toggle("light-preview");const l=document.body.classList.contains("light-preview");document.documentElement.style.colorScheme=l?"light":"dark";$("#theme-toggle").textContent=l?"☀":"☾";document.querySelector('meta[name=theme-color]').content=l?"#f7f9fd":"#05070d"});
+buildNavigation();$("#nav-search")?.addEventListener("input",buildNavigation);window.addEventListener("popstate",()=>{if(location.hash.startsWith("#library=")){renderLibraryDetail(decodeURIComponent(location.hash.slice(9)),false);return}view=location.hash.startsWith("#page=")?location.hash.slice(6):"home";render()});
+const CATALOG_SOURCES=[
+  new URL("tools.json",document.baseURI).href,
+  "https://zskbot.github.io/ocodejs-cli/tools.json",
+  "https://raw.githubusercontent.com/zskbot/ocodejs-cli/main/tools.json"
+];
+function renderCatalogError(errors){
+  clearTimeout(catalogBootWatchdog);
+  const host=$("#app");
+  if(!host)return;
+  host.innerHTML='<section class="catalog-error" role="alert"><div class="catalog-error-mark">!</div><h1>Catalog unavailable</h1><p>OCode.js CLI Hub không tải được danh mục công cụ. Kiểm tra kết nối rồi thử lại.</p><p class="catalog-error-detail">'+esc(errors[errors.length-1]||"Unknown network error")+'</p><button class="catalog-retry" id="catalog-retry" type="button">Try again ↻</button><p class="catalog-error-help">Nếu lỗi tiếp tục, mở repository để kiểm tra tệp tools.json.</p><a class="catalog-error-link" href="https://github.com/zskbot/ocodejs-cli/blob/main/tools.json" target="_blank" rel="noopener noreferrer">Open catalog source ↗</a></section>';
+  $("#catalog-retry")?.addEventListener("click",loadCatalog,{once:true});
+}
+async function loadCatalog(){
+  const host=$("#app");
+  if(host)host.innerHTML='<section class="catalog-loading" role="status" aria-live="polite"><span class="catalog-spinner" aria-hidden="true"></span><strong>Loading catalog…</strong><p>Đang kết nối danh mục công cụ.</p></section>';
+  const errors=[];
+  for(const source of [...new Set(CATALOG_SOURCES)]){
+    const controller=new AbortController();
+    let timeout;
+    try{
+      const request=fetch(source+(source.includes("?")?"&":"?")+"v=20261106",{cache:"no-store",credentials:"omit",signal:controller.signal,headers:{Accept:"application/json"}});
+      const deadline=new Promise((_,reject)=>{timeout=setTimeout(()=>{controller.abort();reject(new Error("Request timed out · "+new URL(source).host))},5000)});
+      const response=await Promise.race([request,deadline]);
+      if(!response.ok)throw new Error("HTTP "+response.status+" · "+new URL(source).host);
+      const data=await response.json();
+      if(!Array.isArray(data)||!data.every(item=>item&&typeof item.id==="string"&&typeof item.name==="string"))throw new Error("Invalid catalog format · "+new URL(source).host);
+      tools=data;
+      const initial=location.hash.startsWith("#page=")?location.hash.slice(6):"home";
+      view=pageDefinitions.some(p=>p.id===initial)?initial:"home";
+      buildNavigation();
+      if(location.hash.startsWith("#library="))renderLibraryDetail(decodeURIComponent(location.hash.slice(9)),false);else render();
+      return;
+    }catch(error){errors.push(error.name==="AbortError"?"Request timed out · "+new URL(source).host:error.message||String(error))}
+    finally{clearTimeout(timeout)}
+  }
+  console.error("OCode.js catalog loading failed:",errors);renderCatalogError(errors);
+}
+loadCatalog();
+</script>
+</body>
+</html>
