@@ -229,7 +229,6 @@ test("catalog loading has bounded timeouts, fallback sources, and retry recovery
   for (const required of [
     "const CATALOG_SOURCES=[",
     'new URL("tools.json",document.baseURI).href',
-    '"https://raw.githubusercontent.com/OCodejs/cli-hub/main/tools.json"',
     "setTimeout(()=>{controller.abort();reject(new Error(\"Request timed out · \"+new URL(source).host))},5000)",
     "Promise.race([request,deadline])",
     "finally{clearTimeout(timeout)}",
@@ -246,7 +245,7 @@ test("all first-party CLI Hub links use the canonical repository", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
   assert.equal(html.includes("zskbot/ocodejs-cli"), false);
-  assert.equal(html.includes("raw.githubusercontent.com/OCodejs/cli-hub/main/tools.json"), true);
+  const catalogSources = html.match(/const CATALOG_SOURCES=\[([\s\S]*?)\];/);\n  assert.ok(catalogSources, "catalog source list must be declared");\n  assert.match(catalogSources[1], /raw\.githubusercontent\.com\/OCodejs\/cli-hub\/main\/tools\.json/);\n  assert.doesNotMatch(catalogSources[1], /zskbot\.github\.io\/ocodejs-cli/);
   assert.match(html, /github\.com\/OCodejs\/cli-hub/);
   assert.match(readme, /OCodejs\/cli-hub/);
 });
