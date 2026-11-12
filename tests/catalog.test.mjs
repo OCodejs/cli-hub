@@ -157,14 +157,16 @@ test("library cards use official brand colors and logos", async () => {
     assert.ok(html.includes(color), "expected brand color " + color);
   }
   assert.match(html, /cdn\.simpleicons\.org/);
-  assert.match(html, /official brand logo/);
+  assert.match(html, /alt="'\+esc\(lib\.name\)\+' logo"/);
+  assert.match(html, /libraryBrandColors=\{/);
 });
 
 test("Lucide icons are applied to navigation and tool cards", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   assert.match(html, /lucide@latest\/dist\/umd\/lucide\.min\.js/);
   assert.match(html, /data-lucide=.*routeLucideIcons/);
-  assert.match(html, /data-lucide="\$\{toolLucideIcons\[t\.id\]/);
+  assert.match(html, /data-lucide="\$\{brand\.icon\}/);
+  assert.match(html, /const toolBrandStyle=\{/);
   assert.match(html, /function refreshIcons\(\)/);
   assert.match(html, /DOMContentLoaded,refreshIcons/);
   assert.match(html, /renderCatalog\(\);refreshIcons\(\)/);
@@ -179,7 +181,8 @@ test("Marketplace page links to official VS Code GitHub and Google catalogs", as
   assert.match(html, /https:\/\/console\.cloud\.google\.com\/marketplace/);
   assert.match(html, /marketplace-grid/);
   assert.match(html, /marketplace:"store"/);
-  assert.match(html, /"marketplace"\]\?\.includes|marketplace.*quick access/i);
+  assert.match(html, /marketplace:"store"/);
+  assert.match(html, /if\(p\.id==="marketplace"\)/);
 });
 
 
