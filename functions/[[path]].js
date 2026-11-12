@@ -2,7 +2,7 @@ import authWorker from "../auth-worker/src/index.js";
 
 const AUTH_ROUTE = /^\/(?:health|auth(?:\/|$)|api(?:\/|$))/;
 
-export async function onRequest(context) {
+export async function onRequest(context, auth = authWorker) {
   const { request, env } = context;
   const url = new URL(request.url);
 
@@ -12,16 +12,20 @@ export async function onRequest(context) {
     const origin = request.headers.get("Origin");
     const fetchSite = request.headers.get("Sec-Fetch-Site");
     const isOAuthCallback = url.pathname === "/auth/github/callback" && request.method === "GET";
-    if (!isOAuthCallback && ((origin && origin !== url.origin) || fetchSite === "cross-site")) {
+    if (!isOAuthCallback && (
+      (origin && origin !== url.origin) ||
+      fetchSite === "cross-site" ||
+      (request.method !== "GET" && !origin)
+    )) {
       return new Response(JSON.stringify({ error: "origin_not_allowed" }), {
         status: 403,
         headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
       });
     }
     const headers = new Headers(request.headers);
-    if (isOAuthCallback || !origin) headers.set("Origin", url.origin);
+    if (isOAuthCallback || (!origin && request.method === "GET")) headers.set("Origin", url.origin);
     const sameOriginRequest = new Request(request, { headers });
-    return authWorker.fetch(sameOriginRequest, { ...env, APP_ORIGIN: url.origin });
+    return auth.fetch(sameOriginRequest, { ...env, APP_ORIGIN: url.origin });
   }
 
   // Pass static assets through to the Pages asset pipeline.
