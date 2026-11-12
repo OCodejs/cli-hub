@@ -46,14 +46,25 @@ function envWithDb(initialRow) {
   };
 }
 
-test("Pages routes health requests through the auth Worker", async () => {
+test("Pages delegates health requests to the injected auth Worker", async () => {
+  const calls = [];
+  const worker = {
+    async fetch(request, env) {
+      calls.push({ url: request.url, origin: request.headers.get("Origin"), appOrigin: env.APP_ORIGIN });
+      return Response.json({ service: "test-worker" });
+    }
+  };
   const response = await onRequest({
     request: new Request("https://preview.pages.dev/health"),
     env: {},
     next: async () => { throw new Error("static asset pipeline must not run"); }
-  });
+  }, worker);
   assert.equal(response.status, 200);
-  assert.equal((await response.json()).service, "ocodejs-auth-worker");
+  assert.equal((await response.json()).service, "test-worker");
+  assert.equal(calls.length, 1);
+  assert.equal(new URL(calls[0].url).pathname, "/health");
+  assert.equal(calls[0].origin, "https://preview.pages.dev");
+  assert.equal(calls[0].appOrigin, "https://preview.pages.dev");
 });
 
 test("Pages safely supplies Origin for same-origin GET requests without Origin", async () => {
@@ -119,6 +130,19 @@ test("conditional HTML requests preserve bodyless 304 responses", async () => {
   assert.equal(response.status, 304);
   assert.equal(await response.text(), "");
   assert.equal(response.headers.get("etag"), '"cached"');
+});
+
+test("state-changing auth requests without Origin are rejected", async () => {
+  const response = await onRequest({
+    request: new Request("https://preview.pages.dev/auth/pat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ token: "ghp_exampletokenvalue1234567890" })
+    }),
+    env: {},
+    next: async () => { throw new Error("auth route must not reach static assets"); }
+  });
+  assert.equal(response.status, 403);
 });
 
 test("cross-site auth requests are rejected before reaching the Worker", async () => {
