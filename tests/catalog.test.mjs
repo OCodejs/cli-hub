@@ -116,9 +116,8 @@ test("local project creation and deletion record browser-local activity", async 
 });
 
 
-test("home introduces community libraries with real brand marks and animated media", async () => {
+test("home introduces community libraries with brand marks and live npm data", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
-  assert.match(html, /media\.giphy\.com\/media\/.+\/giphy\.gif/);
   assert.match(html, /cdn\.simpleicons\.org/);
   assert.match(html, /alt="'\+esc\(lib\.name\)\+' logo"/);
   assert.match(html, /communityLibraries=/);
@@ -168,7 +167,7 @@ test("Lucide icons are applied to navigation and tool cards", async () => {
   assert.match(html, /data-lucide="\$\{brand\.icon\}/);
   assert.match(html, /const toolBrandStyle=\{/);
   assert.match(html, /function refreshIcons\(\)/);
-  assert.match(html, /DOMContentLoaded,refreshIcons/);
+  assert.match(html, /DOMContentLoaded",refreshIcons/);
   assert.match(html, /renderCatalog\(\);refreshIcons\(\)/);
 });
 
