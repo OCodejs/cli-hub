@@ -162,7 +162,7 @@ test("GitHub OAuth callback permits cross-site top-level GET navigation", async 
     request: new Request("https://preview.pages.dev/auth/github/callback?error=access_denied", {
       headers: { Origin: "https://github.com", "Sec-Fetch-Site": "cross-site" }
     }),
-    env: {},
+    env: envWithDb(null),
     next: async () => { throw new Error("auth route must not reach static assets"); }
   });
   assert.equal(response.status, 302);
