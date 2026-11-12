@@ -26,3 +26,6 @@ Set these in Cloudflare Dashboard → Workers & Pages → `ocodejs-cli-hub-stagi
 The Pages Function sets `APP_ORIGIN` from the exact active Pages request origin at runtime. This supports both the stable staging hostname and branch-preview hostnames without allowing cross-origin requests. PAT login remains unavailable until the two required secrets are entered. GitHub OAuth additionally requires a dedicated OAuth App whose callback URL is `https://ocodejs-cli-hub-staging.pages.dev/auth/github/callback`.
 
 Do not copy secrets into GitHub files, commits, issue comments, or chat. Do not attach a custom domain or alter existing `app`, `mcp`, or auth Workers.
+
+
+Cloudflare Pages is connected to this repository for the isolated staging project. Only the `feat/cloudflare-pages-same-origin-auth` branch is included for Preview deployments; automatic deployments from `main` are disabled.
