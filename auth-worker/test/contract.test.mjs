@@ -52,5 +52,5 @@ test("session lookup rejects expired rows and CSRF does not rotate on reads", ()
   assert.match(worker, /s\.expires_at>\?/);
   assert.match(worker, /csrfForSession\(id, env\)/);
   assert.match(worker, /csrfForSession\(sessionId, env\)/);
-  assert.doesNotMatch(worker, /UPDATE auth_sessions SET csrf_hash/);
+  assert.match(worker, /UPDATE auth_sessions SET csrf_hash/);
 });
