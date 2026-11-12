@@ -2,18 +2,35 @@ import authWorker from "../auth-worker/src/index.js";
 
 const AUTH_ROUTE = /^\/(?:health|auth(?:\/|$)|api(?:\/|$))/;
 
-export async function onRequest(context) {
+export async function onRequest(context, auth = authWorker) {
   const { request, env } = context;
   const url = new URL(request.url);
 
   // Keep authentication and API requests on the Pages origin so Safari treats
   // the HttpOnly session cookie as first-party rather than a third-party cookie.
   if (AUTH_ROUTE.test(url.pathname)) {
-    return authWorker.fetch(request, { ...env, APP_ORIGIN: url.origin });
+    const origin = request.headers.get("Origin");
+    const fetchSite = request.headers.get("Sec-Fetch-Site");
+    const isOAuthCallback = url.pathname === "/auth/github/callback" && request.method === "GET";
+    if (!isOAuthCallback && (
+      (origin && origin !== url.origin) ||
+      fetchSite === "cross-site" ||
+      (request.method !== "GET" && !origin)
+    )) {
+      return new Response(JSON.stringify({ error: "origin_not_allowed" }), {
+        status: 403,
+        headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
+      });
+    }
+    const headers = new Headers(request.headers);
+    if (isOAuthCallback || (!origin && request.method === "GET")) headers.set("Origin", url.origin);
+    const sameOriginRequest = new Request(request, { headers });
+    return auth.fetch(sameOriginRequest, { ...env, APP_ORIGIN: url.origin });
   }
 
   // Pass static assets through to the Pages asset pipeline.
   const response = await context.next();
+  if ([204, 205, 304].includes(response.status)) return response;
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("text/html")) return response;
 

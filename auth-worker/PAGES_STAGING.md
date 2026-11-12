@@ -11,7 +11,7 @@ The CLI Hub staging host is isolated from the existing OCodeJS production servic
 
 ## Same-origin auth
 
-`functions/[[path]].js` sends `/health`, `/auth/*`, and `/api/*` to the existing auth Worker module. Other requests continue to the static Pages asset pipeline. HTML responses set `window.OCODE_AUTH_API` to the current Pages origin. This keeps the HttpOnly session cookie first-party in Safari.
+`functions/[[path]].js` sends `/health`, `/auth/*`, and `/api/*` to the existing auth Worker module. It rejects mismatched Origin and Fetch Metadata cross-site requests, then supplies the active Pages origin for same-origin browser GET requests that omit Origin. Other requests continue to the static Pages asset pipeline. HTML responses set `window.OCODE_AUTH_API` to the current Pages origin. This keeps the HttpOnly session cookie first-party in Safari.
 
 The staging D1 migration `auth-worker/migrations/0001_init.sql` has been applied and the Pages deployment configuration has the `DB` binding in both preview and production environments.
 
@@ -23,9 +23,9 @@ Already configured for both Preview and Production:
 - `TOKEN_ENCRYPTION_KEY` — generated as a base64-encoded 32-byte key and stored as an encrypted Pages secret.
 - `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` — not configured; only required to enable GitHub OAuth.
 
-The Pages Function sets `APP_ORIGIN` from the exact active Pages request origin at runtime. This supports both the stable staging hostname and branch-preview hostnames without allowing cross-origin requests. PAT login is backend-configured. GitHub OAuth remains disabled until its dedicated OAuth App credentials are configured. GitHub OAuth additionally requires a dedicated OAuth App whose callback URL is `https://ocodejs-cli-hub-staging.pages.dev/auth/github/callback`.
+The Pages Function allows the exact GitHub OAuth callback GET to return from a cross-site top-level navigation, while still rejecting other cross-site auth requests. It sets `APP_ORIGIN` from the exact active Pages request origin at runtime. This supports both the stable staging hostname and branch-preview hostnames without allowing cross-origin requests. The auth Worker now derives a stable per-session CSRF token so parallel tabs do not invalidate each other's tokens. Legacy session CSRF hashes are migrated on the first session read, and session lookup rejects expired sessions at the SQL query. PAT login is backend-configured. GitHub OAuth remains disabled until its dedicated OAuth App credentials are configured. GitHub OAuth additionally requires a dedicated OAuth App whose callback URL is `https://ocodejs-cli-hub-staging.pages.dev/auth/github/callback`.
 
 Do not copy secrets into GitHub files, commits, issue comments, or chat. Do not attach a custom domain or alter existing `app`, `mcp`, or auth Workers.
 
 
-Cloudflare Pages is connected to this repository for the isolated staging project. Only the `feat/cloudflare-pages-same-origin-auth` branch is included for Preview deployments; automatic deployments from `main` are disabled.
+Cloudflare Pages is connected to this repository for the isolated staging project. Only the `feat/cloudflare-pages-same-origin-auth` branch is included for Preview deployments; automatic deployments from `main` are disabled. The current review fixes are in `fix/auth-session-and-pages-review` (PR #5). The Pages Preview branch filter includes this branch; automatic Production deployments remain disabled.
