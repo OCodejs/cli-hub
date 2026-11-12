@@ -239,3 +239,13 @@ test("catalog loading has bounded timeouts, fallback sources, and retry recovery
     assert.ok(html.includes(required), "catalog recovery contract missing: " + required);
   }
 });
+
+
+test("all first-party CLI Hub links use the canonical repository", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+  assert.equal(html.includes("zskbot/ocodejs-cli"), false);
+  assert.equal(html.includes("raw.githubusercontent.com/OCodejs/cli-hub/main/tools.json"), true);
+  assert.match(html, /github\.com\/OCodejs\/cli-hub/);
+  assert.match(readme, /OCodejs\/cli-hub/);
+});
