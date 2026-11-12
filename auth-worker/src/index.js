@@ -88,8 +88,11 @@ async function saveCredential(user, token, kind, scopes, env) {
   await env.DB.prepare("INSERT INTO auth_users(github_id, github_login, token_ciphertext, token_kind, scopes, updated_at) VALUES(?, ?, ?, ?, ?, ?) ON CONFLICT(github_id) DO UPDATE SET github_login=excluded.github_login, token_ciphertext=excluded.token_ciphertext, token_kind=excluded.token_kind, scopes=excluded.scopes, updated_at=excluded.updated_at")
     .bind(String(user.id), user.login, encrypted, kind, JSON.stringify(scopes || []), Date.now()).run();
 }
+async function csrfForSession(id, env) {
+  return hmac("csrf:" + id, env.SESSION_SECRET);
+}
 async function createSession(githubId, env) {
-  const id = randomToken(), csrf = randomToken(), expires = Date.now() + SESSION_TTL * 1000;
+  const id = randomToken(), csrf = await csrfForSession(id, env), expires = Date.now() + SESSION_TTL * 1000;
   await env.DB.prepare("INSERT INTO auth_sessions(id_hash, github_id, csrf_hash, expires_at) VALUES(?, ?, ?, ?)").bind(await hmac(id, env.SESSION_SECRET), String(githubId), await hmac(csrf, env.SESSION_SECRET), expires).run();
   return { id, csrf };
 }
@@ -172,8 +175,8 @@ async function handle(request, env) {
   if (path === "/auth/session" && request.method === "GET") {
     const session = await findSession(request, env);
     if (!session) return json({ connected: false });
-    const csrf = randomToken();
-    await env.DB.prepare("UPDATE auth_sessions SET csrf_hash=? WHERE id_hash=?").bind(await hmac(csrf, env.SESSION_SECRET), session.id_hash).run();
+    const sessionId = cookies(request)[COOKIE];
+    const csrf = await csrfForSession(sessionId, env);
     return json({ connected: true, user: publicUser(session), csrfToken: csrf });
   }
   if (path === "/auth/logout" && request.method === "POST") {
