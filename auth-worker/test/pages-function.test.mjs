@@ -6,7 +6,7 @@ const source = await readFile(new URL("../../functions/[[path]].js", import.meta
 
 test("Pages Functions routes auth endpoints through the same-origin Worker", () => {
   assert.match(source, /AUTH_ROUTE/);
-  assert.match(source, /authWorker\.fetch\(request, env\)/);
+  assert.match(source, /authWorker\.fetch\(request, \{ \.\.\.env, APP_ORIGIN: url\.origin \}\)/);
   assert.match(source, /context\.next\(\)/);
 });
 
