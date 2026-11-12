@@ -19,15 +19,27 @@ async function hmac(value) {
   return b64url(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value)));
 }
 
-function envWithDb(first) {
+function envWithDb(initialRow) {
+  let row = initialRow;
+  const updates = [];
   return {
     SESSION_SECRET: secret,
     TOKEN_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString("base64"),
+    __updates: updates,
+    __getRow: () => row,
     DB: {
-      prepare() {
+      prepare(sql) {
+        let values = [];
         return {
-          bind() { return this; },
-          async first() { return first; }
+          bind(...args) { values = args; return this; },
+          async first() { return row; },
+          async run() {
+            if (sql.startsWith("UPDATE auth_sessions")) {
+              updates.push(values);
+              row = { ...row, csrf_hash: values[0] };
+            }
+            return { success: true };
+          }
         };
       }
     }
@@ -54,12 +66,12 @@ test("Pages safely supplies Origin for same-origin GET requests without Origin",
   assert.deepEqual(await response.json(), { error: "not_authenticated" });
 });
 
-test("session reads return a stable CSRF token across tabs", async () => {
-  const csrf = await hmac("csrf:" + sessionId);
+test("session reads migrate legacy CSRF hashes and stay stable across tabs", async () => {
+  const legacyHash = await hmac("legacy-random-csrf-token");
   const row = {
     id_hash: await hmac(sessionId),
     github_id: "123",
-    csrf_hash: await hmac(csrf),
+    csrf_hash: legacyHash,
     expires_at: Date.now() + 60_000,
     github_login: "ocodejs-test",
     token_ciphertext: "unused",
@@ -78,7 +90,9 @@ test("session reads return a stable CSRF token across tabs", async () => {
   const second = await (await readSession()).json();
   assert.equal(first.connected, true);
   assert.equal(first.csrfToken, second.csrfToken);
-  assert.equal(first.csrfToken, csrf);
+  assert.equal(first.csrfToken, await hmac("csrf:" + sessionId));
+  assert.equal(env.__updates.length, 1);
+  assert.equal(env.__getRow().csrf_hash, await hmac(first.csrfToken));
 });
 
 test("HTML responses receive the active Pages origin configuration", async () => {
@@ -117,4 +131,16 @@ test("cross-site auth requests are rejected before reaching the Worker", async (
     next: async () => { throw new Error("auth route must not reach static assets"); }
   });
   assert.equal(response.status, 403);
+});
+
+test("GitHub OAuth callback permits cross-site top-level GET navigation", async () => {
+  const response = await onRequest({
+    request: new Request("https://preview.pages.dev/auth/github/callback?error=access_denied", {
+      headers: { Origin: "https://github.com", "Sec-Fetch-Site": "cross-site" }
+    }),
+    env: {},
+    next: async () => { throw new Error("auth route must not reach static assets"); }
+  });
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("location"), "https://preview.pages.dev/?auth=cancelled");
 });
