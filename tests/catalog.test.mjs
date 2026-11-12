@@ -245,7 +245,10 @@ test("all first-party CLI Hub links use the canonical repository", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
   assert.equal(html.includes("zskbot/ocodejs-cli"), false);
-  const catalogSources = html.match(/const CATALOG_SOURCES=\[([\s\S]*?)\];/);\n  assert.ok(catalogSources, "catalog source list must be declared");\n  assert.match(catalogSources[1], /raw\.githubusercontent\.com\/OCodejs\/cli-hub\/main\/tools\.json/);\n  assert.doesNotMatch(catalogSources[1], /zskbot\.github\.io\/ocodejs-cli/);
+  const catalogSources = html.match(/const CATALOG_SOURCES=\[([\s\S]*?)\];/);
+  assert.ok(catalogSources, "catalog source list must be declared");
+  assert.match(catalogSources[1], /raw\.githubusercontent\.com\/OCodejs\/cli-hub\/main\/tools\.json/);
+  assert.doesNotMatch(catalogSources[1], /zskbot\.github\.io\/ocodejs-cli/);
   assert.match(html, /github\.com\/OCodejs\/cli-hub/);
   assert.match(readme, /OCodejs\/cli-hub/);
 });
