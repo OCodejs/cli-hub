@@ -28,4 +28,4 @@ The Pages Function sets `APP_ORIGIN` from the exact active Pages request origin 
 Do not copy secrets into GitHub files, commits, issue comments, or chat. Do not attach a custom domain or alter existing `app`, `mcp`, or auth Workers.
 
 
-Cloudflare Pages is connected to this repository for the isolated staging project. Only the `feat/cloudflare-pages-same-origin-auth` branch is included for Preview deployments; automatic deployments from `main` are disabled. The current review fixes are being developed in `fix/auth-session-and-pages-review` and will require the Pages Preview branch filter to include that branch before deployment.
+Cloudflare Pages is connected to this repository for the isolated staging project. Only the `feat/cloudflare-pages-same-origin-auth` branch is included for Preview deployments; automatic deployments from `main` are disabled. The current review fixes are in `fix/auth-session-and-pages-review` (PR #5). The Pages Preview branch filter includes this branch; automatic Production deployments remain disabled.
