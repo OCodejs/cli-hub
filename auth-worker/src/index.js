@@ -177,6 +177,13 @@ async function handle(request, env) {
     if (!session) return json({ connected: false });
     const sessionId = cookies(request)[COOKIE];
     const csrf = await csrfForSession(sessionId, env);
+    const csrfHash = await hmac(csrf, env.SESSION_SECRET);
+    // Migrate pre-deterministic CSRF hashes once. Concurrent reads calculate
+    // the same token and write the same hash, so active tabs remain compatible.
+    if (csrfHash !== session.csrf_hash) {
+      await env.DB.prepare("UPDATE auth_sessions SET csrf_hash=? WHERE id_hash=?")
+        .bind(csrfHash, session.id_hash).run();
+    }
     return json({ connected: true, user: publicUser(session), csrfToken: csrf });
   }
   if (path === "/auth/logout" && request.method === "POST") {
