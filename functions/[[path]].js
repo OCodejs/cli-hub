@@ -11,14 +11,15 @@ export async function onRequest(context) {
   if (AUTH_ROUTE.test(url.pathname)) {
     const origin = request.headers.get("Origin");
     const fetchSite = request.headers.get("Sec-Fetch-Site");
-    if ((origin && origin !== url.origin) || fetchSite === "cross-site") {
+    const isOAuthCallback = url.pathname === "/auth/github/callback" && request.method === "GET";
+    if (!isOAuthCallback && ((origin && origin !== url.origin) || fetchSite === "cross-site")) {
       return new Response(JSON.stringify({ error: "origin_not_allowed" }), {
         status: 403,
         headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
       });
     }
     const headers = new Headers(request.headers);
-    if (!origin) headers.set("Origin", url.origin);
+    if (isOAuthCallback || !origin) headers.set("Origin", url.origin);
     const sameOriginRequest = new Request(request, { headers });
     return authWorker.fetch(sameOriginRequest, { ...env, APP_ORIGIN: url.origin });
   }
