@@ -3,6 +3,8 @@
            ❤️OCODEJS CLI HUB❤️
  # OCodeJS CLI Hub
 
+Canonical repository: https://github.com/OCodejs/cli-hub
+
 Danh mục tuyển chọn các công cụ terminal/TUI cho developer và AI agents. Website tĩnh được host bằng GitHub Pages; dữ liệu danh mục nằm trong `tools.json`.
 
 ## Danh mục hiện tại

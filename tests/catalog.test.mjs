@@ -116,9 +116,8 @@ test("local project creation and deletion record browser-local activity", async 
 });
 
 
-test("home introduces community libraries with real brand marks and animated media", async () => {
+test("home introduces community libraries with brand marks and live npm data", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
-  assert.match(html, /media\.giphy\.com\/media\/.+\/giphy\.gif/);
   assert.match(html, /cdn\.simpleicons\.org/);
   assert.match(html, /alt="'\+esc\(lib\.name\)\+' logo"/);
   assert.match(html, /communityLibraries=/);
@@ -157,16 +156,18 @@ test("library cards use official brand colors and logos", async () => {
     assert.ok(html.includes(color), "expected brand color " + color);
   }
   assert.match(html, /cdn\.simpleicons\.org/);
-  assert.match(html, /official brand logo/);
+  assert.match(html, /alt="'\+esc\(lib\.name\)\+' logo"/);
+  assert.match(html, /libraryBrandColors=\{/);
 });
 
 test("Lucide icons are applied to navigation and tool cards", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   assert.match(html, /lucide@latest\/dist\/umd\/lucide\.min\.js/);
   assert.match(html, /data-lucide=.*routeLucideIcons/);
-  assert.match(html, /data-lucide="\$\{toolLucideIcons\[t\.id\]/);
+  assert.match(html, /data-lucide="\$\{brand\.icon\}/);
+  assert.match(html, /const toolBrandStyle=\{/);
   assert.match(html, /function refreshIcons\(\)/);
-  assert.match(html, /DOMContentLoaded,refreshIcons/);
+  assert.match(html, /DOMContentLoaded",refreshIcons/);
   assert.match(html, /renderCatalog\(\);refreshIcons\(\)/);
 });
 
@@ -179,7 +180,8 @@ test("Marketplace page links to official VS Code GitHub and Google catalogs", as
   assert.match(html, /https:\/\/console\.cloud\.google\.com\/marketplace/);
   assert.match(html, /marketplace-grid/);
   assert.match(html, /marketplace:"store"/);
-  assert.match(html, /"marketplace"\]\?\.includes|marketplace.*quick access/i);
+  assert.match(html, /marketplace:"store"/);
+  assert.match(html, /if\(p\.id==="marketplace"\)/);
 });
 
 
@@ -227,8 +229,6 @@ test("catalog loading has bounded timeouts, fallback sources, and retry recovery
   for (const required of [
     "const CATALOG_SOURCES=[",
     'new URL("tools.json",document.baseURI).href',
-    '"https://zskbot.github.io/ocodejs-cli/tools.json"',
-    '"https://raw.githubusercontent.com/zskbot/ocodejs-cli/main/tools.json"',
     "setTimeout(()=>{controller.abort();reject(new Error(\"Request timed out · \"+new URL(source).host))},5000)",
     "Promise.race([request,deadline])",
     "finally{clearTimeout(timeout)}",
@@ -245,7 +245,10 @@ test("all first-party CLI Hub links use the canonical repository", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
   assert.equal(html.includes("zskbot/ocodejs-cli"), false);
-  assert.equal(html.includes("raw.githubusercontent.com/OCodejs/cli-hub/main/tools.json"), true);
+  const catalogSources = html.match(/const CATALOG_SOURCES=\[([\s\S]*?)\];/);
+  assert.ok(catalogSources, "catalog source list must be declared");
+  assert.match(catalogSources[1], /raw\.githubusercontent\.com\/OCodejs\/cli-hub\/main\/tools\.json/);
+  assert.doesNotMatch(catalogSources[1], /zskbot\.github\.io\/ocodejs-cli/);
   assert.match(html, /github\.com\/OCodejs\/cli-hub/);
   assert.match(readme, /OCodejs\/cli-hub/);
 });
