@@ -9,7 +9,7 @@ export async function onRequest(context) {
   // Keep authentication and API requests on the Pages origin so Safari treats
   // the HttpOnly session cookie as first-party rather than a third-party cookie.
   if (AUTH_ROUTE.test(url.pathname)) {
-    return authWorker.fetch(request, env);
+    return authWorker.fetch(request, { ...env, APP_ORIGIN: url.origin });
   }
 
   // Pass static assets through to the Pages asset pipeline.
