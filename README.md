@@ -112,8 +112,8 @@ The existing Express/PostgreSQL implementation in `auth-server/` is retained as 
 **Real login is not active until the separate Worker and D1 database are deployed, the `auth.ocodejs.dev` hostname is attached, and a dedicated GitHub OAuth App's client ID/secret are configured as Cloudflare Worker secrets.** PAT connection can be used after the Worker and its encryption/session secrets are configured. Never commit real credentials or put them in frontend code.
 
 
-## Custom domain: ocodejs.dev
+## Public URL and hosting fallback
 
-The OCode.js CLI Hub is intended to use **https://ocodejs.dev/** as its canonical public URL. The repository publishes the `CNAME` file at the site root so GitHub Pages can associate the custom domain with this project. The `www.ocodejs.dev` hostname should resolve to the same Pages site and redirect to the apex domain. Keep the existing `app` and `mcp` subdomains on their separate services.
+The canonical fallback URL for this repository is **https://ocodejs.github.io/cli-hub/**, served by GitHub Pages. The deployment workflow runs after updates to `main`; its latest deployment completed successfully.
 
-DNS and Pages ownership must be verified before considering the custom domain live. Do not replace unrelated DNS records or the existing Worker bindings while configuring this domain.
+The custom domain previously recorded in this repository conflicted with the OCodeJS domain allocation. This repository therefore does not claim or configure a custom domain. DNS records and other OCodeJS services remain untouched. Vercel is optional and is not required for the static CLI Hub site.
