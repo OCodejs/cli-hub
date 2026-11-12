@@ -227,8 +227,7 @@ test("catalog loading has bounded timeouts, fallback sources, and retry recovery
   for (const required of [
     "const CATALOG_SOURCES=[",
     'new URL("tools.json",document.baseURI).href',
-    '"https://zskbot.github.io/ocodejs-cli/tools.json"',
-    '"https://raw.githubusercontent.com/zskbot/ocodejs-cli/main/tools.json"',
+    '"https://raw.githubusercontent.com/OCodejs/cli-hub/main/tools.json"',
     "setTimeout(()=>{controller.abort();reject(new Error(\"Request timed out · \"+new URL(source).host))},5000)",
     "Promise.race([request,deadline])",
     "finally{clearTimeout(timeout)}",
